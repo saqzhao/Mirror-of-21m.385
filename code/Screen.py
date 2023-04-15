@@ -1,9 +1,11 @@
-class StartScreenDisplay(InstructionGroup):
-    '''
+from imslib.screen import Screen
 
+class MainScreenDisplay(Screen):
+    '''
+    class for the main game screen
     '''
     def __init__(self) -> None:
-        super(StartScreenDisplay, self).__init__()
+        super(MainScreenDisplay, self).__init__()
         pass
     
     def on_button_down(self, button_value):

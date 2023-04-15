@@ -17,6 +17,10 @@ class BackgroundDisplay(InstructionGroup):
             self.add(this_line)
             self.layers.append(this_line)
 
+        # self.ladders = []
+        # for layer in self.layers:
+        #     for i in range(2)
+
     def can_climb(self, pos):
         # Returns True if player is on a ladder spot and can climb up
         pass #TODO

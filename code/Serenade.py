@@ -14,7 +14,7 @@ from kivy.graphics import Color, Ellipse, Line, Rectangle
 from kivy.core.window import Window
 from kivy.core.image import Image
 
-from background import BackgroundDisplay
+from Background import BackgroundDisplay
 
 
 # Scaling Constants we will be working with
@@ -26,6 +26,10 @@ player_h = 4*ramp_h
 class MainWidget(BaseWidget):
     def __init__(self):
         super(MainWidget, self).__init__()
+        self.audio_ctrl = Audio(2) # TODO - rename to self.audio if we don't use the controller
+        self.background = BackgroundDisplay()
+        self.player = Player(self.audio_ctrl, self.background)
+        self.canvas.add(self.background)
         pass #TODO
 
         # self.audio_ctrl
@@ -51,17 +55,18 @@ class MainWidget(BaseWidget):
     # handle changing displayed elements when window size changes
     # This function should call GameDisplay.on_resize
     def on_resize(self, win_size):
-        resize_topleft_label(self.info)
-        self.display.on_resize(win_size)
+        pass
+        # resize_topleft_label(self.info)
+        # self.display.on_resize(win_size)
         #TODO : anything else that needs resizing ?
 
     def on_update(self):
         self.audio_ctrl.on_update()
-        now = self.audio_ctrl.get_time()  # time of song in seconds.
+        # now = self.audio_ctrl.get_time()  # time of song in seconds.
         # self.player.on_update(now)
 
-        self.info.text = 'p: pause/unpause song\n'
-        self.info.text += f'song time: {now:.2f}\n'
+        # self.info.text = 'p: pause/unpause song\n'
+        # self.info.text += f'song time: {now:.2f}\n'
         # self.info.text += f'num objects: {self.display.get_num_object()}'
 
 class Player(object):
@@ -70,9 +75,10 @@ class Player(object):
     Controls the GameDisplay and AudioCtrl based on what happens
     '''
 
-    def __init__(self, audio_ctrl, display):
+    def __init__(self, audio_ctrl, background):
         super(Player, self).__init__()
-        pass #TODO
+        self.background = background
+        self.audio_ctrl = audio_ctrl
 
     # called by MainWidget
     def on_button_down(self, button_value):
