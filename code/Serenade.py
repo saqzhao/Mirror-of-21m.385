@@ -14,6 +14,7 @@ from kivy.graphics import Color, Ellipse, Line, Rectangle
 from kivy.core.window import Window
 from kivy.core.image import Image
 
+from background import BackgroundDisplay
 
 
 # Scaling Constants we will be working with
@@ -65,6 +66,10 @@ class MainWidget(BaseWidget):
 
 # Handles everything about Audio.
 class AudioController(object):
+    '''
+    Handles: background music, collectible item collection sound, serenade at end of game,
+             interval quiz audio
+    '''
     def __init__(self):
         super(AudioController, self).__init__()
         self.audio = Audio(2)
@@ -111,10 +116,13 @@ class AudioController(object):
         self.audio.on_update()
 
 # Ladders, Floors, Player -- Basically whole game as we're playing it
-class PlayingDisplay(InstructionGroup):
+class CharacterDisplay(InstructionGroup):
+    '''
+    Creates player character and controls movement
+    '''
     def __init__(self) -> None:
-        super(PlayingDisplay, self).__init__()
-        pass #TODO
+        super(CharacterDisplay, self).__init__()
+        self.background = BackgroundDisplay()
         # Ladders, Floors, Character??
     
     def on_button_down(self, button_value):
@@ -125,16 +133,19 @@ class PlayingDisplay(InstructionGroup):
 
     def can_climb(self, pos):
         # Returns True if player is on a ladder spot and can climb up
-        pass #TODO
+        return self.background.can_climb(pos)
     
     def can_descend(self, pos):
         # Returns True if a player is on a ladder spot and can climb down
-        pass #TODO
+        return self.background.can_descend(pos)
 
     def on_resize(self, win_size):
         pass #TODO
 
 class StartScreenDisplay(InstructionGroup):
+    '''
+
+    '''
     def __init__(self) -> None:
         super(StartScreenDisplay, self).__init__()
         pass
@@ -155,30 +166,30 @@ class StartScreenDisplay(InstructionGroup):
     def on_resize(self, win_size):
         pass #TODO
 
-# Switches between our possible screens (starting, settings, map/gameplay, serenade)
-# Forwards button presses to relevant smaller parts, callbacks to music settings if relevant
-class GameDisplay(InstructionGroup):
-    def __init__(self):
-        super(GameDisplay, self).__init__()
-        pass 
+# # Switches between our possible screens (starting, settings, map/gameplay, serenade)
+# # Forwards button presses to relevant smaller parts, callbacks to music settings if relevant
+# class GameDisplay(InstructionGroup):
+#     def __init__(self):
+#         super(GameDisplay, self).__init__()
+#         pass 
 
-    def on_button_right(self):
-        pass
+#     def on_button_right(self):
+#         pass
 
-    def on_button_left(self):
-        pass
+#     def on_button_left(self):
+#         pass
 
-    def on_button_down(self):
-        pass
+#     def on_button_down(self):
+#         pass
 
-    def on_button_up(self):
-        pass
+#     def on_button_up(self):
+#         pass
 
-    def on_resize(self, win_size):
-        pass
+#     def on_resize(self, win_size):
+#         pass
 
-    def on_update(self, now_time):
-        pass
+#     def on_update(self, now_time):
+#         pass
 
 class CollectedInstrumentDisplay(InstructionGroup):
     def __init__(self):
@@ -202,8 +213,12 @@ class IntervalQuiz(InstructionGroup):
     def on_update(self, time):
         pass #TODO
 
-# Controls the GameDisplay and AudioCtrl based on what happens
 class Player(object):
+    '''
+    Handles game logic
+    Controls the GameDisplay and AudioCtrl based on what happens
+    '''
+
     def __init__(self, audio_ctrl, display):
         super(Player, self).__init__()
         pass #TODO
@@ -219,7 +234,6 @@ class Player(object):
     def on_update(self, time):
         # self.display.on_update(time)
         pass
-
 
 
 if __name__ == "__main__":
