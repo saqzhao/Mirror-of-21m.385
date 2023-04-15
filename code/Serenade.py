@@ -15,13 +15,18 @@ from kivy.core.window import Window
 from kivy.core.image import Image
 
 from Background import BackgroundDisplay
+from enum import Enum
 
 
 # Scaling Constants we will be working with
 ladder_w = 0.1
 ramp_h = 0.75*ladder_w
 player_h = 4*ramp_h
-
+class Direction(Enum):
+    UP = 0
+    DOWN = 1
+    LEFT = 2
+    RIGHT = 3
 
 class MainWidget(BaseWidget):
     def __init__(self):
