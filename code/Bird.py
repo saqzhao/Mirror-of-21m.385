@@ -63,6 +63,7 @@ class Bird(InstructionGroup):
         if direction == Direction.RIGHT:
             self.x +=amount
         else:
+            print(f"moving x left theoretically {self.x} -> {self.x-amount}")
             self.x -= amount
         self.x = self.x % Window.width
 
@@ -82,7 +83,7 @@ class Bird(InstructionGroup):
                     self.direction = random.choice([Direction.RIGHT, Direction.LEFT])
                     print("new direction: ", self.direction)
             # Can go down
-            elif self.background.can_descend((self.x, self.y)) and self.direction == Direction.RIGHT or self.direction ==Direction.LEFT:
+            elif self.background.can_descend((self.x, self.y)) and (self.direction == Direction.RIGHT or self.direction ==Direction.LEFT):
                 if random.random() <.8: # Randomly doesn't  fly down
                     print("should be going down now")
                     self.direction = Direction.DOWN
