@@ -8,23 +8,22 @@ from kivy.core.window import Window
 import random
 import math
 # from enum import Enum
-from Serenade import Direction
+from Direction import Direction
 from Background import BackgroundDisplay
-
-print("you have entered Bird.py. You are probably running the wrong .py file")
 
 # TODO: Figure out optimal self.pace, etc
 class Bird(InstructionGroup):
-    def __init__(self, background, pos = (0,0)) -> None:
+    def __init__(self, background, pos ) -> None:
         super(Bird, self).__init__()
         self.background = background
+        self.background.add(self) # Does this work?
         self.x=pos[0]
         self.y=pos[1]
         self.direction = Direction.RIGHT 
         self.active = False
-        self.range = 50 # Distance in pixels that activates interval quiz
-        self.pace = 1 # Position per time
-        self.radius = 10
+        self.range = Window.width/10 # Distance that activates interval quiz
+        self.pace = Window.width/4/10 # Position per time
+        self.radius = Window.width/20
         self.circle = Ellipse(pos = (self.x, self.y), radius = (self.radius, self.radius))
         self.add(self.circle)
 
@@ -59,7 +58,7 @@ class Bird(InstructionGroup):
         self.y-= amount
         pass
 
-    def move_x(self, amount, direction):
+    def move_x(self, amount: float|int, direction: Direction):
         print(f"moving in {direction} {amount} amount")
         if direction == Direction.RIGHT:
             self.x +=amount
@@ -72,20 +71,34 @@ class Bird(InstructionGroup):
         self.circle.pos= (self.x, self.y)        
 
     def on_update(self, dt):
+        print("bird on_update")
         move_amt = self.pace*dt
         while move_amt > 0: #allows us to, say, go down a tad and then go right on same dt
-            if self.direction == Direction.DOWN:
+            # Already going down
+            if self.direction == Direction.DOWN: 
                 amount = min(self.background.distance_to_ladder_bottom((self.x, self.y)), move_amt) # can go down until you hit bottom of ladder
                 self.move_down(amount)
                 move_amt -=amount
                 if self.background.distance_to_ladder_bottom((self.x, self.y)) == 0: # if we've hit bottom of ladder
                     self.direction = random.choice([Direction.RIGHT, Direction.LEFT])
-            if self.background.above_ladder((self.x, self.y)) and self.direction == Direction.RIGHT or self.direction ==Direction.LEFT:
+            # Can go down
+            elif self.background.can_descend((self.x, self.y)) and self.direction == Direction.RIGHT or self.direction ==Direction.LEFT:
                 if random.random() <.8: # Randomly doesn't  fly down
                     self.direction = Direction.DOWN
-        self.update_position()      
+            # Go to side
+            else:
+                self.move_x(move_amt, self.direction)
+                move_amt = 0
+        self.update_position()   
+        return True   
 
         
     def on_resize(self, win_size):
         #TODO: This affects bird size, their current position, and rate/multiplier
         pass 
+
+if __name__ == "__main__":
+    print("you have entered Bird.py. You are probably running the wrong .py file")
+    background = BackgroundDisplay()
+    bird = Bird(background)
+    print(bird)
