@@ -20,7 +20,7 @@ class CharacterDisplay(InstructionGroup):
         self.background = background
         self.pos = (0, 0)
 
-        # self.character = CEllipse(cpos = self.pos) # temporary 
+        self.character = CEllipse(cpos = self.pos) # temporary 
         # character animation
         self.walk_left_texture = Texture.create(size=(64, 64))
         self.rest_left_character = Image(source='../data/rest_left_character.png', keep_data = True)
@@ -43,6 +43,7 @@ class CharacterDisplay(InstructionGroup):
         self.moving_direction = 0
         self.current_level = 0
         self.on_ladder = False
+        self.already_resting = False
     
     def walk(self, direction):
         '''
@@ -53,7 +54,10 @@ class CharacterDisplay(InstructionGroup):
             pass
         else:
             self.walking = True
-            self.pos[0] += 2*direction
+            self.remove(self.character)
+            real_direction = -1 if direction == Direction.LEFT else 1
+            self.pos[0] += real_direction
+            self.add(self.character)
 
     def on_button_down(self, button_value):
         if button_value == 'up':
@@ -69,8 +73,10 @@ class CharacterDisplay(InstructionGroup):
         '''
         animates character resting state
         '''
-        state = self.rest_left_character if (direction == Direction.LEFT) else self.rest_right_character
-
+        if not self.already_resting:
+            # pass
+            rest_state = self.rest_left_character if (direction == Direction.LEFT) else self.rest_right_character
+            # insert rest state character image here
 
     def on_button_up(self, button_value):
         if button_value in {'up', 'down', 'left', 'right'}:
@@ -97,7 +103,8 @@ class CharacterDisplay(InstructionGroup):
                 pass
         
             # check if reach top of ladder and if so, don't move
-            
+        else:
+            self.rest(self.moving_direction)
     
     def climb_down(self, pos):
         # Returns True if a player is on a ladder spot and can climb down
@@ -112,7 +119,5 @@ class CharacterDisplay(InstructionGroup):
                 self.climb_up(self.pos)
             elif self.moving_direction == Direction.DOWN:
                 self.climb_down(self.pos)
-            elif self.moving_direction == Direction.LEFT:
-                self.walk(-1)
-            elif self.moving_direction == Direction.RIGHT:
-                self.walk(1)
+            else:
+                self.walk(self.moving_direction)
