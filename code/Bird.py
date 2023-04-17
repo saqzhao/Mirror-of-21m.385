@@ -25,6 +25,8 @@ class Bird(InstructionGroup):
         self.pace = Window.width/4/5 # Position per time
         self.radius = Window.width/20
         self.circle = Ellipse(pos = (self.x, self.y), radius = (self.radius, self.radius))
+        self.color = Color(rgb = (.5,.5,.5))
+        self.add(self.color)
         self.add(self.circle)
 
     def player_in_range(self, pos): # May/May not use
@@ -63,7 +65,6 @@ class Bird(InstructionGroup):
         if direction == Direction.RIGHT:
             self.x +=amount
         else:
-            print(f"moving x left theoretically {self.x} -> {self.x-amount}")
             self.x -= amount
         self.x = self.x % Window.width
 

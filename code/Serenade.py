@@ -84,21 +84,30 @@ class Player(object):
         self.background = background
         self.audio_ctrl = audio_ctrl
         self.birds = []
+        self.time=0
+        self.birds_spawned =0
 
     # called by MainWidget
     def on_button_down(self, button_value):
-        print("Spawning a new bird")
-        new_bird = Bird(self.background, (Window.width *0.8, self.background.get_start_position_height()))
-        self.birds.append(new_bird)
         pass #TODO
 
     # called by MainWidget
     def on_button_up(self, button_value):
         pass #TODO
 
+    def spawn_bird(self):
+        print("Spawning a new bird")
+        new_bird = Bird(self.background, (Window.width *0.8, self.background.get_start_position_height()))
+        self.birds.append(new_bird)
+        self.birds_spawned+=1
+
     def on_update(self):
         # self.display.on_update(time)
         dt = kivyClock.frametime
+        self.time += dt
+        bird_num = int(self.time)/5
+        if bird_num > self.birds_spawned:
+            self.spawn_bird()
 
         for bird in self.birds:
             bird.on_update(dt)
