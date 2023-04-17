@@ -88,6 +88,7 @@ class BackgroundDisplay(InstructionGroup):
                 break
         return can_descend
     
+    # B for bottom, T for top
     def distance_to_ladder_end(self, pos, which_end):
         closest_y_distance = float('inf')
         ladder_ends = self.ladder_ends(which_end)
@@ -101,7 +102,7 @@ class BackgroundDisplay(InstructionGroup):
         return [loc[end_idx] for loc in self.ladder_locs]
     
     def get_start_position_height(self):
-        return max(self.ladder_tops())
+        return max(self.ladder_ends('T'))
 
     def on_resize(self, win_size):
         pass #TODO
