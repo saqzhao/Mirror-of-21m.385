@@ -8,25 +8,23 @@ from imslib.mixer import Mixer
 from imslib.wavegen import WaveGenerator
 from imslib.wavesrc import WaveBuffer, WaveFile
 from imslib.gfxutil import CEllipse, topleft_label, resize_topleft_label, CLabelRect, CRectangle
-
+from kivy.clock import Clock as kivyClock
 from kivy.graphics.instructions import InstructionGroup
 from kivy.graphics import Color, Ellipse, Line, Rectangle
 from kivy.core.window import Window
 from kivy.core.image import Image
 
 from Background import BackgroundDisplay
+from Bird import Bird
 from enum import Enum
+from Direction import Direction
 
 
 # Scaling Constants we will be working with
 ladder_w = 0.1
 ramp_h = 0.75*ladder_w
 player_h = 4*ramp_h
-class Direction(Enum):
-    UP = 0
-    DOWN = 1
-    LEFT = 2
-    RIGHT = 3
+
 
 class MainWidget(BaseWidget):
     def __init__(self):
@@ -67,6 +65,7 @@ class MainWidget(BaseWidget):
 
     def on_update(self):
         self.audio_ctrl.on_update()
+        self.player.on_update()
         # now = self.audio_ctrl.get_time()  # time of song in seconds.
         # self.player.on_update(now)
 
@@ -84,6 +83,9 @@ class Player(object):
         super(Player, self).__init__()
         self.background = background
         self.audio_ctrl = audio_ctrl
+        self.birds = []
+        self.time=0
+        self.birds_spawned =0
 
     # called by MainWidget
     def on_button_down(self, button_value):
@@ -93,8 +95,22 @@ class Player(object):
     def on_button_up(self, button_value):
         pass #TODO
 
-    def on_update(self, time):
+    def spawn_bird(self):
+        print("Spawning a new bird")
+        new_bird = Bird(self.background, (Window.width *0.8, self.background.get_start_position_height()))
+        self.birds.append(new_bird)
+        self.birds_spawned+=1
+
+    def on_update(self):
         # self.display.on_update(time)
+        dt = kivyClock.frametime
+        self.time += dt
+        bird_num = int(self.time)/5
+        if bird_num > self.birds_spawned:
+            self.spawn_bird()
+
+        for bird in self.birds:
+            bird.on_update(dt)
         pass
 
 
