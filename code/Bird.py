@@ -77,10 +77,10 @@ class Bird(InstructionGroup):
             
             # Already going down
             if self.direction == Direction.DOWN: 
-                amount = min(self.background.distance_to_ladder_bottom((self.x, self.y)), move_amt) # can go down until you hit bottom of ladder
+                amount = min(self.background.distance_to_ladder_end((self.x, self.y), 'B'), move_amt) # can go down until you hit bottom of ladder
                 self.move_down(amount)
                 move_amt -=amount
-                if self.background.distance_to_ladder_bottom((self.x, self.y)) == 0: # if we've hit bottom of ladder
+                if self.background.distance_to_ladder_end((self.x, self.y), 'B') == 0: # if we've hit bottom of ladder
                     self.direction = random.choice([Direction.RIGHT, Direction.LEFT])
                     print("new direction: ", self.direction)
             # Can go down

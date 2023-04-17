@@ -18,12 +18,14 @@ from Background import BackgroundDisplay
 from Bird import Bird
 from enum import Enum
 from Direction import Direction
+from Character import Character
 
 
 # Scaling Constants we will be working with
 ladder_w = 0.1
 ramp_h = 0.75*ladder_w
 player_h = 4*ramp_h
+directions = {member.value for member in Direction}
 
 
 class MainWidget(BaseWidget):
@@ -31,9 +33,10 @@ class MainWidget(BaseWidget):
         super(MainWidget, self).__init__()
         self.audio_ctrl = Audio(2) # TODO - rename to self.audio if we don't use the controller
         self.background = BackgroundDisplay()
-        self.player = Player(self.audio_ctrl, self.background)
+        self.character = Character(self.background)
+        self.player = Player(self.audio_ctrl, self.background, self.character)
         self.canvas.add(self.background)
-        pass #TODO
+        self.add_widget(self.character)
 
         # self.audio_ctrl
         # self.game_display
@@ -44,15 +47,17 @@ class MainWidget(BaseWidget):
             self.audio_ctrl.toggle()
 
         # button down TODO: Change to arrow keys or controller controls
-        button_idx = lookup(keycode[1], 'wasd', (0,1,2,3))
+        # button_idx = lookup(keycode[1], 'wasd', (0,1,2,3))
+        button_idx = lookup(keycode[1], ['up', 'down', 'left', 'right'], (0,1,2,3))
         if button_idx != None:
-            self.player.on_button_down(button_idx+1)
+            self.player.on_button_down(button_idx)
 
     def on_key_up(self, keycode):
         # button up
-        button_idx = lookup(keycode[1], 'wasd', (0,1,2,3))
+        # button_idx = lookup(keycode[1], 'wasd', (0,1,2,3))
+        button_idx = lookup(keycode[1], ['up', 'down', 'left', 'right'], (0,1,2,3))
         if button_idx != None:
-            self.player.on_button_up(button_idx+1)
+            self.player.on_button_up(button_idx)
 
 
     # handle changing displayed elements when window size changes
@@ -79,39 +84,42 @@ class Player(object):
     Controls the GameDisplay and AudioCtrl based on what happens
     '''
 
-    def __init__(self, audio_ctrl, background):
+    def __init__(self, audio_ctrl, background, character):
         super(Player, self).__init__()
         self.background = background
         self.audio_ctrl = audio_ctrl
+        self.character = character
         self.birds = []
         self.time=0
         self.birds_spawned =0
 
     # called by MainWidget
     def on_button_down(self, button_value):
-        pass #TODO
+        if button_value in directions:
+            self.character.on_button_down(button_value)
 
     # called by MainWidget
     def on_button_up(self, button_value):
-        pass #TODO
+        if button_value in directions:
+            self.character.on_button_up(button_value)
 
-    def spawn_bird(self):
-        print("Spawning a new bird")
-        new_bird = Bird(self.background, (Window.width *0.8, self.background.get_start_position_height()))
-        self.birds.append(new_bird)
-        self.birds_spawned+=1
+    # def spawn_bird(self):
+    #     print("Spawning a new bird")
+    #     new_bird = Bird(self.background, (Window.width *0.8, self.background.get_start_position_height()))
+    #     self.birds.append(new_bird)
+    #     self.birds_spawned+=1
 
     def on_update(self):
         # self.display.on_update(time)
         dt = kivyClock.frametime
         self.time += dt
-        bird_num = int(self.time)/5
-        if bird_num > self.birds_spawned:
-            self.spawn_bird()
+        # bird_num = int(self.time)/5
+        # if bird_num > self.birds_spawned:
+        #     self.spawn_bird()
 
-        for bird in self.birds:
-            bird.on_update(dt)
-        pass
+        # for bird in self.birds:
+        #     bird.on_update(dt)
+        # pass
 
 
 if __name__ == "__main__":
