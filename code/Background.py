@@ -49,9 +49,6 @@ class BackgroundDisplay(InstructionGroup):
                 self.add(this_ladder)
                 self.ladders.append(this_ladder)
                 self.ladder_locs.add((0.5*(this_ladder.bounding_box()[0] + this_ladder.bounding_box()[2]), this_ladder.bounding_box()[1], this_ladder.bounding_box()[3]))
-                # self.ladder_bottoms.add((x, self.margin_bottom + self.layer_spacing * i))
-                # self.ladder_tops.add((x, self.margin_bottom + self.layer_spacing * (i+1)))
-                # self.ladder_locs.add((x, self.margin_bottom + self.layer_spacing * i, self.margin_bottom + self.layer_spacing * (i+1)))
 
     def can_begin_climbing(self, pos):
         # Returns True if player is on a ladder spot and can climb up
@@ -91,18 +88,16 @@ class BackgroundDisplay(InstructionGroup):
                 break
         return can_descend
     
-    def distance_to_ladder_bottom(self, pos):
+    def distance_to_ladder_end(self, pos, which_end):
         closest_y_distance = float('inf')
-        ladder_bottoms =self.ladder_bottoms()
-        for loc in ladder_bottoms:
+        ladder_ends = self.ladder_ends(which_end)
+        for loc in ladder_ends:
             closest_y_distance = min(closest_y_distance, abs(pos[1]-loc))
         return closest_y_distance
     
-    def ladder_bottoms(self):
-        return [loc[1] for loc in self.ladder_locs]
-    
-    def ladder_tops(self):
-        return [loc[2] for loc in self.ladder_locs]
+    def ladder_ends(self, which_end):
+        end_idx = 1 if which_end == 'B' else 2
+        return [loc[end_idx] for loc in self.ladder_locs]
     
     def get_start_position_height(self):
         return max(self.ladder_tops())
