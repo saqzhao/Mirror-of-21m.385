@@ -95,6 +95,7 @@ class BackgroundDisplay(InstructionGroup):
             closest_y_distance = min(closest_y_distance, abs(pos[1]-loc))
         return closest_y_distance
     
+    # B for bottom, T for top
     def ladder_ends(self, which_end):
         end_idx = 1 if which_end == 'B' else 2
         return [loc[end_idx] for loc in self.ladder_locs]
