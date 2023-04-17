@@ -93,8 +93,9 @@ class BackgroundDisplay(InstructionGroup):
     
     def distance_to_ladder_bottom(self, pos):
         closest_y_distance = float('inf')
-        for loc in self.ladder_bottoms:
-            closest_y_distance = min(closest_y_distance, abs(pos[1]-loc[1]))
+        ladder_bottoms =self.ladder_bottoms()
+        for loc in ladder_bottoms:
+            closest_y_distance = min(closest_y_distance, abs(pos[1]-loc))
         return closest_y_distance
     
     def ladder_bottoms(self):
@@ -102,6 +103,9 @@ class BackgroundDisplay(InstructionGroup):
     
     def ladder_tops(self):
         return [loc[2] for loc in self.ladder_locs]
+    
+    def get_start_position_height(self):
+        return max(self.ladder_tops())
 
     def on_resize(self, win_size):
         pass #TODO
