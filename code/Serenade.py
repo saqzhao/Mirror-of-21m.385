@@ -34,13 +34,11 @@ class MainWidget(BaseWidget):
         self.audio_ctrl = Audio(2) # TODO - rename to self.audio if we don't use the controller
         self.background = BackgroundDisplay()
         self.character = Character(self.background)
-        self.player = Player(self.audio_ctrl, self.background, self.character)
+        # self.player = Player(self.audio_ctrl, self.background)
+        self.player = Player(self.audio_ctrl, self.background)
         self.canvas.add(self.background)
-        self.add_widget(self.character)
+        self.add_widget(self.player.character)
 
-        # self.audio_ctrl
-        # self.game_display
-        # self.player
     def on_key_down(self, keycode, modifiers):
         # play / pause toggle
         if keycode[1] == 'p':
@@ -84,42 +82,45 @@ class Player(object):
     Controls the GameDisplay and AudioCtrl based on what happens
     '''
 
-    def __init__(self, audio_ctrl, background, character):
+    def __init__(self, audio_ctrl, background):
         super(Player, self).__init__()
         self.background = background
         self.audio_ctrl = audio_ctrl
-        self.character = character
+        self.character = Character(self.background)
         self.birds = []
         self.time=0
         self.birds_spawned =0
 
     # called by MainWidget
     def on_button_down(self, button_value):
-        if button_value in directions:
-            self.character.on_button_down(button_value)
+        for direction in Direction:
+            if button_value == direction.value:
+                self.character.on_button_down(direction)
+            
 
     # called by MainWidget
     def on_button_up(self, button_value):
-        if button_value in directions:
-            self.character.on_button_up(button_value)
+        for direction in Direction:
+            if button_value == direction.value:
+                self.character.on_button_up(direction)
 
-    # def spawn_bird(self):
-    #     print("Spawning a new bird")
-    #     new_bird = Bird(self.background, (Window.width *0.8, self.background.get_start_position_height()))
-    #     self.birds.append(new_bird)
-    #     self.birds_spawned+=1
+    def spawn_bird(self):
+        # print("Spawning a new bird")
+        new_bird = Bird(self.background, (Window.width *0.8, self.background.get_start_position_height()))
+        self.birds.append(new_bird)
+        self.birds_spawned+=1
 
     def on_update(self):
-        # self.display.on_update(time)
+        # self.background.on_update(self.time)
         dt = kivyClock.frametime
         self.time += dt
-        # bird_num = int(self.time)/5
-        # if bird_num > self.birds_spawned:
-        #     self.spawn_bird()
+        bird_num = int(self.time)/5
+        if bird_num > self.birds_spawned:
+            self.spawn_bird()
 
-        # for bird in self.birds:
-        #     bird.on_update(dt)
-        # pass
+        for bird in self.birds:
+            bird.on_update(dt)
+        self.character.on_update()
 
 
 if __name__ == "__main__":
