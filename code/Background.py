@@ -49,6 +49,18 @@ class BackgroundDisplay(InstructionGroup):
                 self.add(this_ladder)
                 self.ladders.append(this_ladder)
                 self.ladder_locs.add((0.5*(this_ladder.bounding_box()[0] + this_ladder.bounding_box()[2]), this_ladder.bounding_box()[1], this_ladder.bounding_box()[3]))
+    
+    def get_margin_side(self):
+        return self.margin_side
+    
+    def get_margin_bottom(self):
+        return self.margin_bottom
+    
+    def get_layer_spacing(self):
+        return self.layer_spacing
+    
+    def get_buffer(self):
+        return BUFFER
 
     def can_begin_climbing(self, pos):
         # Returns True if player is on a ladder spot and can climb up

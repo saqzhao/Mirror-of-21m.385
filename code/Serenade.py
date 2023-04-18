@@ -16,10 +16,12 @@ from kivy.core.image import Image
 
 from Background import BackgroundDisplay
 from Bird import Bird
+from CollectedInstrument import CollectedInstrumentDisplay
 from enum import Enum
 from Direction import Direction
 from Character import Character
 
+import random
 
 # Scaling Constants we will be working with
 ladder_w = 0.1
@@ -90,6 +92,12 @@ class Player(object):
         self.birds = []
         self.time=0
         self.birds_spawned =0
+        self.collectables = set()
+        for _ in range(3):
+            i = random.randint(0, 7)
+            this_collectable = CollectedInstrumentDisplay(self.background, i, callback = self.on_instrument_collected)
+            self.collectables.add(this_collectable)
+            
 
     # called by MainWidget
     def on_button_down(self, button_value):
@@ -120,8 +128,11 @@ class Player(object):
 
         for bird in self.birds:
             bird.on_update(dt)
+
         self.character.on_update()
 
+    def on_instrument_collected(self, instrument):
+        print("An instrument was collected: ", instrument)
 
 if __name__ == "__main__":
     run(MainWidget())
