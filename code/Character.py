@@ -46,7 +46,6 @@ class Character(Widget):
         self.on_ladder = False
         # self.already_resting = False
         self.add_widget(self.character)
-        print('character made')
     
     # def __remove_character(self):
     #     Clock.unschedule(self.on_update)
@@ -69,18 +68,17 @@ class Character(Widget):
             else:
                 self.rest(self.moving_direction)
 
-    # animates character resting state
     def rest(self, direction = Direction.LEFT):
+        '''
+        animates character resting state
+        '''
         self.moving = False
         self.character.source = self.rest_left_character if (direction == Direction.LEFT) else self.rest_right_character
-    
-    # animate character rest state while climbing
-    def climb_rest(self):
-        self.moving = False
-        self.character.source = self.climb_rest_character
-        
-    # animates character walking left/right state
+
     def walk(self, moving_direction):
+        '''
+        animates character walking left/right state
+        '''
         if not self.on_ladder:
             direction = 1
             if moving_direction == Direction.LEFT:
@@ -113,13 +111,12 @@ class Character(Widget):
             direction
             self.moving = True
             self.on_ladder = True
-
             # animate climbing
             self.character.pos[1] += direction
         
             # check if reach end of ladder and if so, stop climbing
             ladder_end = 'T' if direction == 1 else 'B'
-            if self.background.distance_to_ladder_end(screen_pos, ladder_end) < 1:
+            if self.background.distance_to_ladder_end(screen_pos, ladder_end) < 2:
                 self.on_ladder = False
                 self.rest()
         else:
