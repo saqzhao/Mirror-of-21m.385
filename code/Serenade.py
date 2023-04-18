@@ -14,11 +14,13 @@ from kivy.graphics import Color, Ellipse, Line, Rectangle
 from kivy.core.window import Window
 from kivy.core.image import Image
 
+from enum import Enum
+
 from Background import BackgroundDisplay
 from Bird import Bird
-from enum import Enum
 from Direction import Direction
 from Character import Character
+from IntervalQuiz import IntervalQuiz
 
 
 # Scaling Constants we will be working with
@@ -86,17 +88,32 @@ class Player(object):
         super(Player, self).__init__()
         self.background = background
         self.audio_ctrl = audio_ctrl
-        self.character = Character(self.background)
+        self.score = 0
+        self.character = None
+        self.mode = 'easy'
         self.birds = []
         self.time=0
+        self.options = ['2M', '3M', '4', '5'] ### need to have a way for player to choose what
+                                                ## intervals they want to be quizzed on
         self.birds_spawned =0
+
+    def increment_score(self, succeed):
+        magnifier = 1 if succeed else 0
+        self.score += 10*magnifier
+        self.total += 10
+
+    def start_game(self):
+        self.character = Character(self.background)
 
     # called by MainWidget
     def on_button_down(self, button_value):
         for direction in Direction:
             if button_value == direction.value:
                 self.character.on_button_down(direction)
-            
+    
+    def call_interval_quiz(self):
+        interval_quiz = IntervalQuiz(self.mode, self.options, self.increment_score, self.audio_ctrl.play_interval)
+
 
     # called by MainWidget
     def on_button_up(self, button_value):
@@ -106,7 +123,7 @@ class Player(object):
 
     def spawn_bird(self):
         # print("Spawning a new bird")
-        new_bird = Bird(self.background, (Window.width *0.8, self.background.get_start_position_height()))
+        new_bird = Bird(self.background, (Window.width *0.8, self.background.get_start_position_height()), self.call_interval_quiz)
         self.birds.append(new_bird)
         self.birds_spawned+=1
 

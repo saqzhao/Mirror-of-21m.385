@@ -1,3 +1,10 @@
+from imslib.audio import Audio
+from imslib.synth import Synth
+from imslib.mixer import Mixer
+from imslib.wavegen import WaveGenerator
+from imslib.wavesrc import WaveBuffer, WaveFile
+from imslib.clock import Clock, SimpleTempoMap, AudioScheduler, tick_str, kTicksPerQuarter, quantize_tick_up
+
 # Handles everything about Audio.
 class AudioController(object):
     '''
@@ -7,13 +14,27 @@ class AudioController(object):
     def __init__(self):
         super(AudioController, self).__init__()
         self.audio = Audio(2)
-
         self.mixer = Mixer()
-        self.audio.set_generator(self.mixer)
-        self.instruments = []
+        self.synth = Synth()
 
-        # Add other variables here as needed
-        # Maybe keep track of possible intervals to test? 
+        # create TempoMap, AudioScheduler
+        self.tempo_map  = SimpleTempoMap(120)
+        self.sched = AudioScheduler(self.tempo_map)
+
+        self.audio.set_generator(self.sched)
+        self.sched.set_generator(self.synth)
+        self.audio.set_generator(self.mixer)
+
+        # interval quiz
+        self.interval_midi = {'2m': 1, '2M': 2, '3m': 3, '3M': 4, '4': 5, '5': 7, '6m': 8,
+                             '6M': 9, '7m': 10, '7M': 11, '8': 12}
+        self.base_pitch = 60
+        self.quiz_channel = 0
+        self.vel = 80
+        self.note_length = 90
+
+        # collectibles
+        self.instruments = []
 
     # start / stop the song
     def toggle(self):
@@ -37,8 +58,19 @@ class AudioController(object):
     def play_serenade(self):
         pass #TODO
 
-    def play_interval(self):
-        pass #TODO
+    def play_interval(self, interval): #called in intervalQuiz
+        self.synth.noteon(self.quiz_channel, self.base_pitch, self.vel)
+        next_note = self.base_pitch + self.interval_midi[interval]
+
+        now = self.sched.get_tick()
+        next_beat = quantize_tick_up(now, self.note_length)
+
+        self.sched.post_at_tick(self._noteoff, next_beat, self.base_pitch)
+        self.cmd = self.sched.post_at_tick(self.synth.noteon(self.quiz_channel, next_note), next_beat)
+
+        interval_off = quantize_tick_up(now, 2*self.note_length)
+        self.sched.post_at_tick(self._noteoff, interval_off, next_note)
+
 
     # return current time (in seconds) of song
     def get_time(self):
