@@ -5,8 +5,8 @@ from kivy.graphics.instructions import InstructionGroup
 from kivy.graphics import Line
 from kivy.core.window import Window
 
-EPSILON = 5
-BUFFER = 20
+EPSILON = float(5)
+BUFFER = float(20)
 
 class Ladder(InstructionGroup):
     def __init__(self, margin_side, margin_bottom, layer_spacing, i):
@@ -42,7 +42,7 @@ class BackgroundDisplay(InstructionGroup):
             self.layers.append(this_line)
 
         self.ladders = []
-        self.ladder_locs = set()
+        self.ladder_locs = set() #set of (x, y_bottom, y_top)
         for i in range(len(self.layers)-1):
             for _ in range(2):
                 this_ladder = Ladder(self.margin_side, self.margin_bottom, self.layer_spacing, i)
@@ -54,7 +54,7 @@ class BackgroundDisplay(InstructionGroup):
         # Returns True if player is on a ladder spot and can climb up
         # TODO - make this take into account the width of ladders once ladder isn't just a line
         can_climb = False
-        for loc in self.ladder_bottoms():
+        for loc in self.ladder_ends('B'):
             if ((abs(pos[0]-loc[0])**2 + abs(pos[1]-loc[1])**2)**0.5 < BUFFER):
                 can_climb = True
                 break
@@ -63,16 +63,17 @@ class BackgroundDisplay(InstructionGroup):
     def can_begin_descending(self, pos):
         # Returns True if a player is on a ladder spot and can climb down
         can_descend = False
-        for loc in self.ladder_tops():
+        for loc in self.ladder_ends('T'):
             if ((abs(pos[0]-loc[0])**2 + abs(pos[1]-loc[1])**2)**0.5 < BUFFER):
                 can_descend = True
                 break
         return can_descend
-    
+
     def can_climb(self, pos):
         # Returns True if player is on a ladder spot and can climb up
         # TODO - make this take into account the width of ladders once ladder isn't just a line
         can_climb = False
+        
         for loc in self.ladder_locs:
             if (abs(pos[0]-loc[0]) < BUFFER and pos[1] < loc[2] and pos[1] > loc[1] - EPSILON):
                 can_climb = True
@@ -95,6 +96,7 @@ class BackgroundDisplay(InstructionGroup):
         for loc in ladder_ends:
             closest_y_distance = min(closest_y_distance, abs(pos[1]-loc))
         return closest_y_distance
+
     
     # B for bottom, T for top
     def ladder_ends(self, which_end):
@@ -105,4 +107,7 @@ class BackgroundDisplay(InstructionGroup):
         return max(self.ladder_ends('T'))
 
     def on_resize(self, win_size):
+        pass #TODO
+
+    def on_update(self):
         pass #TODO
