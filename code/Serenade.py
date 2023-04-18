@@ -18,10 +18,12 @@ from enum import Enum
 
 from Background import BackgroundDisplay
 from Bird import Bird
+from CollectedInstrument import CollectedInstrumentDisplay
 from Direction import Direction
 from Character import Character
 from IntervalQuiz import IntervalQuiz
 
+import random
 
 # Scaling Constants we will be working with
 ladder_w = 0.1
@@ -95,7 +97,12 @@ class Player(object):
         self.time=0
         self.options = ['2M', '3M', '4', '5'] ### need to have a way for player to choose what
                                                 ## intervals they want to be quizzed on
-        self.birds_spawned =0
+        self.birds_spawned = 0
+        self.collectables = set()
+        for _ in range(3):
+            i = random.randint(0, 7)
+            this_collectable = CollectedInstrumentDisplay(self.background, i, callback = self.on_instrument_collected)
+            self.collectables.add(this_collectable)
 
     def increment_score(self, succeed):
         magnifier = 1 if succeed else 0
@@ -137,8 +144,11 @@ class Player(object):
 
         for bird in self.birds:
             bird.on_update(dt)
+
         self.character.on_update()
 
+    def on_instrument_collected(self, instrument):
+        print("An instrument was collected: ", instrument)
 
 if __name__ == "__main__":
     run(MainWidget())
