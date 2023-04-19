@@ -58,6 +58,11 @@ class AudioController(object):
     def play_serenade(self):
         pass #TODO
 
+    # from ps4
+    def _noteoff(self, tick, pitch):
+        # just turn off the currently sounding note.
+        self.synth.noteoff(self.channel, pitch)
+
     def play_interval(self, interval): #called in intervalQuiz
         self.synth.noteon(self.quiz_channel, self.base_pitch, self.vel)
         next_note = self.base_pitch + self.interval_midi[interval]
@@ -66,7 +71,7 @@ class AudioController(object):
         next_beat = quantize_tick_up(now, self.note_length)
 
         self.sched.post_at_tick(self._noteoff, next_beat, self.base_pitch)
-        self.cmd = self.sched.post_at_tick(self.synth.noteon(self.quiz_channel, next_note), next_beat)
+        self.cmd = self.sched.post_at_tick(self.synth.noteon(self.quiz_channel, next_note, self.vel), next_beat)
 
         interval_off = quantize_tick_up(now, 2*self.note_length)
         self.sched.post_at_tick(self._noteoff, interval_off, next_note)

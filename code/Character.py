@@ -49,7 +49,7 @@ class Character(Widget):
     
     # def __remove_character(self):
     #     Clock.unschedule(self.on_update)
-
+    
     def on_button_down(self, button_value):
         if button_value in {Direction.UP, Direction.DOWN}:
             self.moving_direction = button_value

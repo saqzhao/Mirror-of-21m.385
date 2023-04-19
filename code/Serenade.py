@@ -22,6 +22,7 @@ from CollectedInstrument import CollectedInstrumentDisplay
 from Direction import Direction
 from Character import Character
 from IntervalQuiz import IntervalQuiz
+from AudioController import AudioController
 
 import random
 
@@ -35,11 +36,10 @@ directions = {member.value for member in Direction}
 class MainWidget(BaseWidget):
     def __init__(self):
         super(MainWidget, self).__init__()
-        self.audio_ctrl = Audio(2) # TODO - rename to self.audio if we don't use the controller
+        self.audio_ctrl = AudioController()
         self.background = BackgroundDisplay()
         self.character = Character(self.background)
-        # self.player = Player(self.audio_ctrl, self.background)
-        self.player = Player(self.audio_ctrl, self.background)
+        self.player = Player(self.audio_ctrl, self.background, self.character)
         self.canvas.add(self.background)
         self.add_widget(self.player.character)
 
@@ -86,12 +86,12 @@ class Player(object):
     Controls the GameDisplay and AudioCtrl based on what happens
     '''
 
-    def __init__(self, audio_ctrl, background):
+    def __init__(self, audio_ctrl, background, character):
         super(Player, self).__init__()
         self.background = background
         self.audio_ctrl = audio_ctrl
         self.score = 0
-        self.character = None
+        self.character = character
         self.mode = 'easy'
         self.birds = []
         self.time=0
@@ -104,23 +104,22 @@ class Player(object):
             this_collectable = CollectedInstrumentDisplay(self.background, i, callback = self.on_instrument_collected)
             self.collectables.add(this_collectable)
 
+    # called by IntervalQuiz
     def increment_score(self, succeed):
         magnifier = 1 if succeed else 0
         self.score += 10*magnifier
         self.total += 10
 
-    def start_game(self):
-        self.character = Character(self.background)
-
+    # called by Bird
+    def call_interval_quiz(self):
+        interval_quiz = IntervalQuiz(self.mode, self.options, self.increment_score, self.audio_ctrl.play_interval)
+        interval_quiz.generate_quiz()
+    
     # called by MainWidget
     def on_button_down(self, button_value):
         for direction in Direction:
             if button_value == direction.value:
                 self.character.on_button_down(direction)
-    
-    def call_interval_quiz(self):
-        interval_quiz = IntervalQuiz(self.mode, self.options, self.increment_score, self.audio_ctrl.play_interval)
-
 
     # called by MainWidget
     def on_button_up(self, button_value):
@@ -130,7 +129,7 @@ class Player(object):
 
     def spawn_bird(self):
         # print("Spawning a new bird")
-        new_bird = Bird(self.background, (Window.width *0.8, self.background.get_start_position_height()), self.call_interval_quiz)
+        new_bird = Bird(self.background, (Window.width *0.8, self.background.get_start_position_height()), self.call_interval_quiz, self.character)
         self.birds.append(new_bird)
         self.birds_spawned+=1
 

@@ -2,27 +2,26 @@ import sys, os
 sys.path.insert(0, os.path.abspath('..'))
 
 from imslib.core import BaseWidget, run, lookup
-from imslib.gfxutil import CEllipse, topleft_label, resize_topleft_label, CLabelRect, CRectangle, KFAnim
+from imslib.gfxutil import CRectangle, KFAnim, AnimGroup
 
 from kivy.graphics.instructions import InstructionGroup
-from kivy.graphics import Color, Ellipse, Line, Rectangle, Texture
+from kivy.graphics import Color, Rectangle
 from kivy.core.window import Window
-from kivy.core.image import Image
 from kivy.app import App
+from kivy.uix.widget import Widget
 from kivy.uix.button import Button
-from math import random, randint
+import random
 
-class QuizButton(App):
+class QuizButton(BaseWidget):
     def __init__(self, buttonLabel, pos, is_correct, size, callback):
         btn = Button(text = buttonLabel,
                      font_size = "20sp",
                      background_color = (1, 1, 1, 1),
                      color = (1, 1, 1, 1),
-                     background_down = (.5, .5, .5, 1),
-                     background_normal = (1, 1, 1, 1),
                      size = size,
                      size_hint = (0.2, 0.2),
                      pos = pos)
+        # background_down and normal must be string address for button
         self.is_correct = is_correct
         self.callback = callback
         btn.bind(on_press = self.give_result)
@@ -35,14 +34,16 @@ class QuizButton(App):
             # pass
         else: #does something to button if correct
             print('correct')
-            pass
         self.callback(self.is_correct)
 
-class IntervalQuiz(InstructionGroup):
+class IntervalQuiz(BaseWidget):
     def __init__(self, mode, options, increment_score, generate_interval):
         super(IntervalQuiz, self).__init__()
         self.mode = mode
         self.options = options
+        self.timer_color = Color(1, 0, 0)
+        self.anim_group = AnimGroup()
+        self.canvas.add(self.anim_group)
         self.timer_bar = CRectangle(cpos=(Window.width/2, Window.height/8), csize = (Window.width/3, Window.height/30))
         self.timer_runout = KFAnim((0, Window.width/3, Window.height/30), (6, 0, Window.height/30))
         self.score = increment_score
@@ -55,29 +56,41 @@ class IntervalQuiz(InstructionGroup):
         # quiz buttons
         self.button_size = (Window.width/15, Window.height/20)
         self.button_centerline_margin = Window.width/20
-
+        self.button_locations = dict()
         self.button_locations[0] = (Window.width/2, Window.height*3/5) # bottom row middle
         for idx in range(1, 12):
             if idx % 4 == 1: # top row left
-                self.button_locations[idx] = (Window.width/2+self.button_centerline_margin+self.button_size*(idx-1)/4, Window.height*2/5)
+                self.button_locations[idx] = (Window.width/2+self.button_centerline_margin+self.button_size[0]*(idx-1)/4, Window.height*2/5)
             elif idx % 4 == 2: # top row right
-                self.button_locations[idx] = (Window.width/2+self.button_centerline_margin-self.button_size*(idx-2)/4, Window.height*2/5)
+                self.button_locations[idx] = (Window.width/2+self.button_centerline_margin-self.button_size[0]*(idx-2)/4, Window.height*2/5)
             elif idx % 4 == 3: # bottom row left
-                self.button_locations[idx] = (Window.width/2+self.button_centerline_margin+self.button_size*(idx-3)/4, Window.height*3/5)
+                self.button_locations[idx] = (Window.width/2+self.button_centerline_margin+self.button_size[0]*(idx-3)/4, Window.height*3/5)
             elif idx % 4 == 0: # bottom row right
-                self.button_locations[idx] = (Window.width/2+self.button_centerline_margin-self.button_size*(idx-4)/4, Window.height*3/5)
+                self.button_locations[idx] = (Window.width/2+self.button_centerline_margin-self.button_size[0]*(idx-4)/4, Window.height*3/5)
 
         self.buttons = []
         self.button_labels = []
+        self.background_color = Color(1, 1, 1, 0.25)
+        self.background = Rectangle(pos=(0, 0), size=(Window.width, Window.height))
+        self.quiz_begun = False
 
     def generate_quiz_options(self, num_options):
-        options = {}
-        if len(self.options > num_options):
+        options = set()
+        self.canvas.add(self.background_color)
+        self.canvas.add(self.background)
+        self.canvas.add(self.timer_color)
+        self.canvas.add(self.timer_bar)
+        if len(self.options) > num_options:
             while (len(options) < num_options):
-                idx_to_add = randint(0, len(self.options)-1)
+                idx_to_add = random.randint(0, len(self.options)-1)
                 if idx_to_add not in options:
                     options.add(self.options[idx_to_add])
-        correct = random.choice(options)
+        else:
+            options = self.options
+        options = list(options)
+        correct_idx = random.randint(0, len(options)-1)
+
+        correct = options[correct_idx]
         return correct, options
 
     def quiz_result(self, is_correct):
@@ -94,10 +107,10 @@ class IntervalQuiz(InstructionGroup):
                 self.add_widget(button)
 
     def generate_quiz(self):
+        self.quiz_begun = True
         if self.mode == 'easy':
             self.correct_answer, all_options = self.generate_quiz_options(4)
             self.interval_audio(self.correct_answer)
-            all_options = list(all_options)
             num_options = len(all_options)
             easy_button_locations = [self.button_locations[idx] for idx in range(num_options)]
             self.create_buttons(easy_button_locations, all_options, self.correct_answer)
@@ -118,11 +131,11 @@ class IntervalQuiz(InstructionGroup):
 
     def on_update(self, time):
         self.time += time
-        self.timer_bar.csize = self.timer_runout.eval(self.time)
-        if self.time > 3 and self.time < 3.3:
-            self.interval_audio(self.correct_answer)
-        if self.succeed:
-            return False
-        if self.time > 6 or self.fail:
-
-            return False
+        if self.quiz_begun:
+            self.timer_bar.csize = self.timer_runout.eval(self.time)
+            if self.time > 3 and self.time < 3.3:
+                self.interval_audio(self.correct_answer)
+            if self.succeed:
+                return False
+            if self.time > 6 or self.fail:
+                return False

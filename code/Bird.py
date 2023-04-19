@@ -13,8 +13,9 @@ from Background import BackgroundDisplay
 
 # TODO: Figure out optimal self.pace, etc
 class Bird(InstructionGroup):
-    def __init__(self, background, pos, call_interval_quiz) -> None:
+    def __init__(self, background, pos, call_interval_quiz, character) -> None:
         super(Bird, self).__init__()
+        self.character = character
         self.background = background
         self.background.add(self) # Does this work?
         self.call_interval_quiz = call_interval_quiz
@@ -24,32 +25,33 @@ class Bird(InstructionGroup):
         self.active = False
         self.range = Window.width/10 # Distance that activates interval quiz
         self.pace = Window.width/4/5 # Position per time
-        self.radius = Window.width/70
+        self.radius = Window.width/50
         self.circle = Ellipse(pos = (self.x, self.y), radius = (self.radius, self.radius))
         self.color = Color(rgb = (.5,.5,.5))
         self.add(self.color)
         self.add(self.circle)
 
-    def player_in_range(self, pos):
+    def player_in_range(self):
+        player_pos = self.character.to_screen_pos()
         # If euclidean distance close
         # OR If barrel moving Towards player on flat or going down and close to player
-        is_close = (math.sqrt((self.x-pos[0])**2+(self.y-pos[1])**2) <= self.range)
+        is_close = (math.sqrt((self.x-player_pos[0])**2+(self.y-player_pos[1])**2) <= self.range)
         if not is_close:
             return False
-
         if self.direction == Direction.DOWN:
             # Player is beneath and also close
-            if pos[1] < (self.y +self.height*2):
+            if player_pos[1] < (self.y + self.radius*2):
                 # If interval quiz is passed into bird, call it here
+                print('HI CALLING INTERVAL QUIZ HERE !!!!')
                 self.call_interval_quiz()
                 return True
         elif self.direction == Direction.RIGHT:
             # Player is to right and close
-            if pos[0] > self.x and (abs(pos[1]-self.y)<self.background.layer_spacing):
+            if player_pos[0] > self.x and (abs(player_pos[1]-self.y)<self.background.layer_spacing):
                 return True
         elif self.direction == Direction.LEFT:
             # Player is to left and close
-            if pos[0] < self.x and (abs(pos[1]-self.y)<self.background.layer_spacing):
+            if player_pos[0] < self.x and (abs(player_pos[1]-self.y)<self.background.layer_spacing):
                 return True
 
         return False
@@ -75,6 +77,7 @@ class Bird(InstructionGroup):
 
     def on_update(self, dt):
         move_amt = self.pace*dt
+        self.player_in_range()
         while move_amt > 0: #allows us to, say, go down a tad and then go right on same dt
             
             # Already going down
@@ -100,7 +103,7 @@ class Bird(InstructionGroup):
             else:
                 self.move_x(move_amt, self.direction)
                 move_amt = 0
-        self.update_position()   
+        self.update_position()
         return True   
 
         
