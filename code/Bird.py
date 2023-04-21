@@ -24,7 +24,8 @@ class Bird(InstructionGroup):
         self.direction = Direction.RIGHT 
         self.active = False
         self.range = Window.width/10 # Distance that activates interval quiz
-        self.pace = Window.width/4/5 # Position per time
+        # self.pace = Window.width/4/5 # Position per time
+        self.pace = Window.width/4/2 # Position per time
         self.radius = Window.width/50
         self.circle = Ellipse(pos = (self.x, self.y), radius = (self.radius, self.radius))
         self.color = Color(rgb = (.5,.5,.5))
@@ -38,12 +39,11 @@ class Bird(InstructionGroup):
         is_close = (math.sqrt((self.x-player_pos[0])**2+(self.y-player_pos[1])**2) <= self.range)
         if not is_close:
             return False
-        if self.direction == Direction.DOWN:
+        if self.direction == Direction.DOWN: 
             # Player is beneath and also close
             if player_pos[1] < (self.y + self.radius*2):
                 # If interval quiz is passed into bird, call it here
-                print('HI CALLING INTERVAL QUIZ HERE !!!!')
-                self.call_interval_quiz()
+                print('PLAYER BELOW')
                 return True
         elif self.direction == Direction.RIGHT:
             # Player is to right and close
@@ -55,6 +55,10 @@ class Bird(InstructionGroup):
                 return True
 
         return False
+
+    def hit_bird(self):
+        self.active = True
+        self.call_interval_quiz()
 
     def send_pos(self):
         return (self.x, self.y)
@@ -77,7 +81,17 @@ class Bird(InstructionGroup):
 
     def on_update(self, dt):
         move_amt = self.pace*dt
-        self.player_in_range()
+
+        if not self.active:
+            x=self.player_in_range()
+            if x:
+                print("There's been an interaction bc bird and player are in range")
+                self.hit_bird()
+                return
+        if self.active:
+            return False
+
+
         while move_amt > 0: #allows us to, say, go down a tad and then go right on same dt
             
             # Already going down

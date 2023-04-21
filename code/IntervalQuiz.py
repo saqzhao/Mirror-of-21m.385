@@ -12,7 +12,7 @@ from kivy.uix.widget import Widget
 from kivy.uix.button import Button
 import random
 
-class QuizButton(BaseWidget):
+class QuizButton(InstructionGroup):
     def __init__(self, buttonLabel, pos, is_correct, size, callback):
         btn = Button(text = buttonLabel,
                      font_size = "20sp",
@@ -36,14 +36,14 @@ class QuizButton(BaseWidget):
             print('correct')
         self.callback(self.is_correct)
 
-class IntervalQuiz(BaseWidget):
+class IntervalQuiz(InstructionGroup):
     def __init__(self, mode, options, increment_score, generate_interval):
         super(IntervalQuiz, self).__init__()
         self.mode = mode
         self.options = options
         self.timer_color = Color(1, 0, 0)
         self.anim_group = AnimGroup()
-        self.canvas.add(self.anim_group)
+        self.add(self.anim_group)
         self.timer_bar = CRectangle(cpos=(Window.width/2, Window.height/8), csize = (Window.width/3, Window.height/30))
         self.timer_runout = KFAnim((0, Window.width/3, Window.height/30), (6, 0, Window.height/30))
         self.score = increment_score
@@ -73,13 +73,14 @@ class IntervalQuiz(BaseWidget):
         self.background_color = Color(1, 1, 1, 0.25)
         self.background = Rectangle(pos=(0, 0), size=(Window.width, Window.height))
         self.quiz_begun = False
+        self.time_since_noise_played=0
 
     def generate_quiz_options(self, num_options):
         options = set()
-        self.canvas.add(self.background_color)
-        self.canvas.add(self.background)
-        self.canvas.add(self.timer_color)
-        self.canvas.add(self.timer_bar)
+        self.add(self.background_color)
+        self.add(self.background)
+        self.add(self.timer_color)
+        self.add(self.timer_bar)
         if len(self.options) > num_options:
             while (len(options) < num_options):
                 idx_to_add = random.randint(0, len(self.options)-1)
@@ -104,7 +105,8 @@ class IntervalQuiz(BaseWidget):
                 is_correct = False if opt != correct_answer else True
                 button = QuizButton(opt, loc, is_correct, self.button_size, self.quiz_result)
                 # self.buttons.append(button)
-                self.add_widget(button)
+                print("interval quiz button")
+                self.add(button) #ThIS IS WHERE PROBLEMIS HAPPENING
 
     def generate_quiz(self):
         self.quiz_begun = True
@@ -113,7 +115,8 @@ class IntervalQuiz(BaseWidget):
             self.interval_audio(self.correct_answer)
             num_options = len(all_options)
             easy_button_locations = [self.button_locations[idx] for idx in range(num_options)]
-            self.create_buttons(easy_button_locations, all_options, self.correct_answer)
+            #TODO: Un-comment this out. It's only here bc I'm having a couple difficulties
+            # self.create_buttons(easy_button_locations, all_options, self.correct_answer)
                 
         else:
             self.correct_answer = random.choice(self.options)
@@ -129,13 +132,17 @@ class IntervalQuiz(BaseWidget):
     def on_resize(self, win_size):
         pass #TODO
 
-    def on_update(self, time):
-        self.time += time
+    def on_update(self, dt):
+
         if self.quiz_begun:
+            self.time += dt
+            self.time_since_noise_played+=dt
             self.timer_bar.csize = self.timer_runout.eval(self.time)
-            if self.time > 3 and self.time < 3.3:
+            if self.time_since_noise_played>=1:
+                self.time_since_noise_played = 0
                 self.interval_audio(self.correct_answer)
             if self.succeed:
                 return False
             if self.time > 6 or self.fail:
                 return False
+            return True

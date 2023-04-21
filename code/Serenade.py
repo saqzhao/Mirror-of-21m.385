@@ -48,16 +48,13 @@ class MainWidget(BaseWidget):
         if keycode[1] == 'p':
             self.audio_ctrl.toggle()
 
-        # button down TODO: Change to arrow keys or controller controls
-        # button_idx = lookup(keycode[1], 'wasd', (0,1,2,3))
-        button_idx = lookup(keycode[1], ['up', 'down', 'left', 'right'], (0,1,2,3))
+        button_idx = lookup(keycode[1], ['up', 'down', 'left', 'right', 'w', 'a', 's', 'd', 'x'], (0,1,2,3,0, 2,1,3,4))
         if button_idx != None:
             self.player.on_button_down(button_idx)
 
     def on_key_up(self, keycode):
-        # button up
-        # button_idx = lookup(keycode[1], 'wasd', (0,1,2,3))
-        button_idx = lookup(keycode[1], ['up', 'down', 'left', 'right'], (0,1,2,3))
+
+        button_idx = lookup(keycode[1], ['up', 'down', 'left', 'right', 'w', 'a', 's', 'd', 'x'], (0,1,2,3, 0, 2,1,3,4))
         if button_idx != None:
             self.player.on_button_up(button_idx)
 
@@ -92,17 +89,25 @@ class Player(object):
         self.audio_ctrl = audio_ctrl
         self.score = 0
         self.character = character
-        self.mode = 'easy'
-        self.birds = []
+        self.mode = 'easy'        
         self.time=0
-        self.options = ['2M', '3M', '4', '5'] ### need to have a way for player to choose what
-                                                ## intervals they want to be quizzed on
+
+        # Birds
         self.birds_spawned = 0
+        self.birds = []
+
+        # Collectables
         self.collectables = set()
         for _ in range(3):
             i = random.randint(0, 7)
             this_collectable = CollectedInstrumentDisplay(self.background, i, callback = self.on_instrument_collected)
             self.collectables.add(this_collectable)
+
+        # Interval 
+        self.options = ['2M', '3M', '4', '5'] ### need to have a way for player to choose what
+                                                ## intervals they want to be quizzed on
+        # self.quiz_active = False
+        self.quiz = None
 
     # called by IntervalQuiz
     def increment_score(self, succeed):
@@ -112,20 +117,32 @@ class Player(object):
 
     # called by Bird
     def call_interval_quiz(self):
-        interval_quiz = IntervalQuiz(self.mode, self.options, self.increment_score, self.audio_ctrl.play_interval)
-        interval_quiz.generate_quiz()
+        print("calling interval quiz serenade.py")
+        self.quiz = IntervalQuiz(self.mode, self.options, self.increment_score, self.audio_ctrl.play_interval)
+        self.background.add(self.quiz)
+        self.quiz.generate_quiz()
+        # self.quiz_active = True
     
     # called by MainWidget
     def on_button_down(self, button_value):
+        if button_value ==5:
+            self.testing_something()
+            return
         for direction in Direction:
             if button_value == direction.value:
                 self.character.on_button_down(direction)
 
     # called by MainWidget
     def on_button_up(self, button_value):
+        if button_value ==5:
+            self.testing_something()
+            return
         for direction in Direction:
             if button_value == direction.value:
                 self.character.on_button_up(direction)
+
+    def testing_something(self):
+        print("sure something happens here (testing_something serenade.py)")
 
     def spawn_bird(self):
         # print("Spawning a new bird")
@@ -136,15 +153,30 @@ class Player(object):
     def on_update(self):
         # self.background.on_update(self.time)
         dt = kivyClock.frametime
+        if self.quiz != None:
+            # DO THE QUIZ THINGS
+            x=self.quiz.on_update(dt)
+            if not x:
+                print("wow this actually happens????")
+                self.background.remove(self.quiz)
+                self.quiz = None
+            return
+
         self.time += dt
         bird_num = int(self.time)/5
         if bird_num > self.birds_spawned:
             self.spawn_bird()
 
-        for bird in self.birds:
-            bird.on_update(dt)
-
         self.character.on_update()
+
+        for bird in self.birds:
+            a=bird.on_update(dt)
+            if not a:
+                print("removing this bird")
+                self.background.remove(bird)
+                self.birds.remove(bird)
+
+        
 
     def on_instrument_collected(self, instrument):
         print("An instrument was collected: ", instrument)
