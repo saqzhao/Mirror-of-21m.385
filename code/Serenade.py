@@ -91,6 +91,8 @@ class Player(object):
         self.character = character
         self.mode = 'easy'        
         self.time=0
+        self.collected_instruments = set()
+        self.instruments = ["violin", "guitar", "piano"] # TODO(ashleymg): choose randomly from a selection
 
         # Birds
         self.birds_spawned = 0
@@ -98,9 +100,9 @@ class Player(object):
 
         # Collectables
         self.collectables = set()
-        for _ in range(3):
+        for j in range(3):
             i = random.randint(0, 7)
-            this_collectable = CollectedInstrumentDisplay(self.background, i, callback = self.on_instrument_collected)
+            this_collectable = CollectedInstrumentDisplay(self.background, self.character, self.instruments[j], i, callback = self.on_instrument_collected)
             self.collectables.add(this_collectable)
 
         # Interval 
@@ -168,6 +170,8 @@ class Player(object):
             self.spawn_bird()
 
         self.character.on_update()
+        for collectable in self.collectables:
+            collectable.on_update(dt)
 
         for bird in self.birds:
             a=bird.on_update(dt)
@@ -176,10 +180,8 @@ class Player(object):
                 self.background.remove(bird)
                 self.birds.remove(bird)
 
-        
-
-    def on_instrument_collected(self, instrument):
-        print("An instrument was collected: ", instrument)
+    def on_instrument_collected(self, collectable):
+        self.collectables.add(collectable)
 
 if __name__ == "__main__":
     run(MainWidget())

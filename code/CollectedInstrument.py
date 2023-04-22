@@ -8,9 +8,11 @@ NUM_LAYERS = 7
 BUFFER = 20
 
 class CollectedInstrumentDisplay(InstructionGroup):
-    def __init__(self, background, i, callback):
+    def __init__(self, background, character, instrument, i, callback):
         super(CollectedInstrumentDisplay, self).__init__()
         self.background = background
+        self.instrument = instrument
+        self.character = character
         self.margin_side = self.background.get_margin_side()
         self.margin_bottom = self.background.get_margin_bottom()
         self.layer_spacing = self.background.get_layer_spacing()
@@ -25,9 +27,18 @@ class CollectedInstrumentDisplay(InstructionGroup):
         self.add(self.ellipse)
         self.background.add(self)
         self.callback = callback
+        self.active = True
         
     def on_resize(self, win_size):
         pass #TODO
 
-    def add_instrument(self, instrument):
-        self.callback(instrument)
+    def on_update(self, dt):
+        if self.active:
+            character_pos = self.character.to_screen_pos()
+            if ((abs(character_pos[0]-self.x_center)**2 + abs(character_pos[1]-self.y_center)**2)**0.5 < 50):
+                self.callback(self)
+                self.remove(self.ellipse)
+                self.active = False
+
+    def get_instrument(self):
+        return self.instrument
