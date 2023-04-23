@@ -23,6 +23,7 @@ from Direction import Direction
 from Character import Character
 from IntervalQuiz import IntervalQuiz
 from AudioController import AudioController
+from FinalScreenAudioController import FinalScreenAudioController
 
 import random
 
@@ -37,9 +38,10 @@ class MainWidget(BaseWidget):
     def __init__(self):
         super(MainWidget, self).__init__()
         self.audio_ctrl = AudioController()
+        self.final_song_audio_ctrl = FinalScreenAudioController()
         self.background = BackgroundDisplay()
         self.character = Character(self.background)
-        self.player = Player(self.audio_ctrl, self.background, self.character)
+        self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character)
         self.canvas.add(self.background)
         self.add_widget(self.player.character)
 
@@ -52,9 +54,9 @@ class MainWidget(BaseWidget):
         if button_idx != None:
             self.player.on_button_down(button_idx)
 
-        if keycode[1] == 'p':
+        if keycode[1] == 'l':
             # Dummy button, will play automatically upon reaching the top
-            self.audio_ctrl.play_serenade()
+            self.final_song_audio_ctrl.play_serenade()
 
     def on_key_up(self, keycode):
 
@@ -87,10 +89,11 @@ class Player(object):
     Controls the GameDisplay and AudioCtrl based on what happens
     '''
 
-    def __init__(self, audio_ctrl, background, character):
+    def __init__(self, audio_ctrl, final_song_audio_ctrl, background, character):
         super(Player, self).__init__()
         self.background = background
         self.audio_ctrl = audio_ctrl
+        self.final_song_audio_ctrl = final_song_audio_ctrl
         self.score = 0
         self.character = character
         self.mode = 'easy'        
@@ -183,9 +186,11 @@ class Player(object):
                 print("removing this bird")
                 self.background.remove(bird)
                 self.birds.remove(bird)
+        
+        self.final_song_audio_ctrl.on_update()
 
     def on_instrument_collected(self, collectable):
-        self.audio_ctrl.on_instrument_collected(collectable.get_instrument())
+        self.final_song_audio_ctrl.on_instrument_collected(collectable.get_instrument())
 
 if __name__ == "__main__":
     run(MainWidget())
