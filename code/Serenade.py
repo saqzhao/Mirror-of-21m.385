@@ -52,6 +52,10 @@ class MainWidget(BaseWidget):
         if button_idx != None:
             self.player.on_button_down(button_idx)
 
+        if keycode[1] == 'p':
+            # Dummy button, will play automatically upon reaching the top
+            self.audio_ctrl.play_serenade()
+
     def on_key_up(self, keycode):
 
         button_idx = lookup(keycode[1], ['up', 'down', 'left', 'right', 'w', 'a', 's', 'd', 'x'], (0,1,2,3, 0, 2,1,3,4))
@@ -181,7 +185,7 @@ class Player(object):
                 self.birds.remove(bird)
 
     def on_instrument_collected(self, collectable):
-        self.collectables.add(collectable)
+        self.audio_ctrl.on_instrument_collected(collectable.get_instrument())
 
 if __name__ == "__main__":
     run(MainWidget())

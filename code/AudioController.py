@@ -5,6 +5,14 @@ from imslib.wavegen import WaveGenerator
 from imslib.wavesrc import WaveBuffer, WaveFile
 from imslib.clock import Clock, SimpleTempoMap, AudioScheduler, tick_str, kTicksPerQuarter, quantize_tick_up
 
+INSTRUMENT_MAPPINGS = {
+    "violin": (0, 40),
+    "piano": (0, 0),
+    "guitar": (0, 27)
+}
+
+DUMMY_SEQUENCE = (60, 61, 62, 63, 64, 65)
+
 # Handles everything about Audio.
 class AudioController(object):
     '''
@@ -34,34 +42,67 @@ class AudioController(object):
         self.note_length = 90
 
         # collectibles
-        self.instruments = []
+        self.instruments = set()
+        self.synths = set()
+        self.i = 0
+        self.channels = {}
+        self.playing_channel = 0
+        self.notelen = 2
+
+    def on_instrument_collected(self, instrument):
+        self.instruments.add(instrument)
 
     # start / stop the song
     def toggle(self):
         #This may/may not work
-        for instrument in self.instruments:
-            instrument.toggle()
+        for synth in self.synths:
+            synth.toggle()
 
     def pause(self):
         #This may/may not work
-        for instrument in self.instruments:
-            instrument.pause()
+        for synth in self.synths:
+            synth.pause()
     
     def add_instrument(self, program):
         # Program is tuple (a, b)
         new_synth = Synth()
-        new_synth.program(.9, program[0], program[1])
-        self.instruments.append(new_synth)
+        new_synth.program(self.playing_channel, program[0], program[1])
+        self.synths.add(new_synth)
+        self.channels[new_synth] = self.playing_channel
+        self.playing_channel += 1
         self.mixer.add(new_synth)
         # TODO: make sure this works
 
     def play_serenade(self):
-        pass #TODO
+        self.i = 0
+        for instrument in self.instruments:
+            self.add_instrument(INSTRUMENT_MAPPINGS[instrument])
 
-    # from ps4
+        # now = self.sched.get_tick()
+        # next_beat = quantize_tick_up(now, 480)
+        for synth in self.synths:
+            print(self.sched.get_tick())
+            self._noteon(self.sched.get_tick(), (synth, DUMMY_SEQUENCE[self.i]))
+        
+        self.playing_channel = 0
+
+    def _noteon(self, tick, synth_pitch):
+        synth, pitch = synth_pitch
+        synth.noteon(self.channels[synth], pitch, self.vel)
+        off_tick = tick + self.notelen #TODO(ashleymg): debug why note off isn't happening and next note_on isn't getting called
+        print(off_tick)
+        self.sched.post_at_tick(self._synth_noteoff, off_tick, (synth, pitch, self.channels[synth]))
+        self.i += 1
+        next_beat = tick + self.notelen
+        self.cmd = self.sched.post_at_tick(self._noteon, next_beat, (synth, DUMMY_SEQUENCE[self.i+1]))
+
+    def _synth_noteoff(self, tick, synth_pitch_channel):
+        synth, pitch, channel = synth_pitch_channel
+        synth.noteoff(channel, pitch)
+        print("102")
+
     def _noteoff(self, tick, pitch):
-        # just turn off the currently sounding note.
-        self.synth.noteoff(self.channel, pitch)
+        self.synth.noteoff(self.quiz_channel, pitch)
 
     def play_interval(self, interval): #called in intervalQuiz
         self.synth.noteon(self.quiz_channel, self.base_pitch, self.vel)
