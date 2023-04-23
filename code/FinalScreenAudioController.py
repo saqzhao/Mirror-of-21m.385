@@ -22,7 +22,7 @@ class Arpeggiator(object):
         self.audio = Audio(2)
         self.synth = synth
         self.audio.set_generator(self.synth)
-        self.pitches = []
+        self.pitches = DUMMY_SEQUENCE
         self.pitch_index = 0
         self.note_len = 480
         self.articulation = 1
@@ -37,9 +37,11 @@ class Arpeggiator(object):
         self.pitch_index = 0
         self.playing = True
         self.synth.program(self.channel, self.program[0], self.program[1])
+        print("started 40")
         now = self.sched.get_tick()
         next_beat = quantize_tick_up(now, self.note_len)
         self.cmd = self.sched.post_at_tick(self._noteon, next_beat)
+        print("44")
 
     def stop(self):
         if not self.playing:
@@ -73,14 +75,17 @@ class Arpeggiator(object):
             self.cmd = self.sched.post_at_tick(self._noteon, next_beat)
 
     def _noteon(self, tick):
+        print("called noteon")
         if not self.playing:
             return
+        print("080")
         duration = self.note_len/self.articulation
         if len(self.pitches) == 0:
             return
         pitch = self.pitches[self.pitch_index % (len(self.pitches) - 1)]
-        if self.callback is not None:
-            self.callback(self.pitches[self.pitch_index % (len(self.pitches) - 1)], duration, 100)
+        print(pitch)
+        # if self.callback is not None:
+        #     self.callback(self.pitches[self.pitch_index % (len(self.pitches) - 1)], duration, 100)
         self.synth.noteon(self.channel, pitch, 100)
 
         off_tick = tick + duration
@@ -88,6 +93,7 @@ class Arpeggiator(object):
 
         next_beat = tick + self.note_len
         self.cmd = self.sched.post_at_tick(self._noteon, next_beat)
+        print("95")
 
     def _noteoff(self, tick, pitch):
         self.synth.noteoff(self.channel, pitch)
