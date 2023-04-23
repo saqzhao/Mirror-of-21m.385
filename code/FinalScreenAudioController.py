@@ -1,6 +1,6 @@
 from imslib.audio import Audio
 from imslib.synth import Synth
-from imslib.mixer import Mixer
+# from imslib.mixer import Mixer
 from imslib.wavegen import WaveGenerator
 from imslib.wavesrc import WaveBuffer, WaveFile
 from imslib.clock import Clock, SimpleTempoMap, Scheduler, AudioScheduler, tick_str, kTicksPerQuarter, quantize_tick_up
@@ -37,11 +37,9 @@ class Arpeggiator(object):
         self.pitch_index = 0
         self.playing = True
         self.synth.program(self.channel, self.program[0], self.program[1])
-        print("started 40")
         now = self.sched.get_tick()
         next_beat = quantize_tick_up(now, self.note_len)
         self.cmd = self.sched.post_at_tick(self._noteon, next_beat)
-        print("44")
 
     def stop(self):
         if not self.playing:
@@ -75,17 +73,13 @@ class Arpeggiator(object):
             self.cmd = self.sched.post_at_tick(self._noteon, next_beat)
 
     def _noteon(self, tick):
-        print("called noteon")
         if not self.playing:
             return
-        print("080")
         duration = self.note_len/self.articulation
         if len(self.pitches) == 0:
             return
         pitch = self.pitches[self.pitch_index % (len(self.pitches) - 1)]
-        print(pitch)
-        # if self.callback is not None:
-        #     self.callback(self.pitches[self.pitch_index % (len(self.pitches) - 1)], duration, 100)
+        self.pitch_index += 1
         self.synth.noteon(self.channel, pitch, 100)
 
         off_tick = tick + duration
@@ -93,7 +87,6 @@ class Arpeggiator(object):
 
         next_beat = tick + self.note_len
         self.cmd = self.sched.post_at_tick(self._noteon, next_beat)
-        print("95")
 
     def _noteoff(self, tick, pitch):
         self.synth.noteoff(self.channel, pitch)
@@ -107,18 +100,13 @@ class FinalScreenAudioController(object):
     def __init__(self):
         super(FinalScreenAudioController, self).__init__()
         self.audio = Audio(2)
-        self.mixer = Mixer()
         self.synth = Synth()
 
-        # create TempoMap, AudioScheduler
         self.tempo_map  = SimpleTempoMap(120)
         self.sched = AudioScheduler(self.tempo_map)
 
         self.audio.set_generator(self.sched)
         self.sched.set_generator(self.synth)
-        self.audio.set_generator(self.mixer)
-
-        self.mixer.add(self.synth)
 
         self.instruments = set()
         self.arpeggiators = set()
@@ -145,30 +133,6 @@ class FinalScreenAudioController(object):
 
         for arpeg in self.arpeggiators:
             arpeg.toggle()
-
-    #     for synth in self.synths:
-    #         print(self.sched.get_tick())
-    #         self._noteon(self.sched.get_tick(), synth, DUMMY_SEQUENCE[self.i])
-        
-
-    # def _noteon(self, tick, *args):
-    #     synth, pitch = args
-    #     synth.noteon(self.channels[synth], pitch, self.vel)
-    #     off_tick = tick + self.notelen #TODO(ashleymg): debug why note off isn't happening and next note_on isn't getting called
-    #     print(off_tick)
-    #     self.sched.post_at_tick(self._noteoff, off_tick, [synth, pitch, self.channels[synth]])
-    #     self.i += 1
-    #     next_beat = tick + self.notelen
-    #     self.cmd = self.sched.post_at_tick(self._noteon, next_beat, [synth, DUMMY_SEQUENCE[self.i+1]])
-
-    # def _noteoff(self, tick, *args):
-    #     synth, pitch, channel = args
-    #     synth.noteoff(channel, pitch)
-    #     print("102")
-
-    # def _noteoff(self, tick, pitch):
-    #     self.synth.noteoff(self.quiz_channel, pitch)
-
 
     # return current time (in seconds) of song
     def get_time(self):
