@@ -82,22 +82,22 @@ class AudioController(object):
         # next_beat = quantize_tick_up(now, 480)
         for synth in self.synths:
             print(self.sched.get_tick())
-            self._noteon(self.sched.get_tick(), (synth, DUMMY_SEQUENCE[self.i]))
+            self._noteon(self.sched.get_tick(), synth, DUMMY_SEQUENCE[self.i])
         
         self.playing_channel = 0
 
-    def _noteon(self, tick, synth_pitch):
-        synth, pitch = synth_pitch
+    def _noteon(self, tick, *args):
+        synth, pitch = args
         synth.noteon(self.channels[synth], pitch, self.vel)
         off_tick = tick + self.notelen #TODO(ashleymg): debug why note off isn't happening and next note_on isn't getting called
         print(off_tick)
-        self.sched.post_at_tick(self._synth_noteoff, off_tick, (synth, pitch, self.channels[synth]))
+        self.sched.post_at_tick(self._synth_noteoff, off_tick, [synth, pitch, self.channels[synth]])
         self.i += 1
         next_beat = tick + self.notelen
-        self.cmd = self.sched.post_at_tick(self._noteon, next_beat, (synth, DUMMY_SEQUENCE[self.i+1]))
+        self.cmd = self.sched.post_at_tick(self._noteon, next_beat, [synth, DUMMY_SEQUENCE[self.i+1]])
 
-    def _synth_noteoff(self, tick, synth_pitch_channel):
-        synth, pitch, channel = synth_pitch_channel
+    def _synth_noteoff(self, tick, *args):
+        synth, pitch, channel = args
         synth.noteoff(channel, pitch)
         print("102")
 
