@@ -5,6 +5,7 @@ from imslib.wavegen import WaveGenerator
 from imslib.wavesrc import WaveBuffer, WaveFile
 from imslib.clock import Clock, SimpleTempoMap, AudioScheduler, tick_str, kTicksPerQuarter, quantize_tick_up
 
+
 # Handles everything about Audio.
 class AudioController(object):
     '''
@@ -33,35 +34,8 @@ class AudioController(object):
         self.vel = 80
         self.note_length = 90
 
-        # collectibles
-        self.instruments = []
-
-    # start / stop the song
-    def toggle(self):
-        #This may/may not work
-        for instrument in self.instruments:
-            instrument.toggle()
-
-    def pause(self):
-        #This may/may not work
-        for instrument in self.instruments:
-            instrument.pause()
-    
-    def add_instrument(self, program):
-        # Program is tuple (a, b)
-        new_synth = Synth()
-        new_synth.program(.9, program[0], program[1])
-        self.instruments.append(new_synth)
-        self.mixer.add(new_synth)
-        # TODO: make sure this works
-
-    def play_serenade(self):
-        pass #TODO
-
-    # from ps4
     def _noteoff(self, tick, pitch):
-        # just turn off the currently sounding note.
-        self.synth.noteoff(self.channel, pitch)
+        self.synth.noteoff(self.quiz_channel, pitch)
 
     def play_interval(self, interval): #called in intervalQuiz
         self.synth.noteon(self.quiz_channel, self.base_pitch, self.vel)

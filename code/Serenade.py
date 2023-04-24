@@ -23,6 +23,7 @@ from Direction import Direction
 from Character import Character
 from IntervalQuiz import IntervalQuiz
 from AudioController import AudioController
+from FinalScreenAudioController import FinalScreenAudioController
 
 import random
 
@@ -37,9 +38,10 @@ class MainWidget(BaseWidget):
     def __init__(self):
         super(MainWidget, self).__init__()
         self.audio_ctrl = AudioController()
+        self.final_song_audio_ctrl = FinalScreenAudioController()
         self.background = BackgroundDisplay()
         self.character = Character(self.background)
-        self.player = Player(self.audio_ctrl, self.background, self.character)
+        self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character)
         self.canvas.add(self.background)
         self.add_widget(self.player.character)
 
@@ -51,6 +53,10 @@ class MainWidget(BaseWidget):
         button_idx = lookup(keycode[1], ['up', 'down', 'left', 'right', 'w', 'a', 's', 'd', 'x'], (0,1,2,3,0, 2,1,3,4))
         if button_idx != None:
             self.player.on_button_down(button_idx)
+
+        if keycode[1] == 'l':
+            # Dummy button, will play automatically upon reaching the top
+            self.final_song_audio_ctrl.play_serenade()
 
     def on_key_up(self, keycode):
 
@@ -83,14 +89,18 @@ class Player(object):
     Controls the GameDisplay and AudioCtrl based on what happens
     '''
 
-    def __init__(self, audio_ctrl, background, character):
+    def __init__(self, audio_ctrl, final_song_audio_ctrl, background, character):
         super(Player, self).__init__()
         self.background = background
         self.audio_ctrl = audio_ctrl
+        self.final_song_audio_ctrl = final_song_audio_ctrl
         self.score = 0
         self.character = character
         self.mode = 'easy'        
         self.time=0
+        self.collected_instruments = set()
+        self.instruments = ["violin", "guitar", "piano"] # TODO(ashleymg): choose randomly from a selection
+        self.x_centers_to_avoid = []
 
         # Birds
         self.birds_spawned = 0
@@ -98,9 +108,10 @@ class Player(object):
 
         # Collectables
         self.collectables = set()
-        for _ in range(3):
+        for j in range(3):
             i = random.randint(0, 7)
-            this_collectable = CollectedInstrumentDisplay(self.background, i, callback = self.on_instrument_collected)
+            this_collectable = CollectedInstrumentDisplay(self.background, self.character, self.instruments[j], i, self.on_instrument_collected, self.x_centers_to_avoid)
+            self.x_centers_to_avoid.append(this_collectable.get_x_pos())
             self.collectables.add(this_collectable)
 
         # Interval 
@@ -164,6 +175,8 @@ class Player(object):
             self.spawn_bird()
 
         self.character.on_update()
+        for collectable in self.collectables:
+            collectable.on_update(dt)
 
         for bird in self.birds:
             a=bird.on_update(dt)
@@ -171,11 +184,11 @@ class Player(object):
                 print("removing this bird")
                 self.background.remove(bird)
                 self.birds.remove(bird)
-
         
+        self.final_song_audio_ctrl.on_update()
 
-    def on_instrument_collected(self, instrument):
-        print("An instrument was collected: ", instrument)
+    def on_instrument_collected(self, collectable):
+        self.final_song_audio_ctrl.on_instrument_collected(collectable.get_instrument())
 
 if __name__ == "__main__":
     run(MainWidget())

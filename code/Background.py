@@ -9,12 +9,15 @@ EPSILON = float(5)
 BUFFER = float(20)
 
 class Ladder(InstructionGroup):
-    def __init__(self, margin_side, margin_bottom, layer_spacing, i):
+    def __init__(self, margin_side, margin_bottom, layer_spacing, i, x_centers_to_avoid = None):
         super(Ladder, self).__init__()
         self.i = i
         self.margin_bottom = margin_bottom
         self.layer_spacing = layer_spacing
-        self.x_center = margin_side + random.randint(0, Window.width - margin_side - BUFFER)
+        self.x_center = margin_side + 10 + random.randint(0, Window.width - 2*margin_side - BUFFER - 30)
+        if x_centers_to_avoid is not None:
+            while any((abs(pos-self.x_center) < 2*BUFFER) for pos in x_centers_to_avoid):
+                self.x_center = margin_side + 10 + random.randint(0, Window.width - 2*margin_side - BUFFER - 30)
         left_line = Line(points=(self.x_center - BUFFER, margin_bottom + layer_spacing * i, self.x_center - BUFFER, margin_bottom + layer_spacing * (i+1)), width = 5)
         right_line = Line(points=(self.x_center + BUFFER, margin_bottom + layer_spacing * i, self.x_center + BUFFER, margin_bottom + layer_spacing * (i+1)), width = 5)
         center_line1 = Line(points=(self.x_center - BUFFER, margin_bottom + layer_spacing * i + (layer_spacing * (i+1)-layer_spacing*i)/4*1, self.x_center + BUFFER, margin_bottom + layer_spacing * i + (layer_spacing * (i+1)-layer_spacing*i)/4*1), width = 5)
@@ -25,7 +28,10 @@ class Ladder(InstructionGroup):
         self.add(center_line1)
         self.add(center_line2)
         self.add(center_line3)
-        
+
+    def get_x_center(self):
+        return self.x_center
+
     def bounding_box(self):
         return (self.x_center - BUFFER, self.margin_bottom + self.layer_spacing * self.i, self.x_center + BUFFER, self.margin_bottom + self.layer_spacing * (self.i+1))
 
@@ -36,6 +42,8 @@ class BackgroundDisplay(InstructionGroup):
         self.margin_bottom = Window.height / 10
         self.layer_spacing = Window.height / 8
         self.layers = []
+        self.x_centers_to_avoid = []
+
         for i in range(7):
             this_line = Line(points=(self.margin_side, self.margin_bottom + self.layer_spacing * i, Window.width - self.margin_side, self.margin_bottom + self.layer_spacing * i), width = 6)
             self.add(this_line)
@@ -45,9 +53,10 @@ class BackgroundDisplay(InstructionGroup):
         self.ladder_locs = set() #set of (x, y_bottom, y_top)
         for i in range(len(self.layers)-1):
             for _ in range(2):
-                this_ladder = Ladder(self.margin_side, self.margin_bottom, self.layer_spacing, i)
+                this_ladder = Ladder(self.margin_side, self.margin_bottom, self.layer_spacing, i, self.x_centers_to_avoid)
                 self.add(this_ladder)
                 self.ladders.append(this_ladder)
+                self.x_centers_to_avoid.append(this_ladder.get_x_center())
                 self.ladder_locs.add((0.5*(this_ladder.bounding_box()[0] + this_ladder.bounding_box()[2]), this_ladder.bounding_box()[1], this_ladder.bounding_box()[3]))
     
     def get_margin_side(self):
