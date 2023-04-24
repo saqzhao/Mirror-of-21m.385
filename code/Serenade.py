@@ -145,19 +145,15 @@ class Player(object):
         print("sure something happens here (testing_something serenade.py)")
 
     def spawn_bird(self):
-        # print("Spawning a new bird")
         new_bird = Bird(self.background, (Window.width *0.8, self.background.get_start_position_height()), self.call_interval_quiz, self.character)
         self.birds.append(new_bird)
         self.birds_spawned+=1
 
     def on_update(self):
-        # self.background.on_update(self.time)
         dt = kivyClock.frametime
         if self.quiz != None:
-            # DO THE QUIZ THINGS
             x=self.quiz.on_update(dt)
             if not x:
-                print("wow this actually happens????")
                 self.background.remove(self.quiz)
                 self.quiz = None
             return
