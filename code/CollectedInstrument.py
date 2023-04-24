@@ -8,7 +8,7 @@ NUM_LAYERS = 7
 BUFFER = 20
 
 class CollectedInstrumentDisplay(InstructionGroup):
-    def __init__(self, background, character, instrument, i, callback):
+    def __init__(self, background, character, instrument, i, callback, x_centers_to_avoid = None):
         super(CollectedInstrumentDisplay, self).__init__()
         self.background = background
         self.instrument = instrument
@@ -17,7 +17,10 @@ class CollectedInstrumentDisplay(InstructionGroup):
         self.margin_bottom = self.background.get_margin_bottom()
         self.layer_spacing = self.background.get_layer_spacing()
         self.buffer = self.background.get_buffer()
-        self.x_center = self.margin_side + random.randint(0, Window.width - self.margin_side - BUFFER)
+        self.x_center = self.margin_side + 10 + random.randint(0, Window.width - self.margin_side - 2*BUFFER)
+        if x_centers_to_avoid is not None:
+            while any((abs(pos-self.x_center) < 2*BUFFER) for pos in x_centers_to_avoid):
+                self.x_center = self.margin_side + 10 + random.randint(0, Window.width - self.margin_side - 2*BUFFER)
         self.y_center = ((self.margin_bottom + self.layer_spacing * i) + (self.margin_bottom + self.layer_spacing * (i+1)))/2
         self.radius = Window.width/20
         self.ellipse = CEllipse(cpos = (self.x_center, self.y_center), csize = (self.radius, self.radius))
@@ -42,3 +45,6 @@ class CollectedInstrumentDisplay(InstructionGroup):
 
     def get_instrument(self):
         return self.instrument
+    
+    def get_x_pos(self):
+        return self.x_center

@@ -100,6 +100,7 @@ class Player(object):
         self.time=0
         self.collected_instruments = set()
         self.instruments = ["violin", "guitar", "piano"] # TODO(ashleymg): choose randomly from a selection
+        self.x_centers_to_avoid = []
 
         # Birds
         self.birds_spawned = 0
@@ -109,7 +110,8 @@ class Player(object):
         self.collectables = set()
         for j in range(3):
             i = random.randint(0, 7)
-            this_collectable = CollectedInstrumentDisplay(self.background, self.character, self.instruments[j], i, callback = self.on_instrument_collected)
+            this_collectable = CollectedInstrumentDisplay(self.background, self.character, self.instruments[j], i, self.on_instrument_collected, self.x_centers_to_avoid)
+            self.x_centers_to_avoid.append(this_collectable.get_x_pos())
             self.collectables.add(this_collectable)
 
         # Interval 

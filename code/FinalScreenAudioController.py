@@ -129,6 +129,7 @@ class FinalScreenAudioController(object):
     def play_serenade(self):
         for instrument in self.instruments:
             self.add_instrument(instrument)
+            
         self.playing_channel = 0
 
         for arpeg in self.arpeggiators:
