@@ -102,11 +102,11 @@ class IntervalQuiz(Widget):
 
     def create_buttons(self, locations, options, correct_answer):
         for loc, opt in zip(locations, options):
-                is_correct = False if opt != correct_answer else True
-                button = QuizButton(opt, loc, is_correct, self.button_size, self.quiz_result)
-                # self.buttons.append(button)
-                print("interval quiz button")
-                self.add(button) #ThIS IS WHERE PROBLEMIS HAPPENING
+            is_correct = False if opt != correct_answer else True
+            button = QuizButton(opt, loc, is_correct, self.button_size, self.quiz_result)
+            # self.buttons.append(button)
+            print("interval quiz button")
+            self.add_widget(button) #ThIS IS WHERE PROBLEM IS HAPPENING
 
     def generate_quiz(self):
         self.quiz_begun = True
@@ -116,7 +116,7 @@ class IntervalQuiz(Widget):
             num_options = len(all_options)
             easy_button_locations = [self.button_locations[idx] for idx in range(num_options)]
             #TODO: Un-comment this out. It's only here bc I'm having a couple difficulties
-            # self.create_buttons(easy_button_locations, all_options, self.correct_answer)
+            self.create_buttons(easy_button_locations, all_options, self.correct_answer)
                 
         else:
             self.correct_answer = random.choice(self.options)
