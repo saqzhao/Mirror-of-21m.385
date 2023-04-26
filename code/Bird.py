@@ -30,11 +30,8 @@ class Bird(InstructionGroup):
         self.direction = Direction.RIGHT 
         self.next_direction = Direction.RIGHT
         self.pace = Window.width/4/2 # Position per time
-
-        # Things for Interval Quiz 
-        self.active = False
-        self.range = Window.width/10 # Distance that activates interval quiz
         # self.pace = Window.width/4/5 # Position per time
+
 
         # Visual Object
         self.radius = Window.width/50
@@ -48,23 +45,32 @@ class Bird(InstructionGroup):
         self.add(self.color)
         self.add(self.circle)
 
+        # Things for Interval Quiz 
+        self.active = False
+        self.range = self.radius*0.9 # Distance that activates interval quiz
+
+
     def player_in_range(self): # Returns TRUE if player and bird are close together
         player_pos = self.character.to_screen_pos()
         is_close = (math.sqrt((self.x-player_pos[0])**2+(self.y-player_pos[1])**2) <= self.range)
-        if not is_close:
-            return False
-        if self.direction == Direction.DOWN: 
-            # Player is below and close
-            if player_pos[1] < (self.y + self.radius*2):
-                return True
-        elif self.direction == Direction.RIGHT:
-            # Player is to right and close
-            if player_pos[0] > self.x and (abs(player_pos[1]-self.y)<self.background.layer_spacing):
-                return True
-        elif self.direction == Direction.LEFT:
-            # Player is to left and close
-            if player_pos[0] < self.x and (abs(player_pos[1]-self.y)<self.background.layer_spacing):
-                return True
+        if is_close:
+            return True
+        # if not is_close:
+        #     return False
+        # if self.direction == Direction.DOWN: 
+        #     # Player is below and close
+        #     if player_pos[1] < (self.y + self.radius*2):
+        #         return True
+        # elif self.direction == Direction.RIGHT:
+        #     # Player is to right and close
+        #     return True
+        #     if player_pos[0] > self.x and (abs(player_pos[1]-self.y)<self.background.layer_spacing):
+        #         return True
+        # elif self.direction == Direction.LEFT:
+        #     # Player is to left and close
+        #     return True
+        #     if player_pos[0] < self.x and (abs(player_pos[1]-self.y)<self.background.layer_spacing):
+        #         return True
         return False
 
     def hit_bird(self):
