@@ -92,7 +92,8 @@ class IntervalQuiz(Widget):
 
     def quiz_result(self, is_correct):
         self.score_func(is_correct)
-        self.remove_quiz = True
+        if is_correct:
+            self.remove_quiz = True
 
     def create_buttons(self, locations, options, correct_answer):
         for loc, opt in zip(locations, options):
