@@ -22,7 +22,7 @@ class QuizButton(Widget):
                      size = size,
                      size_hint = (0.2, 0.2),
                      pos = pos)
-        # background_down and normal must be string address for button
+        # background_down and normal must be string address for button (for future style sthing)
         self.is_correct = is_correct
         self.callback = callback
         btn.bind(on_press = self.give_result)
