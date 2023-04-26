@@ -14,6 +14,7 @@ import random
 
 class QuizButton(Widget):
     def __init__(self, buttonLabel, pos, is_correct, size, callback):
+        super(QuizButton, self).__init__()
         btn = Button(text = buttonLabel,
                      font_size = "20sp",
                      background_color = (1, 1, 1, 1),
@@ -21,13 +22,14 @@ class QuizButton(Widget):
                      size = size,
                      size_hint = (0.2, 0.2),
                      pos = pos)
-        # background_down and normal must be string address for button
+        # background_down and normal must be string address for button (for future style sthing)
         self.is_correct = is_correct
         self.callback = callback
         btn.bind(on_press = self.give_result)
+        self.add_widget(btn)
     
 
-    def give_result(self):
+    def give_result(self, x):
         # does something to button if wrong then grays out option
         if not self.is_correct:
             print('wrong')
@@ -97,16 +99,18 @@ class IntervalQuiz(Widget):
     def quiz_result(self, is_correct):
         if is_correct:
             self.succeed = True
+            print('Hi')
         if not self.fail and is_correct:
+            print('Bye')
             self.score(is_correct)
 
     def create_buttons(self, locations, options, correct_answer):
         for loc, opt in zip(locations, options):
-                is_correct = False if opt != correct_answer else True
-                button = QuizButton(opt, loc, is_correct, self.button_size, self.quiz_result)
-                # self.buttons.append(button)
-                print("interval quiz button")
-                self.add(button) #ThIS IS WHERE PROBLEMIS HAPPENING
+            is_correct = False if opt != correct_answer else True
+            button = QuizButton(opt, loc, is_correct, self.button_size, self.quiz_result)
+            # self.buttons.append(button)
+            print("interval quiz button")
+            self.add_widget(button) #ThIS IS WHERE PROBLEM IS HAPPENING
 
     def generate_quiz(self):
         self.quiz_begun = True
@@ -116,7 +120,7 @@ class IntervalQuiz(Widget):
             num_options = len(all_options)
             easy_button_locations = [self.button_locations[idx] for idx in range(num_options)]
             #TODO: Un-comment this out. It's only here bc I'm having a couple difficulties
-            # self.create_buttons(easy_button_locations, all_options, self.correct_answer)
+            self.create_buttons(easy_button_locations, all_options, self.correct_answer)
                 
         else:
             self.correct_answer = random.choice(self.options)
@@ -133,7 +137,6 @@ class IntervalQuiz(Widget):
         pass #TODO
 
     def on_update(self, dt):
-
         if self.quiz_begun:
             self.time += dt
             self.time_since_noise_played+=dt
@@ -144,5 +147,8 @@ class IntervalQuiz(Widget):
             if self.succeed:
                 return False
             if self.time > 6 or self.fail:
+                self.quiz_begun = False
                 return False
             return True
+        else:
+            pass
