@@ -1,20 +1,10 @@
 import sys, os
 sys.path.insert(0, os.path.abspath('..'))
 
-from imslib.core import BaseWidget, run, lookup
-from imslib.audio import Audio
-from imslib.synth import Synth
-from imslib.mixer import Mixer
-from imslib.wavegen import WaveGenerator
-from imslib.wavesrc import WaveBuffer, WaveFile
-from imslib.gfxutil import CEllipse, topleft_label, resize_topleft_label, CLabelRect, CRectangle
+from imslib.core import lookup
+from imslib.screen import Screen
 from kivy.clock import Clock as kivyClock
-from kivy.graphics.instructions import InstructionGroup
-from kivy.graphics import Color, Ellipse, Line, Rectangle
 from kivy.core.window import Window
-from kivy.core.image import Image
-
-from enum import Enum
 
 from Background import BackgroundDisplay
 from Bird import Bird
@@ -34,9 +24,9 @@ ramp_h = 0.75*ladder_w
 player_h = 4*ramp_h
 directions = {member.value for member in Direction}
 
-class MainWidget(BaseWidget):
-    def __init__(self):
-        super(MainWidget, self).__init__()
+class MainScreen(Screen):
+    def __init__(self, **kwargs):
+        super(MainScreen, self).__init__(always_update=False, **kwargs)
         self.audio_ctrl = AudioController()
         self.final_song_audio_ctrl = FinalScreenAudioController()
         self.background = BackgroundDisplay()
@@ -48,6 +38,9 @@ class MainWidget(BaseWidget):
         self.add_widget(self.quiz_display)
 
     def on_key_down(self, keycode, modifiers):
+        if keycode[1] == 'enter':
+            self.switch_to('end') # delete once automatic switch to end screen
+
         # play / pause toggle
         if keycode[1] == 'p':
             self.audio_ctrl.toggle()
@@ -194,6 +187,3 @@ class Player(object):
 
     def on_instrument_collected(self, collectable):
         self.final_song_audio_ctrl.on_instrument_collected(collectable.get_instrument())
-
-if __name__ == "__main__":
-    run(MainWidget())
