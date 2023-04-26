@@ -10,6 +10,9 @@ import math
 # from enum import Enum
 from Direction import Direction
 from Background import BackgroundDisplay
+from kivy.uix.image import Image
+from kivy.uix.widget import Widget
+
 
 # TODO: Figure out optimal self.pace, etc
 class Bird(InstructionGroup):
@@ -25,6 +28,7 @@ class Bird(InstructionGroup):
         self.x=pos[0]
         self.y=pos[1]
         self.direction = Direction.RIGHT 
+        self.next_direction = Direction.RIGHT
         self.pace = Window.width/4/2 # Position per time
 
         # Things for Interval Quiz 
@@ -34,6 +38,11 @@ class Bird(InstructionGroup):
 
         # Visual Object
         self.radius = Window.width/50
+        self.bird_left = '../data/rest_left.png'
+        self.bird_right = '../data/rest_right.png'
+        # self.circle = Image(source=self.bird_right, anim_delay=0, keep_data = True)
+        # self.circle.pos[1] = self.y
+        # self.circle.pos[0] = self.x
         self.circle = Ellipse(pos = (self.x, self.y), radius = (self.radius, self.radius))
         self.color = Color(rgb = (.5,.5,.5))
         self.add(self.color)
@@ -88,12 +97,13 @@ class Bird(InstructionGroup):
                 self.move_down(amount)
                 move_amt -=amount
                 if self.background.distance_to_ladder_end((self.x, self.y), 'B') == 0: # if we've hit bottom of ladder
-                    self.direction = random.choice([Direction.RIGHT, Direction.LEFT])
+                    self.direction = self.next_direction
             # Can go down
             elif self.background.can_descend((self.x, self.y)) and (self.direction == Direction.RIGHT or self.direction ==Direction.LEFT):
                 if random.random() <.8: # Randomly doesn't  fly down
                     # print("should be going down now")
                     self.direction = Direction.DOWN
+                    self.next_direction = random.choice([Direction.RIGHT, Direction.LEFT])
                     self.move_down(move_amt)
                     break
                 else:
