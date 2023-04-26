@@ -44,6 +44,7 @@ class Character(Widget):
         self.moving_direction = 0
         self.current_layer = 0
         self.on_ladder = False
+        self.frozen = False
         # self.already_resting = False
         self.add_widget(self.character)
     
@@ -51,6 +52,8 @@ class Character(Widget):
     #     Clock.unschedule(self.on_update)
     
     def on_button_down(self, button_value):
+        if self.frozen:
+            return
         if button_value in {Direction.UP, Direction.DOWN}:
             self.moving_direction = button_value
             self.climb(self.moving_direction)
@@ -68,6 +71,12 @@ class Character(Widget):
             else:
                 self.rest(self.moving_direction)
 
+    def freeze(self):
+        self.frozen = True
+
+    def unfreeze(self):
+        self.frozen = False
+
     def rest(self, direction = Direction.LEFT):
         '''
         animates character resting state
@@ -79,6 +88,8 @@ class Character(Widget):
         '''
         animates character walking left/right state
         '''
+        if self.frozen:
+            return
         if not self.on_ladder:
             direction = 1
             if moving_direction == Direction.LEFT:
@@ -103,6 +114,8 @@ class Character(Widget):
 
     # animates character climbing up/down state
     def climb(self, moving_direction):
+        if self.frozen:
+            return
         screen_pos = self.to_screen_pos()
         if self.moving or self.background.can_climb(screen_pos) or self.background.can_descend(screen_pos):
             self.character.source = self.climb_character
