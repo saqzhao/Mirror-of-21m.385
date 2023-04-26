@@ -29,13 +29,7 @@ class QuizButton(Widget):
         self.add_widget(btn)
     
 
-    def give_result(self, x):
-        # does something to button if wrong then grays out option
-        if not self.is_correct:
-            print('wrong')
-            # pass
-        else: #does something to button if correct
-            print('correct')
+    def give_result(self, _):
         self.callback(self.is_correct)
 
 class IntervalQuiz(Widget):
@@ -48,9 +42,9 @@ class IntervalQuiz(Widget):
         self.canvas.add(self.anim_group)
         self.timer_bar = CRectangle(cpos=(Window.width/2, Window.height/8), csize = (Window.width/3, Window.height/30))
         self.timer_runout = KFAnim((0, Window.width/3, Window.height/30), (6, 0, Window.height/30))
-        self.score = increment_score
+        self.score_func = increment_score
         self.interval_audio = generate_interval
-        self.fail = False
+        self.remove_quiz = False
         self.succeed = False
         self.time = 0
         self.correct_answer = None
@@ -97,12 +91,9 @@ class IntervalQuiz(Widget):
         return correct, options
 
     def quiz_result(self, is_correct):
+        self.score_func(is_correct)
         if is_correct:
-            self.succeed = True
-            print('Hi')
-        if not self.fail and is_correct:
-            print('Bye')
-            self.score(is_correct)
+            self.remove_quiz = True
 
     def create_buttons(self, locations, options, correct_answer):
         for loc, opt in zip(locations, options):
@@ -144,10 +135,11 @@ class IntervalQuiz(Widget):
             if self.time_since_noise_played>=1:
                 self.time_since_noise_played = 0
                 self.interval_audio(self.correct_answer)
-            if self.succeed:
-                return False
-            if self.time > 6 or self.fail:
-                self.quiz_begun = False
+            if self.remove_quiz:
+                self.remove_quiz = False
+                return
+            if self.time > 6:
+                self.score_func(False)
                 return False
             return True
         else:

@@ -104,6 +104,7 @@ class Player(object):
         self.collected_instruments = set()
         self.instruments = ["violin", "guitar", "piano"] # TODO(ashleymg): choose randomly from a selection
         self.x_centers_to_avoid = []
+        self.lives = 3
 
         # Birds
         self.birds_spawned = 0
@@ -124,15 +125,16 @@ class Player(object):
         self.quiz = None
 
     # called by IntervalQuiz
-    def increment_score(self, succeed):
-        magnifier = 1 if succeed else 0
-        self.score += 10*magnifier
-        self.total += 10
+    def adjust_lives(self, succeed):
+        self.character.unfreeze()
+        if not succeed:
+            self.lives -= 1
 
     # called by Bird
     def call_interval_quiz(self):
+        self.character.freeze()
         print("calling interval quiz serenade.py")
-        self.quiz = IntervalQuiz(self.mode, self.options, self.increment_score, self.audio_ctrl.play_interval)
+        self.quiz = IntervalQuiz(self.mode, self.options, self.adjust_lives, self.audio_ctrl.play_interval)
         self.quiz_display.add_quiz(self.quiz)
         self.quiz.generate_quiz()
         # self.quiz_active = True
