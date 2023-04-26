@@ -12,7 +12,7 @@ from kivy.uix.widget import Widget
 from kivy.uix.button import Button
 import random
 
-class QuizButton(InstructionGroup):
+class QuizButton(Widget):
     def __init__(self, buttonLabel, pos, is_correct, size, callback):
         btn = Button(text = buttonLabel,
                      font_size = "20sp",
@@ -36,14 +36,14 @@ class QuizButton(InstructionGroup):
             print('correct')
         self.callback(self.is_correct)
 
-class IntervalQuiz(InstructionGroup):
+class IntervalQuiz(Widget):
     def __init__(self, mode, options, increment_score, generate_interval):
         super(IntervalQuiz, self).__init__()
         self.mode = mode
         self.options = options
         self.timer_color = Color(1, 0, 0)
         self.anim_group = AnimGroup()
-        self.add(self.anim_group)
+        self.canvas.add(self.anim_group)
         self.timer_bar = CRectangle(cpos=(Window.width/2, Window.height/8), csize = (Window.width/3, Window.height/30))
         self.timer_runout = KFAnim((0, Window.width/3, Window.height/30), (6, 0, Window.height/30))
         self.score = increment_score
@@ -77,10 +77,10 @@ class IntervalQuiz(InstructionGroup):
 
     def generate_quiz_options(self, num_options):
         options = set()
-        self.add(self.background_color)
-        self.add(self.background)
-        self.add(self.timer_color)
-        self.add(self.timer_bar)
+        self.canvas.add(self.background_color)
+        self.canvas.add(self.background)
+        self.canvas.add(self.timer_color)
+        self.canvas.add(self.timer_bar)
         if len(self.options) > num_options:
             while (len(options) < num_options):
                 idx_to_add = random.randint(0, len(self.options)-1)

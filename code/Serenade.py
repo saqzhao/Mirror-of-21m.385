@@ -24,6 +24,7 @@ from Character import Character
 from IntervalQuiz import IntervalQuiz
 from AudioController import AudioController
 from FinalScreenAudioController import FinalScreenAudioController
+from QuizDisplay import QuizDisplay
 
 import random
 
@@ -33,7 +34,6 @@ ramp_h = 0.75*ladder_w
 player_h = 4*ramp_h
 directions = {member.value for member in Direction}
 
-
 class MainWidget(BaseWidget):
     def __init__(self):
         super(MainWidget, self).__init__()
@@ -41,9 +41,11 @@ class MainWidget(BaseWidget):
         self.final_song_audio_ctrl = FinalScreenAudioController()
         self.background = BackgroundDisplay()
         self.character = Character(self.background)
-        self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character)
+        self.quiz_display = QuizDisplay()
+        self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character, self.quiz_display)
         self.canvas.add(self.background)
         self.add_widget(self.player.character)
+        self.add_widget(self.quiz_display)
 
     def on_key_down(self, keycode, modifiers):
         # play / pause toggle
@@ -89,9 +91,10 @@ class Player(object):
     Controls the GameDisplay and AudioCtrl based on what happens
     '''
 
-    def __init__(self, audio_ctrl, final_song_audio_ctrl, background, character):
+    def __init__(self, audio_ctrl, final_song_audio_ctrl, background, character, quiz_display):
         super(Player, self).__init__()
         self.background = background
+        self.quiz_display = quiz_display
         self.audio_ctrl = audio_ctrl
         self.final_song_audio_ctrl = final_song_audio_ctrl
         self.score = 0
@@ -130,7 +133,7 @@ class Player(object):
     def call_interval_quiz(self):
         print("calling interval quiz serenade.py")
         self.quiz = IntervalQuiz(self.mode, self.options, self.increment_score, self.audio_ctrl.play_interval)
-        self.background.add(self.quiz)
+        self.quiz_display.add_quiz(self.quiz)
         self.quiz.generate_quiz()
         # self.quiz_active = True
     
@@ -165,7 +168,7 @@ class Player(object):
         if self.quiz != None:
             x=self.quiz.on_update(dt)
             if not x:
-                self.background.remove(self.quiz)
+                self.quiz_display.remove_quiz()
                 self.quiz = None
             return
 
