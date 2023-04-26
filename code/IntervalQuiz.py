@@ -14,6 +14,7 @@ import random
 
 class QuizButton(Widget):
     def __init__(self, buttonLabel, pos, is_correct, size, callback):
+        super(QuizButton, self).__init__()
         btn = Button(text = buttonLabel,
                      font_size = "20sp",
                      background_color = (1, 1, 1, 1),
@@ -133,7 +134,6 @@ class IntervalQuiz(Widget):
         pass #TODO
 
     def on_update(self, dt):
-
         if self.quiz_begun:
             self.time += dt
             self.time_since_noise_played+=dt
@@ -144,5 +144,8 @@ class IntervalQuiz(Widget):
             if self.succeed:
                 return False
             if self.time > 6 or self.fail:
+                self.quiz_begun = False
                 return False
             return True
+        else:
+            pass
