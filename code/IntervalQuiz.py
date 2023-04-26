@@ -22,13 +22,14 @@ class QuizButton(Widget):
                      size = size,
                      size_hint = (0.2, 0.2),
                      pos = pos)
-        # background_down and normal must be string address for button
+        # background_down and normal must be string address for button (for future style sthing)
         self.is_correct = is_correct
         self.callback = callback
         btn.bind(on_press = self.give_result)
+        self.add_widget(btn)
     
 
-    def give_result(self):
+    def give_result(self, x):
         # does something to button if wrong then grays out option
         if not self.is_correct:
             print('wrong')
@@ -98,7 +99,9 @@ class IntervalQuiz(Widget):
     def quiz_result(self, is_correct):
         if is_correct:
             self.succeed = True
+            print('Hi')
         if not self.fail and is_correct:
+            print('Bye')
             self.score(is_correct)
 
     def create_buttons(self, locations, options, correct_answer):
