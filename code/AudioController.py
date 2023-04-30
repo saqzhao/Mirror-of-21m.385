@@ -15,40 +15,38 @@ class AudioController(object):
     def __init__(self):
         super(AudioController, self).__init__()
         self.audio = Audio(2)
-        self.mixer = Mixer()
         self.synth = Synth()
+        self.audio.set_generator(self.synth)
 
         # create TempoMap, AudioScheduler
         self.tempo_map  = SimpleTempoMap(120)
         self.sched = AudioScheduler(self.tempo_map)
 
-        self.audio.set_generator(self.sched)
-        self.sched.set_generator(self.synth)
-        self.audio.set_generator(self.mixer)
+        # self.audio.set_generator(self.sched)
 
         # interval quiz
         self.interval_midi = {'2m': 1, '2M': 2, '3m': 3, '3M': 4, '4': 5, '5': 7, '6m': 8,
                              '6M': 9, '7m': 10, '7M': 11, '8': 12}
         self.base_pitch = 60
-        self.quiz_channel = 0
+        self.channel = 0
         self.vel = 80
-        self.note_length = 90
-
-    def _noteoff(self, tick, pitch):
-        self.synth.noteoff(self.quiz_channel, pitch)
+        self.note_length = 240
+        self.pause_between = 480
+        self.program = (0, 46)
+        self.synth.program(self.channel, *self.program)
 
     def play_interval(self, interval): #called in intervalQuiz
-        self.synth.noteon(self.quiz_channel, self.base_pitch, self.vel)
+        self.synth.noteon(self.channel, self.base_pitch, self.vel)
         next_note = self.base_pitch + self.interval_midi[interval]
 
         now = self.sched.get_tick()
-        next_beat = quantize_tick_up(now, self.note_length)
-
-        self.sched.post_at_tick(self._noteoff, next_beat, self.base_pitch)
-        self.cmd = self.sched.post_at_tick(self.synth.noteon(self.quiz_channel, next_note, self.vel), next_beat)
-
-        interval_off = quantize_tick_up(now, 2*self.note_length)
-        self.sched.post_at_tick(self._noteoff, interval_off, next_note)
+        first_noteoff = now+self.note_length
+        second_noteon = now+self.note_length+self.pause_between
+        second_noteoff = now+2*self.note_length+self.pause_between
+        print(now, first_noteoff,second_noteon, second_noteoff)
+        self.sched.post_at_tick(self.synth.noteoff(self.channel, self.base_pitch), now+self.note_length)
+        self.sched.post_at_tick(self.synth.noteon(self.channel, next_note, self.vel), now+self.note_length+self.pause_between)
+        self.sched.post_at_tick(self.synth.noteoff(self.channel, next_note), now+2*self.note_length+self.pause_between)
 
 
     # return current time (in seconds) of song
