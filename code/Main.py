@@ -11,7 +11,8 @@ from FinalSerenadeScreen import EndScreen
 sm = ScreenManager()
 
 sm.add_screen(IntroScreen(name='intro'))
-sm.add_screen(MainScreen(name='main'))
-sm.add_screen(EndScreen(name='end'))
+main = MainScreen(name='main')
+sm.add_screen(main)
+sm.add_screen(EndScreen(name='end', main_screen=main))
 
 run(sm)

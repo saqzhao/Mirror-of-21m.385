@@ -11,8 +11,9 @@ font_sz = metrics.dp(20)
 button_sz = metrics.dp(100)
 
 class EndScreen(Screen):
-    def __init__(self, **kwargs):
-        super(EndScreen, self).__init__(always_update=False, **kwargs)
+    def __init__(self, main_screen, **kwargs):
+        super(EndScreen, self).__init__(always_update=True, **kwargs)
+        self.main_screen = main_screen
 
         self.info = topleft_label()
         self.info.text = "EndScreen\n"
@@ -20,6 +21,9 @@ class EndScreen(Screen):
         self.button = Button(text='Restart game', font_size=font_sz, size = (button_sz, button_sz), pos = (Window.width/2, Window.height/2))
         self.button.bind(on_release= lambda x: self.switch_to('intro'))
         self.add_widget(self.button)
+
+    def on_enter(self):
+        self.main_screen.final_song_audio_ctrl.play_serenade()
 
     def on_key_down(self, keycode, modifiers):
         if keycode[1] == 'right':
