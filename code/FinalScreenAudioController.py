@@ -30,7 +30,6 @@ class Arpeggiator(object):
         self.cmd = None
 
     def start(self):
-        print("Started an arpegg")
         if self.playing:
             return
         self.pitch_index = 0
@@ -128,33 +127,22 @@ class FinalScreenAudioController(object):
     def add_instrument(self, instrument):
         this_arpeggiator = Arpeggiator(self.sched, self.synth, self.playing_channel, INSTRUMENT_MAPPINGS[instrument])
         this_arpeggiator.set_pitches(self.pitches)
-        print(this_arpeggiator.pitches)
         self.arpeggiators.add(this_arpeggiator)
         self.channels[instrument] = self.playing_channel
         self.playing_channel += 1
 
     def add_interval(self, interval):
-        print("an interval is being added")
-        print("Self.pitches was", self.pitches)
         self.pitches.append(60)
         self.pitches.append(60+self.interval_midi[interval])
-        print("Self.pitches is now", self.pitches)
-        # for arpeg in self.arpeggiators:
-        #     arpeg.set_pitches(self.pitches)
 
     def play_serenade(self):
-        print("called play serenade")
         for instrument in self.instruments:
-            print("addina n instrument")
             self.add_instrument(instrument)
             
         self.playing_channel = 0
 
         for arpeg in self.arpeggiators:
-            print(arpeg.pitches)
             arpeg.toggle()
-
-        print(self.arpeggiators)
 
     # return current time (in seconds) of song
     def get_time(self):

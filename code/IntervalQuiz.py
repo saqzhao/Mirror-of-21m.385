@@ -109,7 +109,6 @@ class IntervalQuiz(Widget):
         if self.mode == 'easy':
             self.correct_answer, all_options = self.generate_quiz_options(4)
             self.interval_audio(self.correct_answer)
-            print("correct answer was ipdated to", self.correct_answer)
             num_options = len(all_options)
             easy_button_locations = [self.button_locations[idx] for idx in range(num_options)]
             #TODO: Un-comment this out. It's only here bc I'm having a couple difficulties
