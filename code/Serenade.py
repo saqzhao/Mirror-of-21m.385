@@ -36,11 +36,11 @@ class MainScreen(Screen):
         self.canvas.add(self.background)
         self.add_widget(self.player.character)
         self.add_widget(self.quiz_display)
+        self.ended = False
 
     def on_key_down(self, keycode, modifiers):
         if keycode[1] == 'enter':
-            self.switch_to('end') # delete once automatic switch to end screen
-            # self.switch_to(('end', self.final_song_audio_ctrl)) # delete once automatic switch to end screen
+            self.switch_to('end') # delete once done testing
 
         # play / pause toggle
         if keycode[1] == 'p':
@@ -71,7 +71,10 @@ class MainScreen(Screen):
 
     def on_update(self):
         self.audio_ctrl.on_update()
-        self.player.on_update()
+        switch_to_end_screen = self.player.on_update()
+        if not self.ended and switch_to_end_screen:
+            self.switch_to('end')
+            self.ended = True
         # now = self.audio_ctrl.get_time()  # time of song in seconds.
         # self.player.on_update(now)
 
@@ -173,7 +176,8 @@ class Player(object):
         if bird_num > self.birds_spawned:
             self.spawn_bird()
 
-        self.character.on_update()
+        switch_to_end_screen = self.character.on_update()
+        
         for collectable in self.collectables:
             collectable.on_update(dt)
 
@@ -185,6 +189,8 @@ class Player(object):
                 self.birds.remove(bird)
         
         self.final_song_audio_ctrl.on_update()
+
+        return switch_to_end_screen
 
     def on_instrument_collected(self, collectable):
         self.final_song_audio_ctrl.on_instrument_collected(collectable.get_instrument())
