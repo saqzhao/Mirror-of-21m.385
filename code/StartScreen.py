@@ -15,21 +15,26 @@ font_sz = metrics.dp(20)
 button_sz = metrics.dp(100)
 
 class IntroScreen(Screen):
-    def __init__(self, **kwargs):
+    def __init__(self, start_callback, **kwargs):
         super(IntroScreen, self).__init__(always_update=False, **kwargs)
 
         self.info = topleft_label()
         self.info.text = "Intro/Settings Screen\n"
         self.info.text += "→: Begin game\n"
+        self.start_callback = start_callback
         self.add_widget(self.info)
 
         self.button = Button(text='Begin game', font_size=font_sz, size = (button_sz, button_sz), pos = (Window.width/2, Window.height/2))
-        self.button.bind(on_release= lambda x: self.switch_to('main'))
-        self.add_widget(self.button)
+        self.button.bind(on_release= lambda x: self.switch_to_main())
+        self.add_widget(self.button)       
+
+    def switch_to_main(self):
+        self.switch_to('main')
+        self.start_callback()
 
     def on_key_down(self, keycode, modifiers):
         if keycode[1] == 'right':
-            self.switch_to('main')
+            self.switch_to_main()
 
     # if you want on_update() called when a screen is NOT active, then pass in an extra argument:
     # always_update=True to the screen constructor.

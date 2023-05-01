@@ -9,9 +9,8 @@ from StartScreen import IntroScreen
 from FinalSerenadeScreen import EndScreen
 
 sm = ScreenManager()
-
-sm.add_screen(IntroScreen(name='intro'))
 main = MainScreen(name='main')
+sm.add_screen(IntroScreen(name='intro', start_callback=main.start))
 sm.add_screen(main)
 sm.add_screen(EndScreen(name='end', main_screen=main))
 

@@ -20,7 +20,6 @@ class Bird(Widget):
         # Storing Variables
         self.character = character
         self.background = background
-        self.background.add_widget(self) # Does this work?
         self.call_interval_quiz = call_interval_quiz
 
         # Position, Location, Movement
@@ -31,21 +30,28 @@ class Bird(Widget):
         self.pace = Window.width/4/2 # Position per time
         # self.pace = Window.width/4/5 # Position per time
 
+        self.freeze = False
 
         # Visual Object
         self.radius = Window.width/50
-        self.bird_left = '../data/bird_left.left'
-        self.bird_right = '../data/bird_right.left'
+        self.bird_left = '../data/bird_left.gif'
+        self.bird_right = '../data/bird_right.gif'
         # self.circle = Ellipse(pos = (self.x, self.y), radius = (self.radius, self.radius))
-        self.bird = Image(source = self.bird_left, anim_delay=0, keep_data = True)
+        self.bird = Image(source = self.bird_right, anim_delay=0, keep_data = True)
         # self.color = Color(rgb = (.5,.5,.5))
         # self.add(self.color)
         self.add_widget(self.bird)
+        self.background.add_widget(self) # Does this work?
 
         # Things for Interval Quiz 
         self.active = False
         self.range = self.radius*0.9 # Distance that activates interval quiz
 
+    def toggle(self):
+        if not self.freeze:
+            self.freeze = True
+        else:
+            self.freeze = False
 
     def player_in_range(self): # Returns TRUE if player and bird are close together
         player_pos = self.character.to_screen_pos()
@@ -90,34 +96,36 @@ class Bird(Widget):
         self.x = self.x % Window.width
 
     def update_position(self):
-        self.bird.pos= (self.x, self.y)   
+        self.bird.pos[0] = self.x 
+        self.bird.pos[1] = self.y
 
     def move_bird(self, move_amt):
-        while move_amt > 0: #allows us to, say, go down a tad and then go right on same dt
-            # Already going down
-            if self.direction == Direction.DOWN: 
-                amount = min(self.background.distance_to_ladder_end((self.x, self.y), 'B'), move_amt) # go down until you hit bottom of ladder
-                self.move_down(amount)
-                move_amt -=amount
-                if self.background.distance_to_ladder_end((self.x, self.y), 'B') == 0: # if we've hit bottom of ladder
-                    self.direction = self.next_direction
-            # Can go down
-            elif self.background.can_descend((self.x, self.y)) and (self.direction == Direction.RIGHT or self.direction ==Direction.LEFT):
-                if random.random() <.8: # Randomly doesn't  fly down
-                    # print("should be going down now")
-                    self.direction = Direction.DOWN
-                    self.next_direction = random.choice([Direction.RIGHT, Direction.LEFT])
-                    self.bird.source = self.bird_left if self.next_direction == Direction.RIGHT else self.bird_right
-                    self.move_down(move_amt)
-                    break
+        if not self.freeze:
+            while move_amt > 0: #allows us to, say, go down a tad and then go right on same dt
+                # Already going down
+                if self.direction == Direction.DOWN: 
+                    amount = min(self.background.distance_to_ladder_end((self.x, self.y), 'B'), move_amt) # go down until you hit bottom of ladder
+                    self.move_down(amount)
+                    move_amt -=amount
+                    if self.background.distance_to_ladder_end((self.x, self.y), 'B') == 0: # if we've hit bottom of ladder
+                        self.direction = self.next_direction
+                # Can go down
+                elif self.background.can_descend((self.x, self.y)) and (self.direction == Direction.RIGHT or self.direction ==Direction.LEFT):
+                    if random.random() <.8: # Randomly doesn't  fly down
+                        # print("should be going down now")
+                        self.direction = Direction.DOWN
+                        self.next_direction = random.choice([Direction.RIGHT, Direction.LEFT])
+                        self.bird.source = self.bird_right if self.next_direction == Direction.RIGHT else self.bird_left
+                        self.move_down(move_amt)
+                        break
+                    else:
+                        # print("not changing to down")
+                        self.move_x(move_amt, self.direction)
+                        move_amt = 0
+                # Go to side
                 else:
-                    # print("not changing to down")
                     self.move_x(move_amt, self.direction)
                     move_amt = 0
-            # Go to side
-            else:
-                self.move_x(move_amt, self.direction)
-                move_amt = 0
 
     def on_update(self, dt):
         move_amt = self.pace*dt
