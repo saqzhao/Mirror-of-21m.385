@@ -30,13 +30,14 @@ class QuizButton(Widget):
     
 
     def give_result(self, _):
+        self.background_color = (1, 0, 0, 1) if self.is_correct else (0.5, 0.5, 0.5, 1)
         self.callback(self.is_correct)
 
 class IntervalQuiz(Widget):
     def __init__(self, mode, options, increment_score, generate_interval):
         super(IntervalQuiz, self).__init__()
         self.mode = mode
-        self.options = options
+        self.options = list(options)
         self.timer_color = Color(1, 0, 0)
         self.anim_group = AnimGroup()
         self.canvas.add(self.anim_group)
@@ -53,16 +54,22 @@ class IntervalQuiz(Widget):
         self.button_size = (Window.width/15, Window.height/20)
         self.button_centerline_margin = Window.width/20
         self.button_locations = dict()
-        self.button_locations[0] = (Window.width/2, Window.height*3/5) # bottom row middle
-        for idx in range(1, 12):
+        self.button_distance = self.button_size[0]*1.3
+        self.button_locations[0] = (Window.width/2, Window.height*2/5) # bottom row middle
+        for idx in range(1, 11):
+            print('idx', idx)
             if idx % 4 == 1: # top row left
-                self.button_locations[idx] = (Window.width/2+self.button_centerline_margin+self.button_size[0]*(idx-1)/4, Window.height*2/5)
+                self.button_locations[idx] = (Window.width/2+self.button_centerline_margin+1.2*self.button_distance*(idx-1)/4, Window.height*1/5)
             elif idx % 4 == 2: # top row right
-                self.button_locations[idx] = (Window.width/2+self.button_centerline_margin-self.button_size[0]*(idx-2)/4, Window.height*2/5)
+                self.button_locations[idx] = (Window.width/2-self.button_centerline_margin-1.2*self.button_distance*(idx-2)/4, Window.height*1/5)
+            elif idx == 3:
+                self.button_locations[idx] = (Window.width/2+self.button_centerline_margin+.3*self.button_distance, Window.height*2/5)
+            elif idx == 4:
+                self.button_locations[idx] = (Window.width/2-self.button_centerline_margin-.3*self.button_distance, Window.height*2/5)
             elif idx % 4 == 3: # bottom row left
-                self.button_locations[idx] = (Window.width/2+self.button_centerline_margin+self.button_size[0]*(idx-3)/4, Window.height*3/5)
+                self.button_locations[idx] = (Window.width/2+self.button_centerline_margin+1.2*self.button_distance*(idx-3)/4, Window.height*2/5)
             elif idx % 4 == 0: # bottom row right
-                self.button_locations[idx] = (Window.width/2+self.button_centerline_margin-self.button_size[0]*(idx-4)/4, Window.height*3/5)
+                self.button_locations[idx] = (Window.width/2-self.button_centerline_margin-1.2*self.button_distance*(idx-4)/4, Window.height*2/5)
 
         self.buttons = []
         self.button_labels = []
@@ -78,7 +85,7 @@ class IntervalQuiz(Widget):
         self.canvas.add(self.timer_color)
         self.canvas.add(self.timer_bar)
         if len(self.options) > num_options:
-            while (len(options) < num_options):
+            while (len(options) <= num_options):
                 idx_to_add = random.randint(0, len(self.options)-1)
                 if idx_to_add not in options:
                     options.add(self.options[idx_to_add])

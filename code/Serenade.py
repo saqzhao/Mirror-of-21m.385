@@ -28,25 +28,26 @@ class MainScreen(Screen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(always_update=True, **kwargs)
         self.started = False
-        self.audio_ctrl = None
-        self.final_song_audio_ctrl = None
-        self.background = None
-        self.character = None
-        self.quiz_display = None
-        self.player = None
-    
-    def start(self):
-        self.started = True
         self.audio_ctrl = AudioController()
         self.final_song_audio_ctrl = FinalScreenAudioController()
         self.background = BackgroundDisplay()
         self.character = Character(self.background)
         self.quiz_display = QuizDisplay()
-        self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character, self.quiz_display)
         self.add_widget(self.background)
-        self.add_widget(self.player.character)
         self.add_widget(self.quiz_display)
+        self.default_intervals = {'2M', '3M', '4', '5'}
+        self.intervals = set()
+        self.player = None
+    
+    def start(self):
+        self.started = True
+        intervals = self.default_intervals if (len(self.intervals) == 0) else self.intervals
+        self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character, self.quiz_display, intervals)
+        self.add_widget(self.player.character, index=1)
         self.ended = False
+
+    def select_intervals(self, interval):
+        self.intervals.add(interval)
 
     def on_key_down(self, keycode, modifiers):
         if keycode[1] == 'enter':
@@ -99,7 +100,7 @@ class Player(object):
     Controls the GameDisplay and AudioCtrl based on what happens
     '''
 
-    def __init__(self, audio_ctrl, final_song_audio_ctrl, background, character, quiz_display):
+    def __init__(self, audio_ctrl, final_song_audio_ctrl, background, character, quiz_display, intervals):
         super(Player, self).__init__()
         self.background = background
         self.quiz_display = quiz_display
@@ -128,8 +129,7 @@ class Player(object):
             self.collectables.add(this_collectable)
 
         # Interval 
-        self.options = ['2M', '3M', '4', '5'] ### need to have a way for player to choose what
-                                                ## intervals they want to be quizzed on
+        self.options = intervals 
         # self.quiz_active = False
         self.quiz = None
 
