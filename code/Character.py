@@ -35,9 +35,6 @@ class Character(Widget):
         self.character.pos[1] = Window.height / 10
         self.character.pos[0] = Window.width / 10
 
-        self.update_frequency = 1.0/30.0
-        # Clock.schedule_interval(self.on_update, self.update_frequency)
-
         # character movement
         self.character_frame = 0 #0: left, 1:right
         self.moving = False
@@ -48,8 +45,6 @@ class Character(Widget):
         # self.already_resting = False
         self.add_widget(self.character)
     
-    # def __remove_character(self):
-    #     Clock.unschedule(self.on_update)
     
     def on_button_down(self, button_value):
         if self.frozen:
@@ -103,9 +98,7 @@ class Character(Widget):
                 pass
             else:
                 self.moving = True
-                # self.remove(self.character)
                 self.character.pos[0] += direction
-                # self.add(self.character)
 
     def to_screen_pos(self):
         x = self.character.pos[0]+Window.width/20
@@ -124,7 +117,7 @@ class Character(Widget):
             direction
             self.moving = True
             self.on_ladder = True
-            # animate climbing
+            # move character
             self.character.pos[1] += direction
         
             # check if reach end of ladder and if so, stop climbing
