@@ -91,7 +91,8 @@ class IntervalQuiz(Widget):
         return correct, options
 
     def quiz_result(self, is_correct):
-        self.score_func(is_correct)
+        print("calling score func with correct answer", self.correct_answer)
+        self.score_func(is_correct, self.correct_answer)
         if is_correct:
             self.remove_quiz = True
 
@@ -108,6 +109,7 @@ class IntervalQuiz(Widget):
         if self.mode == 'easy':
             self.correct_answer, all_options = self.generate_quiz_options(4)
             self.interval_audio(self.correct_answer)
+            print("correct answer was ipdated to", self.correct_answer)
             num_options = len(all_options)
             easy_button_locations = [self.button_locations[idx] for idx in range(num_options)]
             #TODO: Un-comment this out. It's only here bc I'm having a couple difficulties
@@ -139,7 +141,7 @@ class IntervalQuiz(Widget):
                 self.remove_quiz = False
                 return
             if self.time > 6:
-                self.score_func(False)
+                self.score_func(False, self.correct_answer)
                 return False
             return True
         else:

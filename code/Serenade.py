@@ -70,17 +70,34 @@ class MainScreen(Screen):
         #TODO : anything else that needs resizing ?
 
     def on_update(self):
-        self.audio_ctrl.on_update()
-        switch_to_end_screen = self.player.on_update()
-        if not self.ended and switch_to_end_screen:
-            self.switch_to('end')
-            self.ended = True
+        if not self.ended:
+            self.audio_ctrl.on_update()
+            switch_to_end_screen = self.player.on_update()
+            if switch_to_end_screen:
+                self.switch_to('end')
+                self.ended = True
+        else:
+            self.final_song_audio_ctrl.on_update()
         # now = self.audio_ctrl.get_time()  # time of song in seconds.
         # self.player.on_update(now)
 
         # self.info.text = 'p: pause/unpause song\n'
         # self.info.text += f'song time: {now:.2f}\n'
         # self.info.text += f'num objects: {self.display.get_num_object()}'
+
+    def on_enter(self):
+        self.canvas.clear()
+        self.audio_ctrl = AudioController()
+        self.final_song_audio_ctrl = FinalScreenAudioController()
+        self.background = BackgroundDisplay()
+        self.character = Character(self.background)
+        self.quiz_display = QuizDisplay()
+        self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character, self.quiz_display)
+        self.add_widget(self.background)
+        self.add_widget(self.player.character)
+        self.add_widget(self.quiz_display)
+        self.ended = False
+
 
 class Player(object):
     '''
@@ -122,10 +139,14 @@ class Player(object):
         self.quiz = None
 
     # called by IntervalQuiz
-    def adjust_lives(self, succeed):
+    def adjust_lives(self, succeed, interval):
+        print("called score func with succeed", succeed, "and interval", interval)
         self.character.unfreeze()
         if not succeed:
             self.lives -= 1
+        if interval is not None:
+            print("now adding interval to final song audio ctrl")
+            self.final_song_audio_ctrl.add_interval(interval)
 
     # called by Bird
     def call_interval_quiz(self):
