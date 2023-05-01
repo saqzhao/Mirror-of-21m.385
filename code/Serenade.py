@@ -33,7 +33,7 @@ class MainScreen(Screen):
         self.character = Character(self.background)
         self.quiz_display = QuizDisplay()
         self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character, self.quiz_display)
-        self.canvas.add(self.background)
+        self.add_widget(self.background)
         self.add_widget(self.player.character)
         self.add_widget(self.quiz_display)
         self.ended = False
@@ -185,7 +185,7 @@ class Player(object):
             a=bird.on_update(dt)
             if not a:
                 print("removing this bird")
-                self.background.remove(bird)
+                self.background.remove_widget(bird)
                 self.birds.remove(bird)
         
         self.final_song_audio_ctrl.on_update()

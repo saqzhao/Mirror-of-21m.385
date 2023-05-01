@@ -28,7 +28,7 @@ class CollectedInstrumentDisplay(InstructionGroup):
         self.color = Color(rgb = (1, 0, 0, 1)) # to distinguish from gray birds
         self.add(self.color)
         self.add(self.ellipse)
-        self.background.add(self)
+        self.background.canvas.add(self)
         self.callback = callback
         self.active = True
         

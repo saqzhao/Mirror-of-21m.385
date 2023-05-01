@@ -1,6 +1,7 @@
 import sys, os, random
 sys.path.insert(0, os.path.abspath('..'))
 
+from kivy.uix.widget import Widget
 from kivy.graphics.instructions import InstructionGroup
 from kivy.graphics import Line
 from kivy.core.window import Window
@@ -35,7 +36,7 @@ class Ladder(InstructionGroup):
     def bounding_box(self):
         return (self.x_center - BUFFER, self.margin_bottom + self.layer_spacing * self.i, self.x_center + BUFFER, self.margin_bottom + self.layer_spacing * (self.i+1))
 
-class BackgroundDisplay(InstructionGroup):
+class BackgroundDisplay(Widget):
     def __init__(self):
         super(BackgroundDisplay, self).__init__()
         self.margin_side = Window.width / 10
@@ -46,7 +47,7 @@ class BackgroundDisplay(InstructionGroup):
 
         for i in range(7):
             this_line = Line(points=(self.margin_side, self.margin_bottom + self.layer_spacing * i, Window.width - self.margin_side, self.margin_bottom + self.layer_spacing * i), width = 6)
-            self.add(this_line)
+            self.canvas.add(this_line)
             self.layers.append(this_line)
 
         self.ladders = []
@@ -54,7 +55,7 @@ class BackgroundDisplay(InstructionGroup):
         for i in range(len(self.layers)-1):
             for _ in range(2):
                 this_ladder = Ladder(self.margin_side, self.margin_bottom, self.layer_spacing, i, self.x_centers_to_avoid)
-                self.add(this_ladder)
+                self.canvas.add(this_ladder)
                 self.ladders.append(this_ladder)
                 self.x_centers_to_avoid.append(this_ladder.get_x_center())
                 self.ladder_locs.add((0.5*(this_ladder.bounding_box()[0] + this_ladder.bounding_box()[2]), this_ladder.bounding_box()[1], this_ladder.bounding_box()[3]))
@@ -73,6 +74,7 @@ class BackgroundDisplay(InstructionGroup):
 
     def can_begin_climbing(self, pos):
         # Returns True if player is on a ladder spot and can climb up
+        # TODO - make this take into account the width of ladders once ladder isn't just a line
         can_climb = False
         for loc in self.ladder_ends('B'):
             if ((abs(pos[0]-loc[0])**2 + abs(pos[1]-loc[1])**2)**0.5 < BUFFER):
@@ -91,6 +93,7 @@ class BackgroundDisplay(InstructionGroup):
 
     def can_climb(self, pos):
         # Returns True if player is on a ladder spot and can climb up
+        # TODO - make this take into account the width of ladders once ladder isn't just a line
         can_climb = False
         
         for loc in self.ladder_locs:
