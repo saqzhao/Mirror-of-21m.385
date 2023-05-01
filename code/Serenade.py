@@ -27,6 +27,16 @@ directions = {member.value for member in Direction}
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(always_update=True, **kwargs)
+        self.started = False
+        self.audio_ctrl = None
+        self.final_song_audio_ctrl = None
+        self.background = None
+        self.character = None
+        self.quiz_display = None
+        self.player = None
+    
+    def start(self):
+        self.started = True
         self.audio_ctrl = AudioController()
         self.final_song_audio_ctrl = FinalScreenAudioController()
         self.background = BackgroundDisplay()
@@ -44,7 +54,8 @@ class MainScreen(Screen):
 
         # play / pause toggle
         if keycode[1] == 'p':
-            self.audio_ctrl.toggle()
+            self.player.toggle()
+        #     self.audio_ctrl.toggle()
 
         button_idx = lookup(keycode[1], ['up', 'down', 'left', 'right', 'w', 'a', 's', 'd', 'x'], (0,1,2,3,0, 2,1,3,4))
         if button_idx != None:
@@ -55,7 +66,6 @@ class MainScreen(Screen):
             self.final_song_audio_ctrl.play_serenade()
 
     def on_key_up(self, keycode):
-
         button_idx = lookup(keycode[1], ['up', 'down', 'left', 'right', 'w', 'a', 's', 'd', 'x'], (0,1,2,3, 0, 2,1,3,4))
         if button_idx != None:
             self.player.on_button_up(button_idx)
@@ -70,8 +80,9 @@ class MainScreen(Screen):
         #TODO : anything else that needs resizing ?
 
     def on_update(self):
-        self.audio_ctrl.on_update()
-        self.player.on_update()
+        if self.started:
+            self.audio_ctrl.on_update()
+            self.player.on_update()
         # now = self.audio_ctrl.get_time()  # time of song in seconds.
         # self.player.on_update(now)
 
@@ -99,6 +110,7 @@ class Player(object):
         self.instruments = ["violin", "guitar", "piano"] # TODO(ashleymg): choose randomly from a selection
         self.x_centers_to_avoid = []
         self.lives = 3
+        self.freeze = False
 
         # Birds
         self.birds_spawned = 0
@@ -117,6 +129,18 @@ class Player(object):
                                                 ## intervals they want to be quizzed on
         # self.quiz_active = False
         self.quiz = None
+
+    def toggle(self):
+        if not self.freeze:
+            self.freeze = True
+            self.character.freeze()
+            for bird in self.birds:
+                bird.toggle()
+        else:
+            self.freeze = False
+            self.character.unfreeze()
+            for bird in self.birds:
+                bird.toggle()
 
     # called by IntervalQuiz
     def adjust_lives(self, succeed):
@@ -155,9 +179,10 @@ class Player(object):
         print("sure something happens here (testing_something serenade.py)")
 
     def spawn_bird(self):
-        new_bird = Bird(self.background, (Window.width *0.8, self.background.get_start_position_height()), self.call_interval_quiz, self.character)
-        self.birds.append(new_bird)
-        self.birds_spawned+=1
+        if not self.freeze:
+            new_bird = Bird(self.background, (Window.width *0.8, self.background.get_start_position_height()), self.call_interval_quiz, self.character)
+            self.birds.append(new_bird)
+            self.birds_spawned+=1
 
     def on_update(self):
         dt = kivyClock.frametime
