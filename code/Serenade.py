@@ -26,7 +26,7 @@ directions = {member.value for member in Direction}
 
 class MainScreen(Screen):
     def __init__(self, **kwargs):
-        super(MainScreen, self).__init__(always_update=False, **kwargs)
+        super(MainScreen, self).__init__(always_update=True, **kwargs)
         self.audio_ctrl = AudioController()
         self.final_song_audio_ctrl = FinalScreenAudioController()
         self.background = BackgroundDisplay()
@@ -40,6 +40,7 @@ class MainScreen(Screen):
     def on_key_down(self, keycode, modifiers):
         if keycode[1] == 'enter':
             self.switch_to('end') # delete once automatic switch to end screen
+            # self.switch_to(('end', self.final_song_audio_ctrl)) # delete once automatic switch to end screen
 
         # play / pause toggle
         if keycode[1] == 'p':

@@ -73,7 +73,6 @@ class BackgroundDisplay(InstructionGroup):
 
     def can_begin_climbing(self, pos):
         # Returns True if player is on a ladder spot and can climb up
-        # TODO - make this take into account the width of ladders once ladder isn't just a line
         can_climb = False
         for loc in self.ladder_ends('B'):
             if ((abs(pos[0]-loc[0])**2 + abs(pos[1]-loc[1])**2)**0.5 < BUFFER):
@@ -92,7 +91,6 @@ class BackgroundDisplay(InstructionGroup):
 
     def can_climb(self, pos):
         # Returns True if player is on a ladder spot and can climb up
-        # TODO - make this take into account the width of ladders once ladder isn't just a line
         can_climb = False
         
         for loc in self.ladder_locs:
