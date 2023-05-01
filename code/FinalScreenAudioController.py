@@ -11,8 +11,6 @@ INSTRUMENT_MAPPINGS = {
     "guitar": (0, 27)
 }
 
-DUMMY_SEQUENCE = (60, 61, 62, 63, 64, 65)
-
 class Arpeggiator(object):
     def __init__(self, sched, synth, channel=0, program=(0, 40), callback = None):
         super(Arpeggiator, self).__init__()
@@ -22,7 +20,7 @@ class Arpeggiator(object):
         self.audio = Audio(2)
         self.synth = synth
         self.audio.set_generator(self.synth)
-        self.pitches = DUMMY_SEQUENCE
+        self.pitches = []
         self.pitch_index = 0
         self.note_len = 480
         self.articulation = 1
@@ -50,7 +48,7 @@ class Arpeggiator(object):
         if self.cmd is not None:
             self.sched.cancel(self.cmd)
             self.cmd = None
-        pitch = self.pitches[self.pitch_index % (len(self.pitches) - 1)]
+        pitch = self.pitches[self.pitch_index % len(self.pitches)]
         self.synth.noteoff(self.channel, pitch)
 
     def toggle(self):
@@ -59,7 +57,7 @@ class Arpeggiator(object):
         else:
             self.start()
 
-    def set_pitches(self, pitches = DUMMY_SEQUENCE):
+    def set_pitches(self, pitches):
         self.pitches = pitches
 
     def set_rhythm(self, length, articulation):
@@ -78,7 +76,7 @@ class Arpeggiator(object):
         duration = self.note_len/self.articulation
         if len(self.pitches) == 0:
             return
-        pitch = self.pitches[self.pitch_index % (len(self.pitches) - 1)]
+        pitch = self.pitches[self.pitch_index % len(self.pitches)]
         self.pitch_index += 1
         self.synth.noteon(self.channel, pitch, 100)
 
@@ -113,6 +111,11 @@ class FinalScreenAudioController(object):
         self.channels = {}
         self.playing_channel = 0
 
+        self.interval_midi = {'2m': 1, '2M': 2, '3m': 3, '3M': 4, '4': 5, '5': 7, '6m': 8,
+                             '6M': 9, '7m': 10, '7M': 11, '8': 12}
+        self.pitches = [] 
+        self.base_pitch = 60
+
     def on_instrument_collected(self, instrument):
         self.instruments.add(instrument)
 
@@ -122,9 +125,15 @@ class FinalScreenAudioController(object):
             arpeg.toggle()
     
     def add_instrument(self, instrument):
-        self.arpeggiators.add(Arpeggiator(self.sched, self.synth, self.playing_channel, INSTRUMENT_MAPPINGS[instrument]))
+        this_arpeggiator = Arpeggiator(self.sched, self.synth, self.playing_channel, INSTRUMENT_MAPPINGS[instrument])
+        this_arpeggiator.set_pitches(self.pitches)
+        self.arpeggiators.add(this_arpeggiator)
         self.channels[instrument] = self.playing_channel
         self.playing_channel += 1
+
+    def add_interval(self, interval):
+        self.pitches.append(60)
+        self.pitches.append(60+self.interval_midi[interval])
 
     def play_serenade(self):
         for instrument in self.instruments:

@@ -23,6 +23,7 @@ class EndScreen(Screen):
         self.add_widget(self.button)
 
     def on_enter(self):
+        print("entered")
         self.main_screen.final_song_audio_ctrl.play_serenade()
 
     def on_key_down(self, keycode, modifiers):

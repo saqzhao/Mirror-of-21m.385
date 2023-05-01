@@ -98,7 +98,8 @@ class IntervalQuiz(Widget):
         return correct, options
 
     def quiz_result(self, is_correct):
-        self.score_func(is_correct)
+        print("calling score func with correct answer", self.correct_answer)
+        self.score_func(is_correct, self.correct_answer)
         if is_correct:
             self.remove_quiz = True
 
@@ -146,7 +147,7 @@ class IntervalQuiz(Widget):
                 self.remove_quiz = False
                 return
             if self.time > 6:
-                self.score_func(False)
+                self.score_func(False, self.correct_answer)
                 return False
             return True
         else:
