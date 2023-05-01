@@ -1,7 +1,6 @@
 import sys, os
 sys.path.insert(0, os.path.abspath('..'))
 
-from kivy.graphics.instructions import InstructionGroup
 # from kivy.graphics import Line, CEllipse
 from kivy.graphics import Rectangle, Ellipse, Color
 from kivy.core.window import Window
@@ -15,13 +14,13 @@ from kivy.uix.widget import Widget
 
 
 # TODO: Figure out optimal self.pace, etc
-class Bird(InstructionGroup):
+class Bird(Widget):
     def __init__(self, background, pos, call_interval_quiz, character) -> None:
         super(Bird, self).__init__()
         # Storing Variables
         self.character = character
         self.background = background
-        self.background.add(self) # Does this work?
+        self.background.add_widget(self) # Does this work?
         self.call_interval_quiz = call_interval_quiz
 
         # Position, Location, Movement
@@ -35,15 +34,13 @@ class Bird(InstructionGroup):
 
         # Visual Object
         self.radius = Window.width/50
-        self.bird_left = '../data/rest_left.png'
-        self.bird_right = '../data/rest_right.png'
-        # self.circle = Image(source=self.bird_right, anim_delay=0, keep_data = True)
-        # self.circle.pos[1] = self.y
-        # self.circle.pos[0] = self.x
-        self.circle = Ellipse(pos = (self.x, self.y), radius = (self.radius, self.radius))
-        self.color = Color(rgb = (.5,.5,.5))
-        self.add(self.color)
-        self.add(self.circle)
+        self.bird_left = '../data/bird_left.left'
+        self.bird_right = '../data/bird_right.left'
+        # self.circle = Ellipse(pos = (self.x, self.y), radius = (self.radius, self.radius))
+        self.bird = Image(source = self.bird_left, anim_delay=0, keep_data = True)
+        # self.color = Color(rgb = (.5,.5,.5))
+        # self.add(self.color)
+        self.add_widget(self.bird)
 
         # Things for Interval Quiz 
         self.active = False
@@ -93,7 +90,7 @@ class Bird(InstructionGroup):
         self.x = self.x % Window.width
 
     def update_position(self):
-        self.circle.pos= (self.x, self.y)   
+        self.bird.pos= (self.x, self.y)   
 
     def move_bird(self, move_amt):
         while move_amt > 0: #allows us to, say, go down a tad and then go right on same dt
@@ -110,6 +107,7 @@ class Bird(InstructionGroup):
                     # print("should be going down now")
                     self.direction = Direction.DOWN
                     self.next_direction = random.choice([Direction.RIGHT, Direction.LEFT])
+                    self.bird.source = self.bird_left if self.next_direction == Direction.RIGHT else self.bird_right
                     self.move_down(move_amt)
                     break
                 else:
