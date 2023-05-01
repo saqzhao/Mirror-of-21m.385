@@ -31,6 +31,7 @@ class Bird(Widget):
         self.pace = Window.width/4/2 # Position per time
         # self.pace = Window.width/4/5 # Position per time
 
+        self.freeze = False
 
         # Visual Object
         self.radius = Window.width/50
@@ -41,11 +42,17 @@ class Bird(Widget):
         # self.color = Color(rgb = (.5,.5,.5))
         # self.add(self.color)
         self.add_widget(self.bird)
+        self.background.add_widget(self) # Does this work?
 
         # Things for Interval Quiz 
         self.active = False
         self.range = self.radius*0.9 # Distance that activates interval quiz
 
+    def toggle(self):
+        if not self.freeze:
+            self.freeze = True
+        else:
+            self.freeze = False
 
     def player_in_range(self): # Returns TRUE if player and bird are close together
         player_pos = self.character.to_screen_pos()

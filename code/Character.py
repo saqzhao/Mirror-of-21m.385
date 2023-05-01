@@ -133,9 +133,10 @@ class Character(Widget):
 
     # animate character (position and animation) based on current time
     def on_update(self):
-        pass
         if self.moving:
             if self.moving_direction in {Direction.UP, Direction.DOWN}:
                 self.climb(self.moving_direction)
             else:
                 self.walk(self.moving_direction)
+        x, y = self.to_screen_pos()
+        return (y >= 600 and x <= 120)
