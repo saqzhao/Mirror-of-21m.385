@@ -41,8 +41,9 @@ class MainScreen(Screen):
     
     def start(self):
         self.started = True
-        intervals = self.default_intervals if (len(self.intervals) == 0) else self.intervals
-        self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character, self.quiz_display, intervals)
+        if len(self.intervals) == 0:
+            self.intervals = self.default_intervals
+        self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character, self.quiz_display, self.intervals)
         self.add_widget(self.player.character, index=1)
         self.ended = False
 
@@ -103,7 +104,9 @@ class MainScreen(Screen):
         self.background = BackgroundDisplay()
         self.character = Character(self.background)
         self.quiz_display = QuizDisplay()
-        self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character, self.quiz_display)
+        if len(self.intervals) == 0:
+            self.intervals = self.default_intervals
+        self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character, self.quiz_display, self.intervals)
         self.add_widget(self.background)
         self.add_widget(self.player.character)
         self.add_widget(self.quiz_display)
