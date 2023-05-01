@@ -34,8 +34,8 @@ class Bird(Widget):
 
         # Visual Object
         self.radius = Window.width/50
-        self.bird_left = '../data/bird_left.left'
-        self.bird_right = '../data/bird_right.left'
+        self.bird_left = '../data/bird_left_small-min.gif'
+        self.bird_right = '../data/bird_right_small-min.gif'
         # self.circle = Ellipse(pos = (self.x, self.y), radius = (self.radius, self.radius))
         self.bird = Image(source = self.bird_left, anim_delay=0, keep_data = True)
         # self.color = Color(rgb = (.5,.5,.5))
