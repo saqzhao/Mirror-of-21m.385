@@ -90,7 +90,6 @@ class IntervalButton(Widget):
                      size_hint = (0.2, 0.2),
                      pos = pos)
         self.callback = callback
-        print(self.callback)
         btn.bind(on_press = self.add_interval)
         self.add_widget(btn)
 
