@@ -27,11 +27,11 @@ class TitleScreen(Screen):
         self.title = Title()
         self.add_widget(self.title)
 
-        self.start_button = Button(text='Chose Intervals', font_size=font_sz, size = (button_width, button_height), pos = (Window.width/3-button_width/2, Window.height/2-button_height/2))
+        self.start_button = Button(text='Choose Intervals', font_size=font_sz, size = (button_width, button_height), pos = (Window.width/3-button_width/2, Window.height/2-button_height/2))
         self.start_button.bind(on_release= lambda x: self.switch_to('intro'))
         self.add_widget(self.start_button)    
 
-        self.levels_button = Button(text='Chose Level', font_size=font_sz, size = (button_width, button_height), pos = (Window.width*2/3-button_width/2, Window.height/2-button_height/2))
+        self.levels_button = Button(text='Choose Level', font_size=font_sz, size = (button_width, button_height), pos = (Window.width*2/3-button_width/2, Window.height/2-button_height/2))
         self.levels_button.bind(on_release= lambda x: self.switch_to('levels'))
         self.add_widget(self.levels_button)    
         
