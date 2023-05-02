@@ -168,6 +168,9 @@ class Player(object):
         self.character.unfreeze()
         if not succeed:
             self.lives -= 1
+        else:
+            print("calling seld.bacgroung.add_one_to_count() in serenade.py")
+            self.background.add_one_to_count() # increments count of correct intervals guessed
         if interval is not None:
             print("now adding interval to final song audio ctrl")
             self.final_song_audio_ctrl.add_interval(interval)
