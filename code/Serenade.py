@@ -114,7 +114,7 @@ class MainScreen(Screen):
         intervals = self.default_intervals if (len(self.intervals) == 0) else self.intervals
         self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character, self.quiz_display, intervals)
         self.add_widget(self.background)
-        self.add_widget(self.player.character)
+        self.add_widget(self.player.character, index=1)
         self.add_widget(self.quiz_display)
         self.ended = False
 

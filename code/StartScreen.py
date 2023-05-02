@@ -39,26 +39,24 @@ class IntroScreen(Screen):
         self.start_button.bind(on_release= lambda x: self.switch_to_main())
         self.add_widget(self.start_button)    
 
-        print('whatsup')
         intervals = ['2m', '2M', '3m', '3M', '4', '5', '6m', '6M', '7m', '7M', '8']
         interval_locs = []
         self.button_centerline_margin = Window.width/20
-        print(len(intervals))
         self.button_size = (Window.width/15, Window.height/20)
         self.button_distance = self.button_size[0]*1.3
         interval_locs.append((Window.width/2, Window.height*2/5)) # bottom row middle
         for idx in range(1, 11):
-            if idx % 4 == 1: # top row left
-                interval_locs.append((Window.width/2+self.button_centerline_margin+1.2*self.button_distance*(idx-1)/4, Window.height*1/5))
-            elif idx % 4 == 2: # top row right
-                interval_locs.append((Window.width/2-self.button_centerline_margin-1.2*self.button_distance*(idx-2)/4, Window.height*1/5))
-            elif idx == 3:
+            if idx % 4 == 1: # bottom row left
+                interval_locs.append((Window.width/2+self.button_centerline_margin+.8*self.button_distance*(idx-1)/4, Window.height*1/5))
+            elif idx % 4 == 2: # bottom row right
+                interval_locs.append((Window.width/2-self.button_centerline_margin-.8*self.button_distance*(idx-2)/4, Window.height*1/5))
+            elif idx == 3: # top row middle right
                 interval_locs.append((Window.width/2+self.button_centerline_margin+.3*self.button_distance, Window.height*2/5))
-            elif idx == 4:
+            elif idx == 4: #top row middle left
                 interval_locs.append((Window.width/2-self.button_centerline_margin-.3*self.button_distance, Window.height*2/5))
-            elif idx % 4 == 3: # bottom row left
+            elif idx % 4 == 3: # top row left
                 interval_locs.append((Window.width/2+self.button_centerline_margin+1.2*self.button_distance*(idx-3)/4, Window.height*2/5))
-            elif idx % 4 == 0: # bottom row right
+            elif idx % 4 == 0: # top row right
                 interval_locs.append((Window.width/2-self.button_centerline_margin-1.2*self.button_distance*(idx-4)/4, Window.height*2/5))
         i = 0
         for loc, opt in zip(interval_locs, intervals):
@@ -68,7 +66,6 @@ class IntroScreen(Screen):
 
     def switch_to_main(self):
         self.switch_to('main')
-        self.start_callback()
 
     def on_key_down(self, keycode, modifiers):
         if keycode[1] == 'right':

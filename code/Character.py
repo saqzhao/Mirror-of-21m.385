@@ -22,15 +22,17 @@ class Character(Widget):
         super(Character, self).__init__()
         self.background = background
         self.pos = (0, 0)
-
-        # self.character = CEllipse(cpos = self.pos) # temporary 
+        self.tim = Image(source='../data/tim.png')
+        self.tim.pos[0] = Window.width / 10
+        self.tim.pos[1] = Window.height - 2*Window.height / 8
+        self.add_widget(self.tim)
+        print('TIM')
         # character animation
         self.rest_left_character = '../data/rest_left.png'
         self.rest_right_character = '../data/rest_right.png'
         self.walk_left_character = '../data/walk_left.gif'
         self.walk_right_character = '../data/walk_right.gif'
         self.climb_character = '../data/climb.gif'
-        # self.rest_climb_character = '../data/climb_rest.gif'
         self.character = Image(source=self.rest_left_character, anim_delay=0, keep_data = True)
         self.character.pos[1] = Window.height / 10
         self.character.pos[0] = Window.width / 10
