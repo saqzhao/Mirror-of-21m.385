@@ -49,8 +49,13 @@ class MainScreen(Screen):
         self.ended = False
         print('begin game')
 
-    def select_intervals(self, interval):
+    def select_intervals(self, interval, add = True):
+        if not add:
+            self.intervals.remove(interval)
+            print("intervals are now ", self.intervals)
+            return
         self.intervals.add(interval)
+        print("intervals are now ", self.intervals)
 
     def on_key_down(self, keycode, modifiers):
         if keycode[1] == 'enter':
@@ -106,9 +111,8 @@ class MainScreen(Screen):
         self.background = BackgroundDisplay()
         self.character = Character(self.background)
         self.quiz_display = QuizDisplay()
-        if len(self.intervals) == 0:
-            self.intervals = self.default_intervals
-        self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character, self.quiz_display, self.intervals)
+        intervals = self.default_intervals if (len(self.intervals) == 0) else self.intervals
+        self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character, self.quiz_display, intervals)
         self.add_widget(self.background)
         self.add_widget(self.player.character)
         self.add_widget(self.quiz_display)
@@ -172,6 +176,9 @@ class Player(object):
         self.character.unfreeze()
         if not succeed:
             self.lives -= 1
+        else:
+            print("calling seld.bacgroung.add_one_to_count() in serenade.py")
+            self.background.add_one_to_count() # increments count of correct intervals guessed
         if interval is not None:
             print("now adding interval to final song audio ctrl")
             self.final_song_audio_ctrl.add_interval(interval)

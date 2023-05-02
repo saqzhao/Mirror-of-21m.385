@@ -18,7 +18,14 @@ class EndScreen(Screen):
         self.info = topleft_label()
         self.info.text = "EndScreen\n"
         self.add_widget(self.info)
-        self.button = Button(text='Restart game', font_size=font_sz, size = (button_sz, button_sz), pos = (Window.width/2, Window.height/2))
+
+        self.button_continue = Button(text = "Continue Game", font_size = font_sz,  size = (button_sz, button_sz), pos = (Window.width/3, Window.height/2))
+        self.button_continue.bind(on_release = lambda x: self.switch_to('main'))
+        self.add_widget(self.button_continue)
+
+
+
+        self.button = Button(text='Change Intervals', font_size=font_sz, size = (button_sz, button_sz), pos = (Window.width*2/3, Window.height/2))
         self.button.bind(on_release= lambda x: self.switch_to('intro'))
         self.add_widget(self.button)
 
