@@ -29,6 +29,12 @@ class IntroScreen(Screen):
         self.interval_callback = interval_callback
         self.add_widget(self.info)
 
+        # TODO: Decide where on screen home button goes
+        home_image = '../data/home_image.png'
+        self.home_button = Button(text='', font_size=font_sz, background_normal =home_image, pos = (Window.width*1/9, Window.height*9/10))
+        self.home_button.bind(on_release= lambda x: self.switch_to('title'))
+        self.add_widget(self.home_button)    
+
         self.start_button = Button(text='Begin game', font_size=font_sz, size = (button_width, button_height), pos = (Window.width/2, Window.height/2))
         self.start_button.bind(on_release= lambda x: self.switch_to_main())
         self.add_widget(self.start_button)    

@@ -14,7 +14,7 @@ from imslib.gfxutil import CLabelRect
 # Here, 20 dp will always be the same physical size on screen regardless of resolution or OS.
 # Another option is to use metrics.pt or metrics.sp. See https://kivy.org/doc/stable/api-kivy.metrics.html
 font_sz = metrics.dp(20)
-button_width = metrics.dp(120)
+button_width = metrics.dp(200)
 button_height = metrics.dp(100)
 
 class TitleScreen(Screen):
@@ -31,8 +31,8 @@ class TitleScreen(Screen):
         self.start_button.bind(on_release= lambda x: self.switch_to('intro'))
         self.add_widget(self.start_button)    
 
-        self.levels_button = Button(text='Chose Level (not working)', font_size=font_sz, size = (button_width, button_height), pos = (Window.width*2/3-button_width/2, Window.height/2-button_height/2))
-        self.levels_button.bind(on_release= lambda x: self.switch_to('main'))
+        self.levels_button = Button(text='Chose Level', font_size=font_sz, size = (button_width, button_height), pos = (Window.width*2/3-button_width/2, Window.height/2-button_height/2))
+        self.levels_button.bind(on_release= lambda x: self.switch_to('levels'))
         self.add_widget(self.levels_button)    
         
 
@@ -46,8 +46,9 @@ class TitleScreen(Screen):
         pass
 
     def on_resize(self, win_size):
-        # self.start_button.pos = (Window.width/2, Window.height/2)
-        # resize_topleft_label(self.info)
+        self.start_button.pos = (Window.width/3-button_width/2, Window.height/2-button_height/2)
+        self.levels_button.pos = (Window.width*2/3-button_width/2, Window.height/2-button_height/2)
+        resize_topleft_label(self.info)
         pass
 
 class Title(Widget):

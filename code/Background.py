@@ -7,7 +7,7 @@ from kivy.graphics import Line
 from imslib.gfxutil import CLabelRect
 from kivy.core.window import Window
 from kivy.uix.image import Image
-
+from GameAccessories import BirdCounter
 
 EPSILON = float(5)
 BUFFER = float(20)
@@ -167,3 +167,5 @@ class BirdCounter(Widget):
         self.score_display.text = f'x {self.count}'
         print(f"Score is {self.count}")
 
+    def on_update(self):
+        self.score_display.text = f'x {self.count}'
