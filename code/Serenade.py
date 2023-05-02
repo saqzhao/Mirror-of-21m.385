@@ -46,8 +46,13 @@ class MainScreen(Screen):
         self.add_widget(self.player.character, index=1)
         self.ended = False
 
-    def select_intervals(self, interval):
+    def select_intervals(self, interval, add = True):
+        if not add:
+            self.intervals.remove(interval)
+            print("intervals are now ", self.intervals)
+            return
         self.intervals.add(interval)
+        print("intervals are now ", self.intervals)
 
     def on_key_down(self, keycode, modifiers):
         if keycode[1] == 'enter':

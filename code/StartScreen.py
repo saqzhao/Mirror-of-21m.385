@@ -18,6 +18,8 @@ button_height = metrics.dp(100)
 
 class IntroScreen(Screen):
     def __init__(self, start_callback, interval_callback, **kwargs):
+
+        # interval callback: str -> adding interval to list
         super(IntroScreen, self).__init__(always_update=False, **kwargs)
 
         self.info = topleft_label()
@@ -77,22 +79,33 @@ class IntroScreen(Screen):
         resize_topleft_label(self.info)
 
 class IntervalButton(Widget):
-    def __init__(self, buttonLabel, pos, button_size, callback):
+    def __init__(self, buttonLabel, pos, button_size, interval_callback):
         super(IntervalButton, self).__init__()
         self.buttonLabel = buttonLabel
-        print('label', self.buttonLabel)
-        print('pos', pos)
-        btn = Button(text = self.buttonLabel,
+        self.down = False
+        self.btn = Button(text = self.buttonLabel,
                      font_size = "20sp",
                      background_color = (1, 1, 1, 1),
                      color = (1, 1, 1, 1),
                      size = button_size,
                      size_hint = (0.2, 0.2),
                      pos = pos)
-        self.callback = callback
-        print(self.callback)
-        btn.bind(on_press = self.add_interval)
-        self.add_widget(btn)
+        self.interval_callback = interval_callback
+        self.btn.bind(on_press = self.pressed_button_action)
+        self.add_widget(self.btn)
+
+    def pressed_button_action(self, _):
+        if self.down:
+            self.remove_interval(_)
+        else:
+            self.add_interval( _)
 
     def add_interval(self, _):
-        self.callback(self.buttonLabel)
+        self.down = True
+        self.btn.background_color = (.5,.5,.5,.5)
+        self.interval_callback(self.buttonLabel)
+
+    def remove_interval(self, _):
+        self.down = False
+        self.btn.background_color = (1,1,1,1)
+        self.interval_callback(self.buttonLabel, False)
