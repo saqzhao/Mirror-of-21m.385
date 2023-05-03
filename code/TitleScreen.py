@@ -54,5 +54,5 @@ class TitleScreen(Screen):
 class Title(Widget):
 	def __init__(self):
 		super(Title, self).__init__()
-		self.title = CLabelRect(cpos=(Window.width/2, Window.height*3/4), text=f'SERENADE', font_size=40)
+		self.title = CLabelRect(cpos=(Window.width/2, Window.height*3/4), text=f'SERENADE FOR TIM', font_size=40)
 		self.canvas.add(self.title)
