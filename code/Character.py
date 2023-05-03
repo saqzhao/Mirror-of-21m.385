@@ -101,9 +101,9 @@ class Character(Widget):
                 pass
             else:
                 self.moving = True
-                print('before', self.character.pos[0])
+                # print('before', self.character.pos[0])
                 self.character.pos[0] += direction
-                print('after', self.character.pos[0])
+                # print('after', self.character.pos[0])
 
     def to_screen_pos(self):
         x = self.character.pos[0]+Window.width/20
@@ -115,21 +115,34 @@ class Character(Widget):
         if self.frozen:
             return
         screen_pos = self.to_screen_pos()
-        if self.moving or self.background.can_climb(screen_pos) or self.background.can_descend(screen_pos):
+        direction = 1 if moving_direction == Direction.UP else -1
+        if (self.background.can_climb(screen_pos) and direction ==1) or (self.background.can_descend(screen_pos) and direction ==-1):
             self.character.source = self.climb_character
-            direction = 1 if moving_direction == Direction.UP else -1
-
-            direction
+            # direction
             self.moving = True
             self.on_ladder = True
             # move character
-            self.character.pos[1] += direction
-        
-            # check if reach end of ladder and if so, stop climbing
             ladder_end = 'T' if direction == 1 else 'B'
-            if self.background.distance_to_ladder_end(screen_pos, ladder_end) < 2:
+
+            # problem was when you get to the top of the ladder you go up an extra step
+            fraction = self.background.distance_to_ladder_end(screen_pos, ladder_end)
+        
+            # Because whole numbers don't always happen
+            if fraction <= 1 and fraction >0: 
+                self.character.pos[1] += fraction * direction
+            else:
+                 self.character.pos[1] += direction
+
+            # check if reach end of ladder and if so, stop climbing
+            new_screen_pos = self.to_screen_pos()
+            if self.background.distance_to_ladder_end(new_screen_pos, ladder_end) == 0:
                 self.on_ladder = False
                 self.rest()
+
+        elif self.background.can_climb(screen_pos) or self.background.can_descend(screen_pos):
+            self.on_ladder = False
+            self.rest()
+            print("ha caught the edge case")
         else:
             self.rest(self.moving_direction)
 
@@ -138,9 +151,9 @@ class Character(Widget):
 
     # animate character (position and animation) based on current time
     def on_update(self):
-        print('pos', self.character.pos)
+        # print('pos', self.character.pos)
         if self.moving:
-            print('continueing to walk')
+            # print('continueing to walk')
             if self.moving_direction in {Direction.UP, Direction.DOWN}:
                 self.climb(self.moving_direction)
             else:
