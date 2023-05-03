@@ -41,13 +41,14 @@ class MainScreen(Screen):
         print('done starting up main')
     
     def start(self):
-        self.started = True
-        if len(self.intervals) == 0:
-            self.intervals = self.default_intervals
-        self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character, self.quiz_display, self.intervals)
-        self.add_widget(self.player.character, index=1)
-        self.ended = False
-        print('begin game')
+        if not self.started:
+            self.started = True
+            if len(self.intervals) == 0:
+                self.intervals = self.default_intervals
+            self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character, self.quiz_display, self.intervals)
+            self.add_widget(self.player.character, index=1)
+            self.ended = False
+            print('begin game')
 
     def select_intervals(self, interval, add = True):
         if not add:

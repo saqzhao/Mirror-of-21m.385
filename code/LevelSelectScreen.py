@@ -35,7 +35,8 @@ class LevelSelectScreen(Screen):
         self.home_button.bind(on_release= lambda x: self.switch_to('title'))
         self.add_widget(self.home_button)    
 
-        self.start_button = Button(text='Begin game', font_size=font_sz, size = (button_width, button_height), pos = (Window.width/2, Window.height/2))
+        start_button_position = (Window.width/5, Window.height*8/9)
+        self.start_button = Button(text='Begin game', font_size=font_sz, size = (button_width, button_height), pos = start_button_position)
         self.start_button.bind(on_release= lambda x: self.start_game())
         self.add_widget(self.start_button)    
 
@@ -56,19 +57,28 @@ class LevelSelectScreen(Screen):
         # Advanced gives you four options
         levels_a = [['2m, 3M, 4, 5']]
 
-        all_levels = []
+        all_levels = [levels_b, levels_m, levels_a]
 
         # self.all_buttons = {}
         button_size = (button_width, button_height)
-        basic_height = Window.height*2/5
-        basic_width_spacing = Window.width/(len(levels_b)+1)
-        for i in range(len(levels_b)):
-            level = levels_b[i] # List of Intervals (strings)
-            all_levels.append(level)
-             # level_name, button_intervals, pos, button_size, callback
-            button = LevelButton(i, level, (basic_width_spacing*i, basic_height), button_size, self.select_this_level_callback)
-            # self.all_buttons[i] = button
-            self.add_widget(button)
+
+        basic_height = Window.height*3/5
+        medium_height = Window.height*2/5
+        advanced_height =Window.height*1/5
+
+        all_heights = [basic_height, medium_height, advanced_height]
+
+        buffer_r = Window.width/10
+        buffer_l = buffer_r
+        for cur_level_group, height, number_id in zip(all_levels, all_heights, [0,len(levels_b)+1,len(levels_b)+len(levels_m)+2]):
+            width_spacing = (Window.width-buffer_l-buffer_r)/(len(cur_level_group))
+            for i in range(len(cur_level_group)):
+                level = cur_level_group[i] # List of Intervals (strings)
+                all_levels.append(level)
+                button = LevelButton(i+number_id, level, (width_spacing*i+buffer_l, height), button_size, self.select_this_level_callback)
+                self.add_widget(button)
+
+
 
 
 
@@ -106,10 +116,12 @@ class LevelButton(Widget):
         super(LevelButton, self).__init__()
         self.level_name = level_name
         self.button_intervals=button_intervals
-        button_label = "Level {level_name}:\n"
+        button_label = f"Level {level_name}:\n"
         button_label += ",".join(button_intervals)
+        cpos = (pos[0]+button_size[0]/2, pos[1]+button_size[1]/2)
+        # print(pos, "->", cpos)
         self.btn = Button(text = button_label,
-                     font_size = "20sp",
+                     font_size = "15sp",
                      background_color = (1, 1, 1, 1),
                      color = (1, 1, 1, 1),
                      size = button_size,
