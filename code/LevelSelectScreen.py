@@ -45,15 +45,15 @@ class LevelSelectScreen(Screen):
 
         #These can be changed however
 
-        # Basic gives you two options (?)
+        # Basic gives you two options
         levels_b = [['2M', '8'], ['5', '2m'], ['6M', '3M'], ['2m', '2M'], ['3m', '3M']]
         levels_b_combined = ['2m', '2M', '3m', '3M', '5', '6M', '8']
 
-        # Medium gives you three options (?)
+        # Medium gives you three options
         levels_m = [['2M', '5', '8'], ['3m', '6m', '7M']]
         levels_m_combined = ['2M', '5', '8', '3m', '6m', '7M']
 
-        # Advanced gives you four options (?)
+        # Advanced gives you four options
         levels_a = [['2m, 3M, 4, 5']]
 
         all_levels = []
@@ -71,7 +71,6 @@ class LevelSelectScreen(Screen):
             self.add_widget(button)
 
 
-        
 
 
     def start_game(self):

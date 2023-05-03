@@ -67,6 +67,7 @@ class MainScreen(Screen):
         #     self.audio_ctrl.toggle()
 
         button_idx = lookup(keycode[1], ['up', 'down', 'left', 'right', 'w', 'a', 's', 'd', 'x'], (0,1,2,3,0, 2,1,3,4))
+        print('check keypress')
         if button_idx != None:
             self.player.on_button_down(button_idx)
 
@@ -194,24 +195,21 @@ class Player(object):
     
     # called by MainWidget
     def on_button_down(self, button_value):
-        if button_value ==5:
-            self.testing_something()
-            return
+        # if button_value ==5:
+        #     self.testing_something()
+        #     return
+        print('button down')
         for direction in Direction:
             if button_value == direction.value:
+                print('direction', direction)
+                print('frozen?', self.character.frozen)
                 self.character.on_button_down(direction)
 
     # called by MainWidget
     def on_button_up(self, button_value):
-        if button_value ==5:
-            self.testing_something()
-            return
         for direction in Direction:
             if button_value == direction.value:
                 self.character.on_button_up(direction)
-
-    def testing_something(self):
-        print("sure something happens here (testing_something serenade.py)")
 
     def spawn_bird(self):
         if not self.freeze:
