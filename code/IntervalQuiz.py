@@ -34,7 +34,7 @@ class QuizButton(Widget):
         self.callback(self.is_correct)
 
 class IntervalQuiz(Widget):
-    def __init__(self, mode, options, increment_score, generate_interval):
+    def __init__(self, mode, options, increment_score, generate_interval, stop_interval):
         super(IntervalQuiz, self).__init__()
         self.mode = mode
         self.options = list(options)
@@ -46,6 +46,7 @@ class IntervalQuiz(Widget):
         self.score_func = increment_score
         self.interval_audio = generate_interval
         self.remove_quiz = False
+        self.stop_interval = stop_interval
         self.succeed = False
         self.time = 0
         self.correct_answer = None

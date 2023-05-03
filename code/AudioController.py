@@ -84,4 +84,4 @@ class AudioController(object):
     
     # needed to update audio
     def on_update(self):
-        self.audio.on_update()v
+        self.audio.on_update()
