@@ -23,8 +23,9 @@ class Character(Widget):
         self.background = background
         self.pos = (0, 0)
         self.tim = Image(source='../data/tim.png')
-        self.tim.pos[0] = Window.width / 10
-        self.tim.pos[1] = Window.height - 2*Window.height / 8
+        self.tim_radius = Window.width/20
+        self.tim.pos[0] = Window.width / 12
+        self.tim.pos[1] = Window.height - 1.1*Window.height / 8
         self.add_widget(self.tim)
         print('TIM')
         # character animation
