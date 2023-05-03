@@ -29,13 +29,8 @@ class CollectedInstrumentDisplay(Widget):
         self.radius = Window.width/20
 
         self.instrument = Image(source = self.instrument_source, anim_delay=0, keep_data = True)
-        self.instrument.pos[0] = self.x_center
-        self.instrument.pos[1] = self.y_center
-        # self.ellipse = CEllipse(cpos = (self.x_center, self.y_center), csize = (self.radius, self.radius))
-        # self.color = Color(rgb = (.7,.7,.7))
-        # self.color = Color(rgb = (1, 0, 0, 1)) # to distinguish from gray birds
-        # self.add(self.color)
-        # self.add(self.ellipse)
+        self.instrument.pos[0] = self.x_center-self.radius
+        self.instrument.pos[1] = self.y_center-self.radius
         self.add_widget(self.instrument)
         self.background.add_widget(self)
         self.callback = callback
@@ -49,8 +44,7 @@ class CollectedInstrumentDisplay(Widget):
             character_pos = self.character.to_screen_pos()
             if ((abs(character_pos[0]-self.x_center)**2 + abs(character_pos[1]-self.y_center)**2)**0.5 < 50):
                 self.callback(self)
-                self.background.remove_widget(self.instrument)
-                # self.remove(self.ellipse)
+                self.remove_widget(self.instrument)
                 self.active = False
 
     def get_instrument(self):
