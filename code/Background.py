@@ -63,8 +63,8 @@ class BackgroundDisplay(Widget):
                 self.x_centers_to_avoid.append(this_ladder.get_x_center())
                 self.ladder_locs.add((0.5*(this_ladder.bounding_box()[0] + this_ladder.bounding_box()[2]), this_ladder.bounding_box()[1], this_ladder.bounding_box()[3]))
     
-        # TODO: adjust position of counter
-        self.counter= BirdCounter((Window.width*8/9, Window.height*8/9))
+        # TODO: adjust position of counter using some value other than 20
+        self.counter= BirdCounter((Window.width*8/9-20, Window.height*8/9))
         self.add_widget(self.counter)
 
     def add_one_to_count(self):
