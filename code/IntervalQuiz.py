@@ -145,9 +145,11 @@ class IntervalQuiz(Widget):
                 self.interval_audio(self.correct_answer)
             if self.remove_quiz:
                 self.remove_quiz = False
+                self.stop_interval()
                 return
             if self.time > 6:
                 self.score_func(False, self.correct_answer)
+                self.stop_interval()
                 return False
             return True
         else:
