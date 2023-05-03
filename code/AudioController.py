@@ -28,7 +28,7 @@ class AudioController(object):
                              '6M': 9, '7m': 10, '7M': 11, '8': 12}
         self.base_pitch = 60
         self.channel = 0
-        self.vel = 80
+        self.vel = 120
         self.note_length = 150
         self.pause_between = 900
         self.program = (0, 46)
