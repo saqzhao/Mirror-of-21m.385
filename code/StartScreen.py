@@ -66,6 +66,7 @@ class IntroScreen(Screen):
 
     def switch_to_main(self):
         self.switch_to('main')
+        self.start_callback()
 
     def on_key_down(self, keycode, modifiers):
         if keycode[1] == 'right':

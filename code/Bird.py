@@ -47,6 +47,8 @@ class Bird(Widget):
         self.active = False
         self.range = self.radius*0.9 # Distance that activates interval quiz
 
+        self.times_around_this_level =0
+
     def toggle(self):
         if not self.freeze:
             self.freeze = True
@@ -93,11 +95,19 @@ class Bird(Widget):
             self.x +=amount
         else:
             self.x -= amount
-        self.x = self.x % Window.width
+        x = self.x % Window.width
+
+        # counting how many times a bird goes in circles so that it only cycles twice
+        if self.x!=x:
+            self.times_around_this_level +=1
+        self.x=x
 
     def update_position(self):
+        # print(self.size)
         self.bird.pos[0] = self.x 
         self.bird.pos[1] = self.y
+        # self.center_x = self.x
+        # self.center_y = self.y
 
     def move_bird(self, move_amt):
         if not self.freeze:
@@ -110,10 +120,11 @@ class Bird(Widget):
                     if self.background.distance_to_ladder_end((self.x, self.y), 'B') == 0: # if we've hit bottom of ladder
                         self.direction = self.next_direction
                 # Can go down
-                elif self.background.can_descend((self.x, self.y)) and (self.direction == Direction.RIGHT or self.direction ==Direction.LEFT):
+                elif self.background.can_descend((self.x+self.size[0]/2, self.y)) and (self.direction == Direction.RIGHT or self.direction ==Direction.LEFT):
                     if random.random() <.8: # Randomly doesn't  fly down
                         # print("should be going down now")
                         self.direction = Direction.DOWN
+                        self.times_around_this_level = 0
                         self.next_direction = random.choice([Direction.RIGHT, Direction.LEFT])
                         self.bird.source = self.bird_right if self.next_direction == Direction.RIGHT else self.bird_left
                         self.move_down(move_amt)
@@ -139,6 +150,8 @@ class Bird(Widget):
             return False
         self.move_bird(move_amt) 
         self.update_position()
+        if self.times_around_this_level >=2:
+            return False
         return True
 
         
@@ -149,5 +162,8 @@ class Bird(Widget):
 if __name__ == "__main__":
     print("you have entered Bird.py. You are probably running the wrong .py file")
     background = BackgroundDisplay()
-    bird = Bird(background)
+    character = "hds"
+    def quiz():
+        return "hi"
+    bird = Bird(quiz, (400,400),background, character)
     print(bird)
