@@ -55,7 +55,7 @@ class LevelSelectScreen(Screen):
         levels_m_combined = ['2M', '5', '8', '3m', '6m', '7M']
 
         # Advanced gives you four options
-        levels_a = [['2m, 3M, 4, 5']]
+        levels_a = [['2m', '3M', '4', '5']]
 
         all_levels = [levels_b, levels_m, levels_a]
 
@@ -87,7 +87,9 @@ class LevelSelectScreen(Screen):
         if self.level_selected == None:
             return
         level_intervals = self.level_selected.button_intervals
+        print("level_intervals", level_intervals)
         for interval in level_intervals:
+            print("interval is", interval)
             self.interval_callback(interval)
         self.switch_to('main')
         self.start_callback()

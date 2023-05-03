@@ -189,7 +189,7 @@ class Player(object):
     def call_interval_quiz(self):
         self.character.freeze()
         print("calling interval quiz serenade.py")
-        self.quiz = IntervalQuiz(self.mode, self.options, self.adjust_lives, self.audio_ctrl.play_interval, self.audio_ctrl.stop)
+        self.quiz = IntervalQuiz(self.mode, self.options, self.adjust_lives, self.audio_ctrl.play_interval)
         self.quiz_display.add_quiz(self.quiz)
         self.quiz.generate_quiz()
         # self.quiz_active = True
