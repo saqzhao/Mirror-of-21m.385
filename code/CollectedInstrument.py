@@ -12,6 +12,7 @@ BUFFER = 20
 class CollectedInstrumentDisplay(Widget):
     def __init__(self, background, character, instrument, i, callback, x_centers_to_avoid = None):
         super(CollectedInstrumentDisplay, self).__init__()
+        self.instrument_text = instrument
         self.instrument_source = '../data/' + instrument + '_2.gif'
         print(self.instrument_source)
         self.background = background
@@ -53,7 +54,7 @@ class CollectedInstrumentDisplay(Widget):
                 self.active = False
 
     def get_instrument(self):
-        return self.instrument
+        return self.instrument_text
     
     def get_x_pos(self):
         return self.x_center
