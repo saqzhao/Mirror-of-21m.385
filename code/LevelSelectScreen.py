@@ -17,14 +17,14 @@ button_width = metrics.dp(100)
 button_height = metrics.dp(100)
 
 class LevelSelectScreen(Screen):
-    def __init__(self, start_callback, interval_callback, **kwargs):
+    def __init__(self, interval_callback, **kwargs):
 
         # interval callback: str -> adding interval to list
         super(LevelSelectScreen, self).__init__(always_update=False, **kwargs)
 
         self.info = topleft_label()
         self.info.text = "Level Select Screen\n"
-        self.start_callback = start_callback
+        # self.start_callback = start_callback
         self.interval_callback = interval_callback
         self.add_widget(self.info)
 
@@ -78,11 +78,6 @@ class LevelSelectScreen(Screen):
                 button = LevelButton(i+number_id+1, level, (width_spacing*i+buffer_l, height), button_size, self.select_this_level_callback)
                 self.add_widget(button)
 
-
-
-
-
-
     def start_game(self):
         if self.level_selected == None:
             return
@@ -129,7 +124,7 @@ class LevelButton(Widget):
                      size = button_size,
                      size_hint = (0.2, 0.2),
                      pos = pos)
-        self.callback = callback
+        # self.callback = callback
         self.btn.bind(on_press = self.pressed_button_action)
         self.add_widget(self.btn)
         self.pressed = False
@@ -137,7 +132,7 @@ class LevelButton(Widget):
     def pressed_button_action(self, _):
         self.pressed = True
         self.btn.background_color= (.5,.5,.5,.5)
-        self.callback(self)
+        # self.callback(self)
 
     def another_pressed(self):
         self.pressed = False

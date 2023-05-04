@@ -28,27 +28,17 @@ class MainScreen(Screen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(always_update=True, **kwargs)
         self.started = False
-        self.audio_ctrl = AudioController()
-        self.final_song_audio_ctrl = FinalScreenAudioController()
-        self.background = BackgroundDisplay()
-        self.character = Character(self.background)
-        self.quiz_display = QuizDisplay()
-        self.add_widget(self.background)
-        self.add_widget(self.quiz_display)
+        self.audio_ctrl = None
+        self.final_song_audio_ctrl = None
+        self.background = None
+        self.character = None
+        self.quiz_display = None
+        self.player = None
+
         self.default_intervals = {'2M', '3M', '4', '5'}
         self.intervals = set()
         self.player = None
         print('done starting up main')
-    
-    def start(self):
-        if not self.started:
-            self.started = True
-            if len(self.intervals) == 0:
-                self.intervals = self.default_intervals
-            self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character, self.quiz_display, self.intervals)
-            self.add_widget(self.player.character, index=1)
-            self.ended = False
-            print('begin game')
 
     def select_intervals(self, interval, add = True):
         if not add:
@@ -107,18 +97,32 @@ class MainScreen(Screen):
         # self.info.text += f'num objects: {self.display.get_num_object()}'
 
     def on_enter(self):
+        print('ENTERING ENTERING ENTERING ENTERING ENTERING ENTERING ENTERING')
         self.canvas.clear()
+        self.started = True
+        print('A')
         self.audio_ctrl = AudioController()
+        print('B')
         self.final_song_audio_ctrl = FinalScreenAudioController()
+        print('C')
         self.background = BackgroundDisplay()
+        print('D')
         self.character = Character(self.background)
+        print('E')
         self.quiz_display = QuizDisplay()
+        print('F')
         intervals = self.default_intervals if (len(self.intervals) == 0) else self.intervals
+        print('G')
         self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character, self.quiz_display, intervals)
+        print('H')
         self.add_widget(self.background)
-        self.add_widget(self.player.character, index=1)
+        print('I')
+        self.add_widget(self.player.character)
+        print('J')
         self.add_widget(self.quiz_display)
+        print('K')
         self.ended = False
+        print('start game HER ELKAJDFLKAJDFLKAJFLKDJALKFJALKFJLKASJFKL')
 
 
 class Player(object):
@@ -129,6 +133,8 @@ class Player(object):
 
     def __init__(self, audio_ctrl, final_song_audio_ctrl, background, character, quiz_display, intervals):
         super(Player, self).__init__()
+        # self.clock = kivyClock()
+        # self.clock = serenClock
         self.background = background
         self.quiz_display = quiz_display
         self.audio_ctrl = audio_ctrl
@@ -142,6 +148,7 @@ class Player(object):
         self.x_centers_to_avoid = []
         self.lives = 3
         self.freeze = False
+        self.pause_time = 0
 
         # Birds
         self.birds_spawned = 0
@@ -163,6 +170,7 @@ class Player(object):
     def toggle(self):
         if not self.freeze:
             self.freeze = True
+            # self.pause_time = self.clock.time()
             self.character.freeze()
             for bird in self.birds:
                 bird.toggle()
@@ -189,16 +197,13 @@ class Player(object):
     def call_interval_quiz(self):
         self.character.freeze()
         print("calling interval quiz serenade.py")
-        self.quiz = IntervalQuiz(self.mode, self.options, self.adjust_lives, self.audio_ctrl.play_interval)
+        self.quiz = IntervalQuiz(self.mode, self.options, self.adjust_lives, self.audio_ctrl.play_interval, self.audio_ctrl.stop)
         self.quiz_display.add_quiz(self.quiz)
         self.quiz.generate_quiz()
         # self.quiz_active = True
     
     # called by MainWidget
     def on_button_down(self, button_value):
-        # if button_value ==5:
-        #     self.testing_something()
-        #     return
         print('button down')
         for direction in Direction:
             if button_value == direction.value:
@@ -219,34 +224,39 @@ class Player(object):
             self.birds_spawned+=1
 
     def on_update(self):
-        dt = kivyClock.frametime
-        if self.quiz != None:
-            x=self.quiz.on_update(dt)
-            if not x:
-                self.quiz_display.remove_quiz()
-                self.quiz = None
-            return
+        if not self.freeze:
+            # print('getting time')
+            dt =  kivyClock.frametime
+            # dt = self.clock.get_time()
+            # print('got time, dt', dt)
+            if self.quiz != None:
+                x=self.quiz.on_update(dt)
+                if not x:
+                    self.quiz_display.remove_quiz()
+                    self.quiz = None
+                return
 
-        self.time += dt
-        bird_num = int(self.time)/5
-        if bird_num > self.birds_spawned:
-            self.spawn_bird()
+            self.time += dt
+            bird_num = int(self.time)/5
+            if bird_num > self.birds_spawned:
+                self.spawn_bird()
 
-        switch_to_end_screen = self.character.on_update()
-        
-        for collectable in self.collectables:
-            collectable.on_update(dt)
+            switch_to_end_screen = self.character.on_update()
+            
+            for collectable in self.collectables:
+                collectable.on_update(dt)
 
-        for bird in self.birds:
-            a=bird.on_update(dt)
-            if not a:
-                print("removing this bird")
-                self.background.remove_widget(bird)
-                self.birds.remove(bird)
-        
-        self.final_song_audio_ctrl.on_update()
+            for bird in self.birds:
+                a=bird.on_update(dt)
+                if not a:
+                    print("removing this bird")
+                    self.background.remove_widget(bird)
+                    self.birds.remove(bird)
+            
+            self.final_song_audio_ctrl.on_update()
 
-        return switch_to_end_screen
+            return switch_to_end_screen
+        return True
 
     def on_instrument_collected(self, collectable):
         self.final_song_audio_ctrl.on_instrument_collected(collectable.get_instrument())

@@ -66,6 +66,7 @@ class BackgroundDisplay(Widget):
         # TODO: adjust position of counter using some value other than 20
         self.counter= BirdCounter((Window.width*8/9-20, Window.height*8/9))
         self.add_widget(self.counter)
+        print('finished setting up background display')
 
     def add_one_to_count(self):
         print("in add one to count in background.py")

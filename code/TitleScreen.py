@@ -56,5 +56,5 @@ class Title(Widget):
 		super(Title, self).__init__()
 		self.title = CLabelRect(cpos=(Window.width/2, Window.height*3/4), text=f'SERENADE FOR TIM', font_size=40)
 		self.canvas.add(self.title)
-		self.art_credit = CLabelRect(cpos=(Window.width/2, Window.height*1/10), text=f'Wide Tim property of Margaret Zheng', font_size=5)
-		self.canvas.add(self.art_credit)
+		# self.art_credit = CLabelRect(cpos=(Window.width/2, Window.height*1/10), text=f'Wide Tim property of Margaret Zheng', font_size=5)
+		# self.canvas.add(self.art_credit)

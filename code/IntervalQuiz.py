@@ -34,7 +34,7 @@ class QuizButton(Widget):
         self.callback(self.is_correct)
 
 class IntervalQuiz(Widget):
-    def __init__(self, mode, options, increment_score, generate_interval):
+    def __init__(self, mode, options, increment_score, generate_interval, stop_interval):
         super(IntervalQuiz, self).__init__()
         self.mode = mode
         self.options = list(options)
@@ -46,9 +46,11 @@ class IntervalQuiz(Widget):
         self.score_func = increment_score
         self.interval_audio = generate_interval
         self.remove_quiz = False
+        self.stop_interval = stop_interval
         self.succeed = False
         self.time = 0
         self.correct_answer = None
+        self.interval_being_played = False
 
         # quiz buttons
         self.button_size = (Window.width/15, Window.height/20)
@@ -115,38 +117,35 @@ class IntervalQuiz(Widget):
         self.quiz_begun = True
         if self.mode == 'easy':
             self.correct_answer, all_options = self.generate_quiz_options(4)
-            self.interval_audio(self.correct_answer)
             num_options = len(all_options)
             easy_button_locations = [self.button_locations[idx] for idx in range(num_options)]
-            #TODO: Un-comment this out. It's only here bc I'm having a couple difficulties
             self.create_buttons(easy_button_locations, all_options, self.correct_answer)
                 
         else:
             self.correct_answer = random.choice(self.options)
-            self.interval_audio(self.correct_answer)
             hard_button_locations = [self.button_locations[idx] for idx in range(len(self.options))]
             self.create_buttons(hard_button_locations, self.options, self.correct_answer)
-
-    # def on_touch_down(self, touch):
-    #     if self.mode == 'easy':
-    #         for loc in self.easy_button_locations:
-    #             pass
 
     def on_resize(self, win_size):
         pass #TODO
 
     def on_update(self, dt):
         if self.quiz_begun:
-            self.time += dt
-            self.time_since_noise_played+=dt
-            self.timer_bar.csize = self.timer_runout.eval(self.time)
-            if self.time_since_noise_played>=1:
-                self.time_since_noise_played = 0
+            if not self.interval_being_played:
+                self.interval_being_played = True
                 self.interval_audio(self.correct_answer)
+            self.time += dt
+            # self.time_since_noise_played+=dt
+            self.timer_bar.csize = self.timer_runout.eval(self.time)
+            # if self.time_since_noise_played>=1:
+            #     self.time_since_noise_played = 0
+            #     self.interval_audio(self.correct_answer)
             if self.remove_quiz:
+                self.stop_interval()
                 self.remove_quiz = False
                 return
             if self.time > 6:
+                self.stop_interval
                 self.score_func(False, self.correct_answer)
                 return False
             return True
