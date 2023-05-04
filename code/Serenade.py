@@ -260,4 +260,4 @@ class Player(object):
 
     def on_instrument_collected(self, collectable):
         self.final_song_audio_ctrl.on_instrument_collected(collectable.get_instrument())
-        self.audio_ctrl.change_program(collectable.get_instrument())
+        self.audio_ctrl.collect_instrument(collectable.get_instrument())
