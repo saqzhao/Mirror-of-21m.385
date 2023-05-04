@@ -4,6 +4,7 @@ sys.path.insert(0, os.path.abspath('..'))
 from imslib.core import lookup
 from imslib.screen import Screen
 from kivy.clock import Clock as kivyClock
+from kivy.uix.image import Image
 from kivy.core.window import Window
 
 from Background import BackgroundDisplay
@@ -147,6 +148,9 @@ class Player(object):
         self.instruments = ["violin", "guitar", "piano"] # TODO(ashleymg): choose randomly from a selection
         self.x_centers_to_avoid = []
         self.lives = 3
+        self.background.add_lives(3)    
+        self.game_over = False
+
         self.freeze = False
         self.pause_time = 0
 
@@ -155,17 +159,21 @@ class Player(object):
         self.birds = []
 
         # Collectables
-        self.collectables = set()
-        for j in range(3):
-            i = random.randint(0, 7)
-            this_collectable = CollectedInstrumentDisplay(self.background, self.character, self.instruments[j], i, self.on_instrument_collected, self.x_centers_to_avoid)
-            self.x_centers_to_avoid.append(this_collectable.get_x_pos())
-            self.collectables.add(this_collectable)
+        self.collectables = self.make_collectables(3)
 
         # Interval 
         self.options = intervals 
         # self.quiz_active = False
         self.quiz = None
+
+    def make_collectables(self, num_collectables):
+        collect = set()
+        for j in range(num_collectables):
+            i = random.randint(0, 7)
+            this_collectable = CollectedInstrumentDisplay(self.background, self.character, self.instruments[j], i, self.on_instrument_collected, self.x_centers_to_avoid)
+            self.x_centers_to_avoid.append(this_collectable.get_x_pos())
+            collect.add(this_collectable)
+        return collect
 
     def toggle(self):
         if not self.freeze:
@@ -185,7 +193,14 @@ class Player(object):
         print("called score func with succeed", succeed, "and interval", interval)
         self.character.unfreeze()
         if not succeed:
-            self.lives -= 1
+            if self.lives > 0:
+                self.lives -= 1
+                self.background.lose_life()
+            else:
+                # need to make a lose screen here, and do reset functionality or smth 
+                self.game_over = True
+                print('Sorry, you have crashed into too many birds, try again?')
+
         else:
             print("calling self.bacground.add_one_to_count() in serenade.py")
             self.background.add_one_to_count() # increments count of correct intervals guessed
@@ -193,12 +208,22 @@ class Player(object):
             print("now adding interval to final song audio ctrl")
             self.final_song_audio_ctrl.add_interval(interval)
 
+    def reset(self):
+        self.background.reset()
+        self.character.reset()
+        self.collectables = self.make_collectables(3)
+        self.lives = 3
+        self.game_over = False
+        self.freeze = False
+        self.quiz = None
+
     # called by Bird
     def call_interval_quiz(self):
         self.character.freeze()
         print("calling interval quiz serenade.py")
         self.quiz = IntervalQuiz(self.mode, self.options, self.adjust_lives, self.audio_ctrl.play_interval, self.audio_ctrl.stop)
         self.quiz_display.add_quiz(self.quiz)
+        self.audio_ctrl.hit_bird()
         self.quiz.generate_quiz()
         # self.quiz_active = True
     
@@ -224,6 +249,9 @@ class Player(object):
             self.birds_spawned+=1
 
     def on_update(self):
+        # if self.game_over:
+        #     self.reset()
+        #     return False
         if not self.freeze:
             # print('getting time')
             dt =  kivyClock.frametime

@@ -22,30 +22,23 @@ class Character(Widget):
         super(Character, self).__init__()
         self.background = background
         self.pos = (0, 0)
-        self.tim = Image(source='../data/tim.png')
-        self.tim_radius = Window.width/20
-        self.tim.pos[0] = Window.width / 12
-        self.tim.pos[1] = Window.height - 1.1*Window.height / 8
+        self.tim = Image(source='../data/tim.png', pos = (Window.width / 12, Window.height - 1.1*Window.height / 8))
         self.add_widget(self.tim)
-        print('TIM')
+        
         # character animation
         self.rest_left_character = '../data/rest_left.png'
         self.rest_right_character = '../data/rest_right.png'
         self.walk_left_character = '../data/walk_left.gif'
         self.walk_right_character = '../data/walk_right.gif'
         self.climb_character = '../data/climb.gif'
-        self.character = Image(source=self.rest_left_character, anim_delay=0, keep_data = True)
-        self.character.pos[1] = Window.height / 10
-        self.character.pos[0] = Window.width / 10
-
+        self.character = Image(source=self.rest_right_character, anim_delay=0, keep_data = True, pos = (Window.width / 10, Window.height / 10))
+        
         # character movement
-        self.character_frame = 0 #0: left, 1:right
         self.moving = False
         self.moving_direction = 0
-        self.current_layer = 0
         self.on_ladder = False
         self.frozen = False
-        # self.already_resting = False
+        
         self.add_widget(self.character)
     
     
@@ -68,6 +61,13 @@ class Character(Widget):
                     self.rest(self.moving_direction)
             else:
                 self.rest(self.moving_direction)
+
+    def reset(self):
+        self.character = Image(source=self.rest_right_character, anim_delay=0, keep_data = True, pos = (Window.height / 10, Window.width / 10))
+        self.frozen = False
+        self.moving = False
+        self.on_ladder = False
+        self.moving_direction = 0
 
     def freeze(self):
         self.frozen = True

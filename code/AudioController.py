@@ -15,25 +15,27 @@ class AudioController(object):
     def __init__(self):
         super(AudioController, self).__init__()
         self.audio = Audio(2)
+        self.mixer = Mixer()
         self.synth = Synth()
          # create TempoMap, AudioScheduler
         self.tempo_map  = SimpleTempoMap(120)
         self.sched = AudioScheduler(self.tempo_map)
-
-        print('hi')
-        self.audio.set_generator(self.sched)
+        self.audio.set_generator(self.mixer)
+        self.mixer.add(self.sched)
         self.sched.set_generator(self.synth)
+        self.cmd = None
+        self.vel = 80
+        self.mixer.gain = 0.8
 
         # interval quiz
         self.interval_midi = {'2m': 1, '2M': 2, '3m': 3, '3M': 4, '4': 5, '5': 7, '6m': 8,
                              '6M': 9, '7m': 10, '7M': 11, '8': 12}
         self.base_pitch = 60
         self.channel = 0
-        self.vel = 80
         self.note_length = 150
         self.pause_between = 800
-        
-        self.cmd = None
+
+        #collectable
         self.pitch_idx = 0
         self.interval = []
         self.success = [0, 2, 5, 7]
@@ -42,17 +44,27 @@ class AudioController(object):
         self.collecting = False
         self.sfx_channel = 1
 
+        #hit bird
+        self.bird_track = WaveGenerator(WaveFile("../data/bird_sound.wav"))
+
+        #program
         self.program = (0, 46)
         self.synth.program(self.channel, *self.program)
         self.synth.program(self.sfx_channel, *self.program)
     
         self.instruments = {'piano': (0, 0), 'violin': (8, 40), 'guitar': (0, 27)}
 
+
     def change_program(self, instrument_name):
         inst_prog = self.instruments[instrument_name]
         self.synth.program(self.channel, *inst_prog)
         self.synth.program(self.sfx_channel, *inst_prog)
 
+    def hit_bird(self):
+        self.bird_track.reset()
+        self.mixer.add(self.bird_track)
+        self.bird_track.play()
+    
     def collect_instrument(self, instrument_name):
         self.change_program(instrument_name)
         self.collecting = True

@@ -135,17 +135,13 @@ class IntervalQuiz(Widget):
                 self.interval_being_played = True
                 self.interval_audio(self.correct_answer)
             self.time += dt
-            # self.time_since_noise_played+=dt
             self.timer_bar.csize = self.timer_runout.eval(self.time)
-            # if self.time_since_noise_played>=1:
-            #     self.time_since_noise_played = 0
-            #     self.interval_audio(self.correct_answer)
             if self.remove_quiz:
                 self.stop_interval()
                 self.remove_quiz = False
                 return
             if self.time > 6:
-                self.stop_interval
+                self.stop_interval()
                 self.score_func(False, self.correct_answer)
                 return False
             return True
