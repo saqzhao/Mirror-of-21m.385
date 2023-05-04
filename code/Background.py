@@ -42,16 +42,20 @@ class Ladder(InstructionGroup):
 class BackgroundDisplay(Widget):
     def __init__(self):
         super(BackgroundDisplay, self).__init__()
+        print('entering bg')
         self.margin_side = Window.width / 10
         self.margin_bottom = Window.height / 10
         self.layer_spacing = Window.height / 8
         self.layers = []
         self.x_centers_to_avoid = []
+        print('BG A')
 
         for i in range(7):
             this_line = Line(points=(self.margin_side, self.margin_bottom + self.layer_spacing * i, Window.width - self.margin_side, self.margin_bottom + self.layer_spacing * i), width = 6)
             self.canvas.add(this_line)
             self.layers.append(this_line)
+        
+        print('BG made layers')
 
         self.ladders = []
         self.ladder_locs = set() #set of (x, y_bottom, y_top)
@@ -63,6 +67,7 @@ class BackgroundDisplay(Widget):
                 self.x_centers_to_avoid.append(this_ladder.get_x_center())
                 self.ladder_locs.add((0.5*(this_ladder.bounding_box()[0] + this_ladder.bounding_box()[2]), this_ladder.bounding_box()[1], this_ladder.bounding_box()[3]))
     
+        print('BG made ladders')
         # TODO: adjust position of counter using some value other than 20
         self.counter= BirdCounter((Window.width*8/9-20, Window.height*8/9))
         self.add_widget(self.counter)

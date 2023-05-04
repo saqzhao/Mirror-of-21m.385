@@ -187,7 +187,7 @@ class Player(object):
         if not succeed:
             self.lives -= 1
         else:
-            print("calling seld.bacgroung.add_one_to_count() in serenade.py")
+            print("calling self.bacground.add_one_to_count() in serenade.py")
             self.background.add_one_to_count() # increments count of correct intervals guessed
         if interval is not None:
             print("now adding interval to final song audio ctrl")
@@ -260,3 +260,4 @@ class Player(object):
 
     def on_instrument_collected(self, collectable):
         self.final_song_audio_ctrl.on_instrument_collected(collectable.get_instrument())
+        self.audio_ctrl.change_program(collectable.get_instrument())

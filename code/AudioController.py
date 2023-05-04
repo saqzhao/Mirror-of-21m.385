@@ -38,6 +38,12 @@ class AudioController(object):
         self.cmd = None
         self.pitch_idx = 0
         self.interval = []
+    
+        self.instruments = {'piano': (0, 0), 'violin': (0, 40), 'guitar': (0, 27)}
+
+    def change_program(self, instrument_name):
+        inst_prog = self.instruments[instrument_name]
+        self.synth.program(self.channel, *inst_prog)
 
     def start(self):
         self.pitch_idx = 0
