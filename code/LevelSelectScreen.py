@@ -70,12 +70,12 @@ class LevelSelectScreen(Screen):
 
         buffer_r = Window.width/10
         buffer_l = buffer_r
-        for cur_level_group, height, number_id in zip(all_levels, all_heights, [0,len(levels_b)+1,len(levels_b)+len(levels_m)+2]):
+        for cur_level_group, height, number_id in zip(all_levels, all_heights, [0,len(levels_b),len(levels_b)+len(levels_m)]):
             width_spacing = (Window.width-buffer_l-buffer_r)/(len(cur_level_group))
             for i in range(len(cur_level_group)):
                 level = cur_level_group[i] # List of Intervals (strings)
                 all_levels.append(level)
-                button = LevelButton(i+number_id, level, (width_spacing*i+buffer_l, height), button_size, self.select_this_level_callback)
+                button = LevelButton(i+number_id+1, level, (width_spacing*i+buffer_l, height), button_size, self.select_this_level_callback)
                 self.add_widget(button)
 
 
