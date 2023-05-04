@@ -17,7 +17,6 @@ from kivy.uix.widget import Widget
 class Bird(Widget):
     def __init__(self, background, pos, call_interval_quiz, character) -> None:
         super(Bird, self).__init__()
-        # Storing Variables
         self.character = character
         self.background = background
         self.call_interval_quiz = call_interval_quiz
@@ -28,7 +27,6 @@ class Bird(Widget):
         self.direction = Direction.RIGHT 
         self.next_direction = Direction.RIGHT
         self.pace = Window.width/4/2 # Position per time
-        # self.pace = Window.width/4/5 # Position per time
 
         self.freeze = False
 
@@ -36,14 +34,11 @@ class Bird(Widget):
         self.radius = Window.width/50
         self.bird_left = '../data/bird_left.gif'
         self.bird_right = '../data/bird_right.gif'
-        # self.circle = Ellipse(pos = (self.x, self.y), radius = (self.radius, self.radius))
         self.bird = Image(source = self.bird_right, anim_delay=0, keep_data = True)
-        # self.color = Color(rgb = (.5,.5,.5))
-        # self.add(self.color)
         self.add_widget(self.bird)
         self.background.add_widget(self) # Does this work?
 
-        # Things for Interval Quiz 
+        # Interval Quiz 
         self.active = False
         self.range = self.radius*0.9 # Distance that activates interval quiz
 
@@ -106,8 +101,6 @@ class Bird(Widget):
         # print(self.size)
         self.bird.pos[0] = self.x 
         self.bird.pos[1] = self.y
-        # self.center_x = self.x
-        # self.center_y = self.y
 
     def move_bird(self, move_amt):
         if not self.freeze:
@@ -139,20 +132,22 @@ class Bird(Widget):
                     move_amt = 0
 
     def on_update(self, dt):
-        move_amt = self.pace*dt
+        if not self.freeze:
+            move_amt = self.pace*dt
 
-        if not self.active: 
-            x=self.player_in_range()
-            if x:
-                self.hit_bird()
-                return
-        if self.active:
-            return False
-        self.move_bird(move_amt) 
-        self.update_position()
-        if self.times_around_this_level >=2:
-            return False
+            if not self.active: 
+                x=self.player_in_range()
+                if x:
+                    self.hit_bird()
+                    return
+            if self.active:
+                return False
+            self.move_bird(move_amt) 
+            self.update_position()
+            if self.times_around_this_level >=2:
+                return False
         return True
+
 
         
     def on_resize(self, win_size):

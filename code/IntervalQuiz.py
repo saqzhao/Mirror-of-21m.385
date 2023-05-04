@@ -119,7 +119,6 @@ class IntervalQuiz(Widget):
             self.interval_audio(self.correct_answer)
             num_options = len(all_options)
             easy_button_locations = [self.button_locations[idx] for idx in range(num_options)]
-            #TODO: Un-comment this out. It's only here bc I'm having a couple difficulties
             self.create_buttons(easy_button_locations, all_options, self.correct_answer)
                 
         else:
@@ -127,11 +126,6 @@ class IntervalQuiz(Widget):
             self.interval_audio(self.correct_answer)
             hard_button_locations = [self.button_locations[idx] for idx in range(len(self.options))]
             self.create_buttons(hard_button_locations, self.options, self.correct_answer)
-
-    # def on_touch_down(self, touch):
-    #     if self.mode == 'easy':
-    #         for loc in self.easy_button_locations:
-    #             pass
 
     def on_resize(self, win_size):
         pass #TODO
@@ -145,9 +139,11 @@ class IntervalQuiz(Widget):
                 self.time_since_noise_played = 0
                 self.interval_audio(self.correct_answer)
             if self.remove_quiz:
+                self.stop_interval()
                 self.remove_quiz = False
                 return
             if self.time > 6:
+                self.stop_interval
                 self.score_func(False, self.correct_answer)
                 return False
             return True

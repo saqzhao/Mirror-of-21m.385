@@ -17,7 +17,7 @@ button_width = metrics.dp(120)
 button_height = metrics.dp(100)
 
 class IntroScreen(Screen):
-    def __init__(self, start_callback, interval_callback, **kwargs):
+    def __init__(self, interval_callback, **kwargs):
 
         # interval callback: str -> adding interval to list
         super(IntroScreen, self).__init__(always_update=False, **kwargs)
@@ -25,7 +25,7 @@ class IntroScreen(Screen):
         self.info = topleft_label()
         self.info.text = "Intro/Settings Screen\n"
         self.info.text += "→: Begin game\n"
-        self.start_callback = start_callback
+        # self.start_callback = start_callback
         self.interval_callback = interval_callback
         self.add_widget(self.info)
 
@@ -66,7 +66,7 @@ class IntroScreen(Screen):
 
     def switch_to_main(self):
         self.switch_to('main')
-        self.start_callback()
+        # self.start_callback()
 
     def on_key_down(self, keycode, modifiers):
         if keycode[1] == 'right':
