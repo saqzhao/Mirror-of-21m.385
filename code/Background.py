@@ -8,6 +8,7 @@ from imslib.gfxutil import CLabelRect
 from kivy.core.window import Window
 from kivy.uix.image import Image
 from GameAccessories import BirdCounter
+from Help import HelpButton
 
 EPSILON = float(5)
 BUFFER = float(20)
@@ -71,6 +72,9 @@ class BackgroundDisplay(Widget):
         self.remaining_lives = 0
         self.hearts = dict()
         self.heart_base_pos = (Window.width*8/9, Window.height*7/9)
+
+        self.help_button = HelpButton()
+        self.add_widget(self.help_button)
         print('finished setting up background display')
 
     def reset(self):

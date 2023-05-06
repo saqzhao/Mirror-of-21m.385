@@ -9,6 +9,7 @@ from kivy.uix.button import Button
 from kivy.uix.widget import Widget
 from kivy import metrics
 from imslib.gfxutil import CLabelRect
+from Help import HelpButton
 
 # metrics allows kivy to create screen-density-independent sizes.
 # Here, 20 dp will always be the same physical size on screen regardless of resolution or OS.
@@ -33,7 +34,10 @@ class TitleScreen(Screen):
 
         self.levels_button = Button(text='Choose Level', font_size=font_sz, size = (button_width, button_height), pos = (Window.width*2/3-button_width/2, Window.height/2-button_height/2))
         self.levels_button.bind(on_release= lambda x: self.switch_to('levels'))
-        self.add_widget(self.levels_button)    
+        self.add_widget(self.levels_button) 
+
+        self.help_button = HelpButton()
+        self.add_widget(self.help_button)   
         
 
     def on_key_down(self, keycode, modifiers):

@@ -9,6 +9,8 @@ from kivy.uix.button import Button
 from kivy.uix.widget import Widget
 from kivy import metrics
 
+from Help import HelpButton
+
 # metrics allows kivy to create screen-density-independent sizes.
 # Here, 20 dp will always be the same physical size on screen regardless of resolution or OS.
 # Another option is to use metrics.pt or metrics.sp. See https://kivy.org/doc/stable/api-kivy.metrics.html
@@ -63,6 +65,9 @@ class IntroScreen(Screen):
             i += 1
             button = IntervalButton(opt, loc, self.button_size, self.interval_callback)
             self.add_widget(button)
+        
+        self.help_button = HelpButton()
+        self.add_widget(self.help_button)
 
     def switch_to_main(self):
         self.switch_to('main')
