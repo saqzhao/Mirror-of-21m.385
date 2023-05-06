@@ -7,13 +7,13 @@ from imslib.gfxutil import CRectangle, CLabelRect
 import webbrowser
 
 font_sz = metrics.dp(20)
-button_side = metrics.dp(50)
+button_side = metrics.dp(100)
 button_sz = (button_side, button_side)
 
 class HelpButton(Widget):
     def __init__(self):
         super(HelpButton, self).__init__()
-        self.help_button = Button(text='?', font_size=font_sz, size = button_sz, background_normal = '../data/circle_button.png', background_down = '../data/circle_button.png', pos = (Window.width/20, Window.height/20))
+        self.help_button = Button(text='?', font_size=font_sz*1.3, size = button_sz, background_normal = '../data/circle_button.png', background_down = '../data/circle_button.png', pos = (Window.width/50, Window.height/50))
         self.help_button.bind(on_press = self.open_help_screen)
         self.add_widget(self.help_button)
         self.help_widget = HelpScreen(self.remove_help_screen)

@@ -14,7 +14,6 @@ class CollectedInstrumentDisplay(Widget):
         super(CollectedInstrumentDisplay, self).__init__()
         self.instrument_text = instrument
         self.instrument_source = '../data/' + instrument + '_2.gif'
-        print(self.instrument_source)
         self.background = background
         self.character = character
         self.margin_side = self.background.get_margin_side()
@@ -46,6 +45,9 @@ class CollectedInstrumentDisplay(Widget):
                 self.collect_callback(self)
                 self.remove_widget(self.instrument)
                 self.active = False
+
+    def get_inst_source(self):
+        return self.instrument_source
 
     def get_instrument(self):
         return self.instrument_text

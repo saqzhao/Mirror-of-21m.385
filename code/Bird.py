@@ -85,7 +85,6 @@ class Bird(Widget):
         pass
 
     def move_x(self, amount: float|int, direction: Direction):
-        # print(f"moving in {direction} {amount} amount")
         if direction == Direction.RIGHT:
             self.x +=amount
         else:
@@ -98,7 +97,6 @@ class Bird(Widget):
         self.x=x
 
     def update_position(self):
-        # print(self.size)
         self.bird.pos[0] = self.x 
         self.bird.pos[1] = self.y
 
@@ -115,7 +113,6 @@ class Bird(Widget):
                 # Can go down
                 elif self.background.can_descend((self.x+self.size[0]/2, self.y)) and (self.direction == Direction.RIGHT or self.direction ==Direction.LEFT):
                     if random.random() <.8: # Randomly doesn't  fly down
-                        # print("should be going down now")
                         self.direction = Direction.DOWN
                         self.times_around_this_level = 0
                         self.next_direction = random.choice([Direction.RIGHT, Direction.LEFT])
@@ -123,7 +120,6 @@ class Bird(Widget):
                         self.move_down(move_amt)
                         break
                     else:
-                        # print("not changing to down")
                         self.move_x(move_amt, self.direction)
                         move_amt = 0
                 # Go to side
@@ -149,16 +145,13 @@ class Bird(Widget):
         return True
 
 
-        
     def on_resize(self, win_size):
         #TODO: This affects bird size, their current position, and rate/multiplier
         pass 
 
 if __name__ == "__main__":
-    print("you have entered Bird.py. You are probably running the wrong .py file")
     background = BackgroundDisplay()
     character = "hds"
-    def quiz():
+    def quiz(): #what is this doing?
         return "hi"
     bird = Bird(quiz, (400,400),background, character)
-    print(bird)

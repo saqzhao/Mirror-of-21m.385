@@ -101,9 +101,7 @@ class Character(Widget):
                 pass
             else:
                 self.moving = True
-                # print('before', self.character.pos[0])
                 self.character.pos[0] += direction
-                # print('after', self.character.pos[0])
 
     def to_screen_pos(self):
         x = self.character.pos[0]+Window.width/20
@@ -142,7 +140,6 @@ class Character(Widget):
         elif self.background.can_climb(screen_pos) or self.background.can_descend(screen_pos):
             self.on_ladder = False
             self.rest()
-            print("ha caught the edge case")
         else:
             self.rest(self.moving_direction)
 
@@ -151,9 +148,7 @@ class Character(Widget):
 
     # animate character (position and animation) based on current time
     def on_update(self):
-        # print('pos', self.character.pos)
         if self.moving:
-            # print('continueing to walk')
             if self.moving_direction in {Direction.UP, Direction.DOWN}:
                 self.climb(self.moving_direction)
             else:

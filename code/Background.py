@@ -8,7 +8,7 @@ from imslib.gfxutil import CLabelRect
 from kivy.core.window import Window
 from kivy.uix.image import Image
 from GameAccessories import BirdCounter
-from Help import HelpButton
+
 
 EPSILON = float(5)
 BUFFER = float(20)
@@ -73,9 +73,7 @@ class BackgroundDisplay(Widget):
         self.hearts = dict()
         self.heart_base_pos = (Window.width*8/9, Window.height*7/9)
 
-        self.help_button = HelpButton()
-        self.add_widget(self.help_button)
-        print('finished setting up background display')
+        self.collected_inst = []
 
     def reset(self):
         self.canvas.clear()
@@ -90,7 +88,6 @@ class BackgroundDisplay(Widget):
 
     def generate_ladders(self):
         for layer_idx in range(self.num_layers-1):
-            print('entering ladder ', layer_idx)
             for _ in range(2):
                 this_ladder = Ladder(self.margin_side, self.margin_bottom, self.layer_spacing, layer_idx, self.x_centers_to_avoid)
                 self.canvas.add(this_ladder)
@@ -98,11 +95,8 @@ class BackgroundDisplay(Widget):
                 self.x_centers_to_avoid[layer_idx].add(this_ladder.get_x_center())
                 self.x_centers_to_avoid[layer_idx+1].add(this_ladder.get_x_center())
                 self.ladder_locs.add(this_ladder.ladder_loc())
-            print('ladders ', layer_idx)
-        print('BG made ladders')
 
     def add_one_to_count(self):
-        print("in add one to count in background.py")
         self.counter.add_one_to_count()
 
     def get_margin_side(self):
@@ -176,15 +170,18 @@ class BackgroundDisplay(Widget):
     def add_lives(self, number_lives):
         self.remaining_lives = number_lives
         for life_idx in range(number_lives):
-            print('life idx: ', life_idx)
             heart_pos = (self.heart_base_pos[0], self.heart_base_pos[1] - life_idx*Window.height/9)
             heart = Image(source='../data/heart.png', anim_delay=1, keep_data=True, pos = heart_pos)
             self.hearts[life_idx] = heart
             self.add_widget(heart)
     
+    def add_collected(self, inst_src, idx):
+        inst_pos = (self.heart_base_pos[0], Window.height - self.heart_base_pos[1] - idx*Window.height/9)
+        inst_img = Image(source=inst_src, anim_delay=1, keep_data=True, pos = inst_pos)
+        self.add_widget(inst_img)
+    
     def lose_life(self):
         self.remaining_lives -= 1
-        print('lose life number ', self.remaining_lives)
         self.remove_widget(self.hearts[self.remaining_lives])
         del self.hearts[self.remaining_lives]
 
@@ -193,28 +190,3 @@ class BackgroundDisplay(Widget):
 
     def on_update(self):
         pass #TODO
-
-class BirdCounter(Widget):
-    def __init__(self, pos):
-        super(BirdCounter, self).__init__()
-        self.count = 0
-        self.bird_left = '../data/bird_left.gif'
-        self.bird_right = '../data/bird_right.gif'
-        self.pos=pos
-        self.spacing = int(Window.width/10)
-        self.bird = Image(source = self.bird_right, anim_delay=1, keep_data = True, pos = (self.pos))
-
-        #TODO: adjust position of counter
-        self.score_display = CLabelRect(cpos=(self.pos[0] + self.spacing, self.pos[1]+ self.spacing/2), text=f'x {self.count}', font_size=21)
-        self.add_widget(self.bird)
-        self.canvas.add(self.score_display)
-
-    def add_one_to_count(self):
-        print("adding one to count in BirdCounter object")
-        # WHY TF ISN:T THIS UPDATING ??
-        self.count +=1
-        self.score_display.text = f'x {self.count}'
-        print(f"Score is {self.count}")
-
-    def on_update(self):
-        self.score_display.text = f'x {self.count}'
