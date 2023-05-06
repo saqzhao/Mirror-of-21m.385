@@ -34,7 +34,7 @@ class QuizButton(Widget):
         self.callback(self.is_correct)
 
 class IntervalQuiz(Widget):
-    def __init__(self, mode, options, increment_score, generate_interval, stop_interval):
+    def __init__(self, mode, options, increment_score, audio_ctrl):
         super(IntervalQuiz, self).__init__()
         self.mode = mode
         self.options = list(options)
@@ -44,9 +44,8 @@ class IntervalQuiz(Widget):
         self.timer_bar = CRectangle(cpos=(Window.width/2, Window.height/8), csize = (Window.width/3, Window.height/30))
         self.timer_runout = KFAnim((0, Window.width/3, Window.height/30), (6, 0, Window.height/30))
         self.score_func = increment_score
-        self.interval_audio = generate_interval
         self.remove_quiz = False
-        self.stop_interval = stop_interval
+        self.audio_ctrl = audio_ctrl
         self.succeed = False
         self.time = 0
         self.correct_answer = None
@@ -59,7 +58,6 @@ class IntervalQuiz(Widget):
         self.button_distance = self.button_size[0]*1.3
         self.button_locations[0] = (Window.width/2, Window.height*2/5) # bottom row middle
         for idx in range(1, 11):
-            print('idx', idx)
             if idx % 4 == 1: # top row left
                 self.button_locations[idx] = (Window.width/2+self.button_centerline_margin+1.2*self.button_distance*(idx-1)/4, Window.height*1/5)
             elif idx % 4 == 2: # top row right
@@ -100,17 +98,15 @@ class IntervalQuiz(Widget):
         return correct, options
 
     def quiz_result(self, is_correct):
-        print("calling score func with correct answer", self.correct_answer)
         self.score_func(is_correct, self.correct_answer)
         if is_correct:
+            self.audio_ctrl.interval_quiz_success()
             self.remove_quiz = True
 
     def create_buttons(self, locations, options, correct_answer):
         for loc, opt in zip(locations, options):
             is_correct = False if opt != correct_answer else True
             button = QuizButton(opt, loc, is_correct, self.button_size, self.quiz_result)
-            # self.buttons.append(button)
-            print("interval quiz button")
             self.add_widget(button) #ThIS IS WHERE PROBLEM IS HAPPENING
 
     def generate_quiz(self):
@@ -133,19 +129,15 @@ class IntervalQuiz(Widget):
         if self.quiz_begun:
             if not self.interval_being_played:
                 self.interval_being_played = True
-                self.interval_audio(self.correct_answer)
+                self.audio_ctrl.play_interval(self.correct_answer)
             self.time += dt
-            # self.time_since_noise_played+=dt
             self.timer_bar.csize = self.timer_runout.eval(self.time)
-            # if self.time_since_noise_played>=1:
-            #     self.time_since_noise_played = 0
-            #     self.interval_audio(self.correct_answer)
             if self.remove_quiz:
-                self.stop_interval()
+                self.audio_ctrl.stop()
                 self.remove_quiz = False
                 return
             if self.time > 6:
-                self.stop_interval
+                self.audio_ctrl.stop()
                 self.score_func(False, self.correct_answer)
                 return False
             return True

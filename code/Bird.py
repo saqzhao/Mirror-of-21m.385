@@ -159,16 +159,13 @@ class Bird(Widget):
         return True
 
 
-        
     def on_resize(self, win_size):
         #TODO: This affects bird size, their current position, and rate/multiplier
         pass 
 
 if __name__ == "__main__":
-    print("you have entered Bird.py. You are probably running the wrong .py file")
     background = BackgroundDisplay()
     character = "hds"
-    def quiz():
+    def quiz(): #what is this doing?
         return "hi"
     bird = Bird(quiz, (400,400),background, character)
-    print(bird)

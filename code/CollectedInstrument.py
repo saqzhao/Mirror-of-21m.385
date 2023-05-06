@@ -10,11 +10,10 @@ NUM_LAYERS = 7
 BUFFER = 20
 
 class CollectedInstrumentDisplay(Widget):
-    def __init__(self, background, character, instrument, i, callback, x_centers_to_avoid = None):
+    def __init__(self, background, character, instrument, i, collect_callback, x_centers_to_avoid = None):
         super(CollectedInstrumentDisplay, self).__init__()
         self.instrument_text = instrument
         self.instrument_source = '../data/' + instrument + '_2.gif'
-        print(self.instrument_source)
         self.background = background
         self.character = character
         self.margin_side = self.background.get_margin_side()
@@ -33,7 +32,7 @@ class CollectedInstrumentDisplay(Widget):
         self.instrument.pos[1] = self.y_center-self.radius
         self.add_widget(self.instrument)
         self.background.add_widget(self)
-        self.callback = callback
+        self.collect_callback = collect_callback
         self.active = True
         
     def on_resize(self, win_size):
@@ -43,9 +42,12 @@ class CollectedInstrumentDisplay(Widget):
         if self.active:
             character_pos = self.character.to_screen_pos()
             if ((abs(character_pos[0]-self.x_center)**2 + abs(character_pos[1]-self.y_center)**2)**0.5 < 50):
-                self.callback(self)
+                self.collect_callback(self)
                 self.remove_widget(self.instrument)
                 self.active = False
+
+    def get_inst_source(self):
+        return self.instrument_source
 
     def get_instrument(self):
         return self.instrument_text

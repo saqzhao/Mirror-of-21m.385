@@ -31,11 +31,9 @@ class BirdCounter(Widget):
         self.canvas.add(self.score_display)
 
     def add_one_to_count(self):
-        print("adding one to count in BirdCounter object")
-        # WHY TF ISN:T THIS UPDATING ??
         self.count +=1
-        self.score_display.text = f'x {self.count}'
-        print(f"Score is {self.count}")
+        self.score_display.set_text(f'x {self.count}')
 
     def on_update(self):
-        self.score_display.text = f'x {self.count}'
+        # self.score_display.text = f'x {self.count}'
+        pass

@@ -9,35 +9,41 @@ from kivy.core.window import Window
 from kivy.uix.image import Image
 from GameAccessories import BirdCounter
 
+
 EPSILON = float(5)
 BUFFER = float(20)
 
 class Ladder(InstructionGroup):
-    def __init__(self, margin_side, margin_bottom, layer_spacing, i, x_centers_to_avoid = None):
+    def __init__(self, margin_side, margin_bottom, layer_spacing, layer_idx, x_centers_to_avoid = None):
         super(Ladder, self).__init__()
-        self.i = i
+        self.layer_idx = layer_idx
         self.margin_bottom = margin_bottom
         self.layer_spacing = layer_spacing
-        self.x_center = margin_side + 10 + random.randint(0, Window.width - 2*margin_side - BUFFER - 30)
-        if x_centers_to_avoid is not None:
-            while any((abs(pos-self.x_center) < 2*BUFFER) for pos in x_centers_to_avoid):
-                self.x_center = margin_side + 10 + random.randint(0, Window.width - 2*margin_side - BUFFER - 30)
-        left_line = Line(points=(self.x_center - BUFFER, margin_bottom + layer_spacing * i, self.x_center - BUFFER, margin_bottom + layer_spacing * (i+1)), width = 5)
-        right_line = Line(points=(self.x_center + BUFFER, margin_bottom + layer_spacing * i, self.x_center + BUFFER, margin_bottom + layer_spacing * (i+1)), width = 5)
-        center_line1 = Line(points=(self.x_center - BUFFER, margin_bottom + layer_spacing * i + (layer_spacing * (i+1)-layer_spacing*i)/4*1, self.x_center + BUFFER, margin_bottom + layer_spacing * i + (layer_spacing * (i+1)-layer_spacing*i)/4*1), width = 5)
-        center_line2 = Line(points=(self.x_center - BUFFER, margin_bottom + layer_spacing * i + (layer_spacing * (i+1)-layer_spacing*i)/4*2, self.x_center + BUFFER, margin_bottom + layer_spacing * i + (layer_spacing * (i+1)-layer_spacing*i)/4*2), width = 5)
-        center_line3 = Line(points=(self.x_center - BUFFER, margin_bottom + layer_spacing * i + (layer_spacing * (i+1)-layer_spacing*i)/4*3, self.x_center + BUFFER, margin_bottom + layer_spacing * i + (layer_spacing * (i+1)-layer_spacing*i)/4*3), width = 5)
-        self.add(left_line)
-        self.add(right_line)
-        self.add(center_line1)
-        self.add(center_line2)
-        self.add(center_line3)
+        self.num_ladder_rungs = 3
+        self.furthest_x_center_loc = Window.width - 2*margin_side - BUFFER - 30
+        self.x_center = margin_side + 10 + random.randint(0, self.furthest_x_center_loc)
+        if x_centers_to_avoid[self.layer_idx] is not None:
+            while any((abs(pos-self.x_center) < 3*BUFFER) for pos in x_centers_to_avoid[self.layer_idx]):
+                self.x_center = margin_side + 10 + random.randint(0, self.furthest_x_center_loc)
+        
+        self.ladder_bottom = self.margin_bottom + self.layer_spacing * self.layer_idx
+        self.ladder_top = self.margin_bottom + self.layer_spacing * (self.layer_idx+1)
+
+        for multiplier in [-1, 1]:
+            line = Line(points=(self.x_center + multiplier*BUFFER, self.ladder_bottom, self.x_center + multiplier*BUFFER, self.ladder_top), width = 5)
+            self.add(line)
+
+        center_line_y = self.ladder_bottom  + self.layer_spacing/4
+        for _ in range(1, self.num_ladder_rungs+1):
+            center_line = Line(points=(self.x_center - BUFFER, center_line_y, self.x_center + BUFFER, center_line_y), width = 5)
+            center_line_y += self.layer_spacing/4
+            self.add(center_line)
 
     def get_x_center(self):
         return self.x_center
 
-    def bounding_box(self):
-        return (self.x_center - BUFFER, self.margin_bottom + self.layer_spacing * self.i, self.x_center + BUFFER, self.margin_bottom + self.layer_spacing * (self.i+1))
+    def ladder_loc(self):
+        return (self.x_center, self.ladder_bottom, self.ladder_top)
 
 class BackgroundDisplay(Widget):
     def __init__(self):
@@ -45,31 +51,52 @@ class BackgroundDisplay(Widget):
         self.margin_side = Window.width / 10
         self.margin_bottom = Window.height / 10
         self.layer_spacing = Window.height / 8
+        self.num_layers = 7
         self.layers = []
-        self.x_centers_to_avoid = []
+        self.x_centers_to_avoid = {idx: set() for idx in range(self.num_layers)}
 
-        for i in range(7):
+        for i in range(self.num_layers):
             this_line = Line(points=(self.margin_side, self.margin_bottom + self.layer_spacing * i, Window.width - self.margin_side, self.margin_bottom + self.layer_spacing * i), width = 6)
             self.canvas.add(this_line)
             self.layers.append(this_line)
+        
 
         self.ladders = []
         self.ladder_locs = set() #set of (x, y_bottom, y_top)
-        for i in range(len(self.layers)-1):
-            for _ in range(2):
-                this_ladder = Ladder(self.margin_side, self.margin_bottom, self.layer_spacing, i, self.x_centers_to_avoid)
-                self.canvas.add(this_ladder)
-                self.ladders.append(this_ladder)
-                self.x_centers_to_avoid.append(this_ladder.get_x_center())
-                self.ladder_locs.add((0.5*(this_ladder.bounding_box()[0] + this_ladder.bounding_box()[2]), this_ladder.bounding_box()[1], this_ladder.bounding_box()[3]))
-    
+        self.generate_ladders()
+
         # TODO: adjust position of counter using some value other than 20
         self.counter= BirdCounter((Window.width*8/9-20, Window.height*8/9))
         self.add_widget(self.counter)
-        print('finished setting up background display')
+
+        self.remaining_lives = 0
+        self.hearts = dict()
+        self.heart_base_pos = (Window.width*8/9, Window.height*7/9)
+
+        self.collected_inst = []
+
+    def reset(self):
+        self.canvas.clear()
+        self.remove_widget(self.counter)
+        self.counter= BirdCounter((Window.width*8/9-20, Window.height*8/9))
+        self.ladders = []
+        self.x_centers_to_avoid = {idx: set() for idx in range(self.num_layers)}
+        self.ladder_locs = set()
+        self.hearts = dict()
+        self.generate_ladders()
+        
+
+    def generate_ladders(self):
+        for layer_idx in range(self.num_layers-1):
+            for _ in range(2):
+                this_ladder = Ladder(self.margin_side, self.margin_bottom, self.layer_spacing, layer_idx, self.x_centers_to_avoid)
+                self.canvas.add(this_ladder)
+                self.ladders.append(this_ladder)
+                self.x_centers_to_avoid[layer_idx].add(this_ladder.get_x_center())
+                self.x_centers_to_avoid[layer_idx+1].add(this_ladder.get_x_center())
+                self.ladder_locs.add(this_ladder.ladder_loc())
 
     def add_one_to_count(self):
-        print("in add one to count in background.py")
         self.counter.add_one_to_count()
 
     def get_margin_side(self):
@@ -140,33 +167,26 @@ class BackgroundDisplay(Widget):
     def get_start_position_height(self):
         return max(self.ladder_ends('T'))
 
+    def add_lives(self, number_lives):
+        self.remaining_lives = number_lives
+        for life_idx in range(number_lives):
+            heart_pos = (self.heart_base_pos[0], self.heart_base_pos[1] - life_idx*Window.height/9)
+            heart = Image(source='../data/heart.png', anim_delay=1, keep_data=True, pos = heart_pos)
+            self.hearts[life_idx] = heart
+            self.add_widget(heart)
+    
+    def add_collected(self, inst_src, idx):
+        inst_pos = (self.heart_base_pos[0], Window.height - self.heart_base_pos[1] - idx*Window.height/9)
+        inst_img = Image(source=inst_src, anim_delay=1, keep_data=True, pos = inst_pos)
+        self.add_widget(inst_img)
+    
+    def lose_life(self):
+        self.remaining_lives -= 1
+        self.remove_widget(self.hearts[self.remaining_lives])
+        del self.hearts[self.remaining_lives]
+
     def on_resize(self, win_size):
         pass #TODO
 
     def on_update(self):
         pass #TODO
-
-class BirdCounter(Widget):
-    def __init__(self, pos):
-        super(BirdCounter, self).__init__()
-        self.count = 0
-        self.bird_left = '../data/bird_left.gif'
-        self.bird_right = '../data/bird_right.gif'
-        self.pos=pos
-        self.spacing = int(Window.width/10)
-        self.bird = Image(source = self.bird_right, anim_delay=1, keep_data = True, pos = (self.pos))
-
-        #TODO: adjust position of counter
-        self.score_display = CLabelRect(cpos=(self.pos[0] + self.spacing, self.pos[1]+ self.spacing/2), text=f'x {self.count}', font_size=21)
-        self.add_widget(self.bird)
-        self.canvas.add(self.score_display)
-
-    def add_one_to_count(self):
-        print("adding one to count in BirdCounter object")
-        # WHY TF ISN:T THIS UPDATING ??
-        self.count +=1
-        self.score_display.text = f'x {self.count}'
-        print(f"Score is {self.count}")
-
-    def on_update(self):
-        self.score_display.text = f'x {self.count}'

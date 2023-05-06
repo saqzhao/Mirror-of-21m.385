@@ -4,7 +4,9 @@ sys.path.insert(0, os.path.abspath('..'))
 from imslib.core import lookup
 from imslib.screen import Screen
 from kivy.clock import Clock as kivyClock
+from kivy.uix.image import Image
 from kivy.core.window import Window
+from kivy.uix.widget import Widget
 
 from Background import BackgroundDisplay
 from Bird import Bird
@@ -15,7 +17,8 @@ from IntervalQuiz import IntervalQuiz
 from AudioController import AudioController
 from FinalScreenAudioController import FinalScreenAudioController
 from QuizDisplay import QuizDisplay
-
+from PauseButton import PauseButton
+from Help import HelpButton
 import random
 
 # Scaling Constants we will be working with
@@ -38,7 +41,9 @@ class MainScreen(Screen):
         self.default_intervals = {'2M', '3M', '4', '5'}
         self.intervals = set()
         self.player = None
-        print('done starting up main')
+
+    def toggle(self):
+        self.player.toggle()
 
     def select_intervals(self, interval, add = True):
         if not add:
@@ -54,11 +59,9 @@ class MainScreen(Screen):
 
         # play / pause toggle
         if keycode[1] == 'p':
-            self.player.toggle()
-        #     self.audio_ctrl.toggle()
+            self.toggle()
 
         button_idx = lookup(keycode[1], ['up', 'down', 'left', 'right', 'w', 'a', 's', 'd', 'x'], (0,1,2,3,0, 2,1,3,4))
-        print('check keypress')
         if button_idx != None:
             self.player.on_button_down(button_idx)
 
@@ -97,35 +100,21 @@ class MainScreen(Screen):
         # self.info.text += f'num objects: {self.display.get_num_object()}'
 
     def on_enter(self):
-        print('ENTERING ENTERING ENTERING ENTERING ENTERING ENTERING ENTERING')
         self.canvas.clear()
         self.started = True
-        print('A')
         self.audio_ctrl = AudioController()
-        print('B')
         self.final_song_audio_ctrl = FinalScreenAudioController()
-        print('C')
         self.background = BackgroundDisplay()
-        print('D')
         self.character = Character(self.background)
-        print('E')
         self.quiz_display = QuizDisplay()
-        print('F')
         intervals = self.default_intervals if (len(self.intervals) == 0) else self.intervals
-        print('G')
         self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character, self.quiz_display, intervals)
-        print('H')
-        self.add_widget(self.background)
-        print('I')
-        self.add_widget(self.player.character)
-        print('J')
-        self.add_widget(self.quiz_display)
-        print('K')
+        self.add_widget(self.player)
         self.ended = False
-        print('start game HER ELKAJDFLKAJDFLKAJFLKDJALKFJALKFJLKASJFKL')
+        print('start game')
 
 
-class Player(object):
+class Player(Widget):
     '''
     Handles game logic
     Controls the GameDisplay and AudioCtrl based on what happens
@@ -139,14 +128,26 @@ class Player(object):
         self.quiz_display = quiz_display
         self.audio_ctrl = audio_ctrl
         self.final_song_audio_ctrl = final_song_audio_ctrl
-        self.score = 0
         self.character = character
+        self.add_widget(self.background)
+        self.add_widget(self.quiz_display)
+        self.add_widget(self.character)
+
+        self.pause_button = PauseButton(self.toggle)
+        self.add_widget(self.pause_button)
+        self.help_button = HelpButton()
+        self.add_widget(self.help_button)
+
+        self.score = 0
         self.mode = 'easy'        
         self.time=0
-        self.collected_instruments = set()
-        self.instruments = ["violin", "guitar", "piano"] # TODO(ashleymg): choose randomly from a selection
+        self.num_collected_so_far = 0
+        self.instruments = ["violin", "guitar", "piano"]
         self.x_centers_to_avoid = []
         self.lives = 3
+        self.background.add_lives(3)    
+        self.game_over = False
+
         self.freeze = False
         self.pause_time = 0
 
@@ -155,17 +156,21 @@ class Player(object):
         self.birds = []
 
         # Collectables
-        self.collectables = set()
-        for j in range(3):
-            i = random.randint(0, 7)
-            this_collectable = CollectedInstrumentDisplay(self.background, self.character, self.instruments[j], i, self.on_instrument_collected, self.x_centers_to_avoid)
-            self.x_centers_to_avoid.append(this_collectable.get_x_pos())
-            self.collectables.add(this_collectable)
+        self.collectables = self.make_collectables(3)
 
         # Interval 
         self.options = intervals 
         # self.quiz_active = False
         self.quiz = None
+
+    def make_collectables(self, num_collectables):
+        collect = set()
+        for j in range(num_collectables):
+            i = random.randint(0, 7)
+            this_collectable = CollectedInstrumentDisplay(self.background, self.character, self.instruments[j], i, self.on_instrument_collected, self.x_centers_to_avoid)
+            self.x_centers_to_avoid.append(this_collectable.get_x_pos())
+            collect.add(this_collectable)
+        return collect
 
     def toggle(self):
         if not self.freeze:
@@ -182,33 +187,43 @@ class Player(object):
 
     # called by IntervalQuiz
     def adjust_lives(self, succeed, interval):
-        print("called score func with succeed", succeed, "and interval", interval)
         self.character.unfreeze()
         if not succeed:
-            self.lives -= 1
+            if self.lives > 0:
+                self.lives -= 1
+                self.background.lose_life()
+            else:
+                # need to make a lose screen here, and do reset functionality or smth 
+                self.game_over = True
+                print('Sorry, you have crashed into too many birds, try again?')
+
         else:
-            print("calling seld.bacgroung.add_one_to_count() in serenade.py")
             self.background.add_one_to_count() # increments count of correct intervals guessed
         if interval is not None:
-            print("now adding interval to final song audio ctrl")
             self.final_song_audio_ctrl.add_interval(interval)
+
+    def reset(self):
+        self.background.reset()
+        self.character.reset()
+        self.collectables = self.make_collectables(3)
+        self.lives = 3
+        self.game_over = False
+        self.freeze = False
+        self.quiz = None
 
     # called by Bird
     def call_interval_quiz(self):
         self.character.freeze()
-        print("calling interval quiz serenade.py")
-        self.quiz = IntervalQuiz(self.mode, self.options, self.adjust_lives, self.audio_ctrl.play_interval, self.audio_ctrl.stop)
+        self.quiz = IntervalQuiz(self.mode, self.options, self.adjust_lives, self.audio_ctrl)
         self.quiz_display.add_quiz(self.quiz)
+        self.audio_ctrl.hit_bird()
         self.quiz.generate_quiz()
         # self.quiz_active = True
     
     # called by MainWidget
     def on_button_down(self, button_value):
-        print('button down')
         for direction in Direction:
             if button_value == direction.value:
-                print('direction', direction)
-                print('frozen?', self.character.frozen)
                 self.character.on_button_down(direction)
 
     # called by MainWidget
@@ -224,11 +239,12 @@ class Player(object):
             self.birds_spawned+=1
 
     def on_update(self):
+        # if self.game_over:
+        #     self.reset()
+        #     return False
         if not self.freeze:
-            # print('getting time')
             dt =  kivyClock.frametime
             # dt = self.clock.get_time()
-            # print('got time, dt', dt)
             if self.quiz != None:
                 x=self.quiz.on_update(dt)
                 if not x:
@@ -249,7 +265,6 @@ class Player(object):
             for bird in self.birds:
                 a=bird.on_update(dt)
                 if not a:
-                    print("removing this bird")
                     self.background.remove_widget(bird)
                     self.birds.remove(bird)
             
@@ -259,4 +274,8 @@ class Player(object):
         return True
 
     def on_instrument_collected(self, collectable):
-        self.final_song_audio_ctrl.on_instrument_collected(collectable.get_instrument())
+        inst_name = collectable.get_instrument()
+        self.final_song_audio_ctrl.on_instrument_collected(inst_name)
+        self.background.add_collected(collectable.get_inst_source(), self.num_collected_so_far)
+        self.num_collected_so_far += 1
+        self.audio_ctrl.collect_instrument(inst_name)
