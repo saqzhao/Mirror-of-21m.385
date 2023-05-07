@@ -100,10 +100,9 @@ class Character(Widget):
             else:
                 self.character.source = self.walk_right_character
 
-            if self.character.pos[0]+direction < self.margin_side or self.character.pos[1]+direction>Window.width-self.margin_side:
+            screen_pos = self.to_screen_pos()
+            if not (screen_pos[0]+direction < self.margin_side or screen_pos[0]+direction>Window.width-self.margin_side):
                 # check if at left and right wall, animate "walking but doesn't move"
-                pass
-            else:
                 self.moving = True
                 self.character.pos[0] += direction
 

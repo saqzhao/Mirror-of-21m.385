@@ -17,14 +17,14 @@ class CollectedInstrumentDisplay(Widget):
         self.instrument_source = '../data/' + instrument + '_2.gif'
         self.background = background
         self.character = character
-        self.margin_side = self.background.get_margin_side()
+        self.margin_side = self.background.get_margin_side() #Window.width/10
         self.margin_bottom = self.background.get_margin_bottom()
         self.layer_spacing = self.background.get_layer_spacing()
         self.buffer = self.background.get_buffer()
-        self.x_center = self.margin_side + 10 + random.randint(0, Window.width - self.margin_side - 2*BUFFER)
+        self.x_center = self.margin_side - Window.width/20 + random.randint(0, Window.width - self.margin_side - 2*BUFFER)
         if x_centers_to_avoid is not None:
             while any((abs(pos-self.x_center) < 2*BUFFER) for pos in x_centers_to_avoid):
-                self.x_center = self.margin_side + 10 + random.randint(0, Window.width - self.margin_side - 2*BUFFER)
+                self.x_center = self.margin_side - Window.width/20 + random.randint(0, Window.width - self.margin_side - 2*BUFFER)
         self.y_center = ((self.margin_bottom + self.layer_spacing * self.layer) + (self.margin_bottom + self.layer_spacing * (self.layer+1)))/2
         self.radius = Window.width/20
 

@@ -7,6 +7,8 @@ from kivy.core.window import Window
 from kivy.uix.button import Button
 from kivy import metrics
 
+from HomeButton import HomeButton
+
 font_sz = metrics.dp(20)
 button_sz = metrics.dp(100)
 
@@ -26,6 +28,9 @@ class EndScreen(Screen):
         self.button = Button(text='Change Intervals', font_size=font_sz, size = (button_sz, button_sz), pos = (Window.width*2/3, Window.height/2))
         self.button.bind(on_release= lambda x: self.switch_to('intro'))
         self.add_widget(self.button)
+
+        self.home_button = HomeButton(self)
+        self.add_widget(self.home_button)
 
     def on_enter(self):
         self.main_screen.final_song_audio_ctrl.play_serenade()

@@ -174,7 +174,7 @@ class BackgroundDisplay(Widget):
             self.add_widget(heart)
     
     def add_collected(self, inst_src, idx):
-        inst_pos = (self.heart_base_pos[0], Window.height - self.heart_base_pos[1] - (idx+1)*Window.height/9)
+        inst_pos = (self.heart_base_pos[0], Window.height - self.heart_base_pos[1] - (idx-1)*Window.height/9)
         inst_img = Image(source=inst_src, size_hint_x=0.8, anim_delay=1, keep_data=True, pos = inst_pos)
         self.add_widget(inst_img)
     
