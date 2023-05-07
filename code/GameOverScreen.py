@@ -7,6 +7,8 @@ from imslib.screen import Screen
 from kivy.core.window import Window
 from kivy.uix.button import Button
 from kivy import metrics
+from kivy.uix.image import Image
+from kivy.graphics import Color
 
 from HomeButton import HomeButton
 
@@ -31,11 +33,20 @@ class GameOverScreen(Screen):
         self.home_button = HomeButton(self)
         self.add_widget(self.home_button)
 
-        self.title = CLabelRect(cpos=(Window.width/2, Window.height*16/20), text=f'Game Over :(', font_size=30)
-        self.canvas.add(self.title)
-        self.instruction_text = '''Oh no! You missed too many interval quizzes carried by birds, and got lost on the 
-                                \npath to Wide Tim. Better luck next time! We encourage you to keep practicing.'''
-        self.instructions = CLabelRect(cpos=(Window.width/2, Window.height*7/20), text=self.instruction_text, font_size=15)
+        # self.title = CLabelRect(cpos=(Window.width/2, Window.height*16/20), text=f'Game Over :(', font_size=30)
+        # self.canvas.add(self.title)
+        # self.instruction_text = '''Oh no! You missed too many interval quizzes carried by birds, and got lost on the 
+        #                         \npath to Wide Tim. Better luck next time! We encourage you to keep practicing.'''
+        # self.instructions = CLabelRect(cpos=(Window.width/2, Window.height*7/20), text=self.instruction_text, font_size=15)
+        # self.canvas.add(self.instructions)
+
+        self.daze_character = Image(source='../data/daze.png', anim_delay=1, keep_data=True, pos = (Window.width/4, Window.height*16/20))
+        self.add_widget(self.daze_character)
+        
+        self.game_over_text = '''Oh no! You've run into too many birds, and became lost on 
+                            your way to Wide Tim. Better luck next time!'''
+        self.canvas.add(Color(1 ,1, 1, 1))
+        self.instructions = CLabelRect(cpos=(Window.width*3/4, Window.height*16/20), text=self.game_over_text, font_size=font_sz)
         self.canvas.add(self.instructions)
 
     def on_enter(self):
