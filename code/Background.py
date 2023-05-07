@@ -8,28 +8,43 @@ from imslib.gfxutil import CLabelRect
 from kivy.core.window import Window
 from kivy.uix.image import Image
 from BirdCounter import BirdCounter
+from kivy import metrics
+from kivy.metrics import Metrics
 
 EPSILON = float(5)
 BUFFER = float(20)
+
 
 class Ladder(InstructionGroup):
     def __init__(self, margin_side, margin_bottom, layer_spacing, layer_idx, x_centers_to_avoid = None):
         super(Ladder, self).__init__()
         self.layer_idx = layer_idx
         self.margin_bottom = margin_bottom
+        self.margin_side = margin_side
         self.layer_spacing = layer_spacing
         self.num_ladder_rungs = 3
-        self.furthest_x_center_loc = Window.width - 2*margin_side - BUFFER - 30
-        self.x_center = margin_side + 10 + random.randint(0, self.furthest_x_center_loc)
+        self.furthest_x_center_loc = int(Window.width - 2*self.margin_side - BUFFER - 30)
+        self.init_furthest_x_center_loc = self.furthest_x_center_loc
+        self.random_number_chosen = random.randint(0, self.furthest_x_center_loc)
+        self.x_center = self.margin_side + 10 + self.random_number_chosen
         if x_centers_to_avoid[self.layer_idx] is not None:
             while any((abs(pos-self.x_center) < 3*BUFFER) for pos in x_centers_to_avoid[self.layer_idx]):
-                self.x_center = margin_side + 10 + random.randint(0, self.furthest_x_center_loc)
+                self.random_number_chosen = random.randint(0, self.furthest_x_center_loc)
+                self.x_center = self.margin_side + 10 + self.random_number_chosen
+
+        self.horiz_lines = []
+        self.vert_lines_left = []
+        self.vert_lines_right = []
         
         self.ladder_bottom = self.margin_bottom + self.layer_spacing * self.layer_idx
         self.ladder_top = self.margin_bottom + self.layer_spacing * (self.layer_idx+1)
 
         for multiplier in [-1, 1]:
             line = Line(points=(self.x_center + multiplier*BUFFER, self.ladder_bottom, self.x_center + multiplier*BUFFER, self.ladder_top), width = 5)
+            if multiplier == -1:
+                self.vert_lines_left.append(line)
+            else:
+                self.vert_lines_right.append(line)
             self.add(line)
 
         center_line_y = self.ladder_bottom  + self.layer_spacing/4
@@ -37,12 +52,30 @@ class Ladder(InstructionGroup):
             center_line = Line(points=(self.x_center - BUFFER, center_line_y, self.x_center + BUFFER, center_line_y), width = 5)
             center_line_y += self.layer_spacing/4
             self.add(center_line)
+            self.horiz_lines.append(center_line)
 
     def get_x_center(self):
         return self.x_center
 
     def ladder_loc(self):
         return (self.x_center, self.ladder_bottom, self.ladder_top)
+    
+    def on_resize(self, win_size, margin_side, margin_bottom, layer_spacing):
+        self.margin_side = margin_side
+        self.margin_bottom = margin_bottom
+        self.layer_spacing = layer_spacing
+        self.ladder_bottom = self.margin_bottom + self.layer_spacing * self.layer_idx
+        self.ladder_top = self.margin_bottom + self.layer_spacing * (self.layer_idx+1)
+        self.furthest_x_center_loc = int(win_size[0] - 2*self.margin_side - BUFFER - 30)
+        self.x_center = self.random_number_chosen*(self.furthest_x_center_loc/self.init_furthest_x_center_loc) + self.margin_side + 10
+        for line in self.vert_lines_left:
+            line.points = (self.x_center + -1*BUFFER, self.ladder_bottom, self.x_center + -1*BUFFER, self.ladder_top)
+        for line in self.vert_lines_right:
+            line.points = (self.x_center + BUFFER, self.ladder_bottom, self.x_center + BUFFER, self.ladder_top)
+        for i in range(len(self.horiz_lines)):
+            line = self.horiz_lines[i]
+            center_line_y = self.ladder_bottom  + (i+1)*self.layer_spacing/4
+            line.points = (self.x_center - BUFFER, center_line_y, self.x_center + BUFFER, center_line_y)
 
 class BackgroundDisplay(Widget):
     def __init__(self):
@@ -184,7 +217,16 @@ class BackgroundDisplay(Widget):
         del self.hearts[self.remaining_lives]
 
     def on_resize(self, win_size):
-        pass #TODO
+        self.margin_side = win_size[0] / 10
+        self.margin_bottom = win_size[1] / 10
+        self.layer_spacing = win_size[1] / 8
+
+        for ladder in self.ladders:
+            ladder.on_resize(win_size, self.margin_side, self.margin_bottom, self.layer_spacing)
+
+        for i in range(len(self.layers)):
+            layer = self.layers[i]
+            layer.points = self.margin_side, self.margin_bottom + self.layer_spacing * i, win_size[0] - self.margin_side, self.margin_bottom + self.layer_spacing * i
 
     def on_update(self):
         pass #TODO

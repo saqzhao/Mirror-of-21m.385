@@ -10,24 +10,21 @@ from kivy import metrics
 from HomeButton import HomeButton
 
 font_sz = metrics.dp(20)
-button_sz = metrics.dp(100)
+button_sz = metrics.dp(325)
+MARGIN = 10
 
 class EndScreen(Screen):
     def __init__(self, main_screen, **kwargs):
         super(EndScreen, self).__init__(always_update=True, **kwargs)
         self.main_screen = main_screen
 
-        # self.info = topleft_label()
-        # self.info.text = "EndScreen\n"
-        # self.add_widget(self.info)
-
-        self.button_continue = Button(text = "Continue Game", font_size = font_sz,  size = (button_sz, button_sz), pos = (Window.width/3, Window.height/2))
+        self.button_continue = Button(text = "Continue Game with Same Settings", font_size = font_sz,  size = (button_sz, button_sz/3), pos = (Window.width/10 - MARGIN, Window.height/2))
         self.button_continue.bind(on_release = lambda x: self.switch_to('main'))
         self.add_widget(self.button_continue)
 
-        self.button = Button(text='Change Intervals', font_size=font_sz, size = (button_sz, button_sz), pos = (Window.width*2/3, Window.height/2))
-        self.button.bind(on_release= lambda x: self.switch_to('intro'))
-        self.add_widget(self.button)
+        self.button_back = Button(text = "Go Back to Settings", font_size = font_sz,  size = (button_sz, button_sz/3), pos = (Window.width*5/10 + MARGIN, Window.height/2))
+        self.button_back.bind(on_release = lambda x: self.switch_to('intro'))
+        self.add_widget(self.button_back)
 
         self.home_button = HomeButton(self)
         self.add_widget(self.home_button)

@@ -31,17 +31,22 @@ directions = {member.value for member in Direction}
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(always_update=True, **kwargs)
-        self.started = False
-        self.audio_ctrl = None
-        self.final_song_audio_ctrl = None
-        self.background = None
-        self.character = None
-        self.quiz_display = None
-        self.player = None
+        self.canvas.clear()
+        self.started = True
+        self.audio_ctrl = AudioController()
+        self.final_song_audio_ctrl = FinalScreenAudioController()
+        self.background = BackgroundDisplay()
+        self.character = Character(self.background)
+        self.quiz_display = QuizDisplay()
+        self.ended = False
+        print('start game')
 
         self.default_intervals = {'2M', '3M', '4', '5'}
         self.intervals = set()
-        self.player = None
+
+        intervals = self.default_intervals if (len(self.intervals) == 0) else self.intervals
+        self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character, self.quiz_display, intervals, self)
+        self.add_widget(self.player)
 
     def toggle(self):
         self.player.toggle()
@@ -79,17 +84,19 @@ class MainScreen(Screen):
     # handle changing displayed elements when window size changes
     # This function should call GameDisplay.on_resize
     def on_resize(self, win_size):
-        pass
         # resize_topleft_label(self.info)
-        # self.display.on_resize(win_size)
+        self.background.on_resize(win_size)
         #TODO : anything else that needs resizing ?
 
     def on_update(self):
         if self.started and not self.ended:
             self.audio_ctrl.on_update()
-            switch_to_end_screen = self.player.on_update()
+            switch_to_end_screen, game_over = self.player.on_update()
             if not self.ended and switch_to_end_screen:
                 self.switch_to('end')
+                self.ended = True
+            if not self.ended and game_over:
+                self.switch_to('game_over')
                 self.ended = True
         elif self.started:
             self.final_song_audio_ctrl.on_update()
@@ -196,11 +203,10 @@ class Player(Widget):
     def adjust_lives(self, succeed, interval):
         self.character.unfreeze()
         if not succeed:
-            if self.lives > 0:
+            if self.lives > 1:
                 self.lives -= 1
                 self.background.lose_life()
             else:
-                # need to make a lose screen here, and do reset functionality or smth 
                 self.game_over = True
                 print('Sorry, you have crashed into too many birds, try again?')
 
@@ -249,6 +255,7 @@ class Player(Widget):
         # if self.game_over:
         #     self.reset()
         #     return False
+        switch_to_end_screen = False
         if not self.freeze:
             dt =  kivyClock.frametime
             # dt = self.clock.get_time()
@@ -257,8 +264,8 @@ class Player(Widget):
                 if not x:
                     self.quiz_display.remove_quiz()
                     self.quiz = None
-                return
-
+                return (False, False)
+            
             self.time += dt
             bird_num = int(self.time)/5
             if bird_num > self.birds_spawned:
@@ -277,7 +284,7 @@ class Player(Widget):
             
             self.final_song_audio_ctrl.on_update()
 
-            return switch_to_end_screen
+        return (switch_to_end_screen, self.game_over)
 
     def on_instrument_collected(self, collectable):
         inst_name = collectable.get_instrument()
