@@ -35,33 +35,42 @@ class IntroScreen(Screen):
         self.home_button = HomeButton(self)
         self.add_widget(self.home_button)    
 
-        self.start_button = Button(text='Begin Game', font_size=font_sz, size = (button_width, button_height), pos = (Window.width/2, Window.height/2))
+        start_button_position = (Window.width/2- button_width/2, Window.height*3/5- button_height/2)
+        self.start_button = Button(text='Begin Game', font_size=font_sz, size = (button_width, button_height), pos = start_button_position)
         self.start_button.bind(on_release= lambda x: self.switch_to_main())
         self.add_widget(self.start_button)    
 
-        intervals = ['2m', '2M', '3m', '3M', '4', '5', '6m', '6M', '7m', '7M', '8']
-        interval_locs = []
-        self.button_centerline_margin = Window.width/20
-        self.button_size = (Window.width/15, Window.height/20)
-        self.button_distance = self.button_size[0]*1.3
-        interval_locs.append((Window.width/2, Window.height*2/5)) # bottom row middle
-        for idx in range(1, 11):
-            if idx % 4 == 1: # bottom row left
-                interval_locs.append((Window.width/2+self.button_centerline_margin+.8*self.button_distance*(idx-1)/4, Window.height*1/5))
-            elif idx % 4 == 2: # bottom row right
-                interval_locs.append((Window.width/2-self.button_centerline_margin-.8*self.button_distance*(idx-2)/4, Window.height*1/5))
-            elif idx == 3: # top row middle right
-                interval_locs.append((Window.width/2+self.button_centerline_margin+.3*self.button_distance, Window.height*2/5))
-            elif idx == 4: #top row middle left
-                interval_locs.append((Window.width/2-self.button_centerline_margin-.3*self.button_distance, Window.height*2/5))
-            elif idx % 4 == 3: # top row left
-                interval_locs.append((Window.width/2+self.button_centerline_margin+1.2*self.button_distance*(idx-3)/4, Window.height*2/5))
-            elif idx % 4 == 0: # top row right
-                interval_locs.append((Window.width/2-self.button_centerline_margin-1.2*self.button_distance*(idx-4)/4, Window.height*2/5))
+        self.intervals = ['2m', '2M', '3m', '3M', '4', '5', '6m', '6M', '7m', '7M', '8']
+        self.interval_locs = []
+        self.buttons = []
+
+        button_centerline_margin = Window.width/20
+        button_size = (Window.width/15, Window.height/20)
+        button_spacing = button_size[0]*0.3
+        button_distance = button_size[0]*1.3
+
+        height_top = Window.height*2/5
+        height_bottom = Window.height* 1/5
+        num_top =len(self.intervals)//2
+        num_bottom =len(self.intervals)-num_top
+        border_o = (Window.width - (num_top)*button_distance)/2
+        border_e = (Window.width - num_bottom*button_distance)/2
+        
+        for idx in range(num_top): # 11 Intervals split 5 then 6
+
+            x = border_o + button_distance*idx
+            self.interval_locs.append((x, height_top))
+
+        for idx in range(num_bottom): 
+            x = border_e + button_distance*idx
+            self.interval_locs.append((x, height_bottom))
+
+        # print(self.interval_locs)
         i = 0
-        for loc, opt in zip(interval_locs, intervals):
+        for loc, opt in zip(self.interval_locs, self.intervals):
             i += 1
-            button = IntervalButton(opt, loc, self.button_size, self.interval_callback)
+            button = IntervalButton(opt, loc, button_size, self.interval_callback)
+            self.buttons.append(button)
             self.add_widget(button)
         
         self.help_button = HelpButton(self)
@@ -83,8 +92,33 @@ class IntroScreen(Screen):
         pass
 
     def on_resize(self, win_size):
-        self.start_button.pos = (Window.width/2, Window.height/2)
+        start_button_position = (win_size[0]/2- button_width/2, win_size[1]*3/5- button_height/2)
+        self.start_button.pos = start_button_position
+        # self.start_button.pos = (Window.width/2, Window.height/2)
         # resize_topleft_label(self.info)
+        button_centerline_margin = win_size[0]/20
+        button_size = (win_size[0]/15, win_size[1]/20)
+        button_spacing = button_size[0]*0.3
+        button_distance = button_size[0]*1.3
+
+        height_top = win_size[1]*2/5
+        height_bottom = win_size[1]* 1/5
+        num_top =len(self.intervals)//2
+        num_bottom =len(self.intervals)-num_top
+        border_o = (Window.width - (num_top)*button_distance)/2
+        border_e = (Window.width - num_bottom*button_distance)/2
+        self.interval_locs = []
+        for idx in range(num_top): # 11 self.Intervals split 5 then 6
+            x = border_o + button_distance*idx
+            self.interval_locs.append((x, height_top))
+        for idx in range(num_bottom): 
+            x = border_e + button_distance*idx
+            self.interval_locs.append((x, height_bottom))
+
+        for button, loc in zip(self.buttons, self.interval_locs):
+            button.set_pos(loc)
+            # button.btn.pos=loc
+        
 
 class IntervalButton(Widget):
     def __init__(self, buttonLabel, pos, button_size, interval_callback):
@@ -117,3 +151,6 @@ class IntervalButton(Widget):
         self.down = False
         self.btn.background_color = (1,1,1,1)
         self.interval_callback(self.buttonLabel, False)
+
+    def set_pos(self, pos):
+        self.btn.pos = pos
