@@ -83,6 +83,7 @@ class LevelSelectScreen(Screen):
 
     def start_game(self):
         if self.level_selected == None:
+            print("not starting game because level was not selected")
             return
         level_intervals = self.level_selected.button_intervals
         for interval in level_intervals:

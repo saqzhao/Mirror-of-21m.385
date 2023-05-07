@@ -13,9 +13,9 @@ font_sz = metrics.dp(20)
 button_sz = metrics.dp(325)
 MARGIN = 10
 
-class EndScreen(Screen):
+class GameOverScreen(Screen):
     def __init__(self, main_screen, **kwargs):
-        super(EndScreen, self).__init__(always_update=True, **kwargs)
+        super(GameOverScreen, self).__init__(always_update=True, **kwargs)
         self.main_screen = main_screen
 
         self.button_continue = Button(text = "Continue Game with Same Settings", font_size = font_sz,  size = (button_sz, button_sz/3), pos = (Window.width/10 - MARGIN, Window.height/2))

@@ -87,9 +87,12 @@ class MainScreen(Screen):
     def on_update(self):
         if self.started and not self.ended:
             self.audio_ctrl.on_update()
-            switch_to_end_screen = self.player.on_update()
+            switch_to_end_screen, game_over = self.player.on_update()
             if not self.ended and switch_to_end_screen:
                 self.switch_to('end')
+                self.ended = True
+            if not self.ended and game_over:
+                self.switch_to('game_over')
                 self.ended = True
         elif self.started:
             self.final_song_audio_ctrl.on_update()
@@ -196,11 +199,10 @@ class Player(Widget):
     def adjust_lives(self, succeed, interval):
         self.character.unfreeze()
         if not succeed:
-            if self.lives > 0:
+            if self.lives > 1:
                 self.lives -= 1
                 self.background.lose_life()
             else:
-                # need to make a lose screen here, and do reset functionality or smth 
                 self.game_over = True
                 print('Sorry, you have crashed into too many birds, try again?')
 
@@ -249,6 +251,7 @@ class Player(Widget):
         # if self.game_over:
         #     self.reset()
         #     return False
+        switch_to_end_screen = False
         if not self.freeze:
             dt =  kivyClock.frametime
             # dt = self.clock.get_time()
@@ -257,8 +260,8 @@ class Player(Widget):
                 if not x:
                     self.quiz_display.remove_quiz()
                     self.quiz = None
-                return
-
+                return (False, False)
+            
             self.time += dt
             bird_num = int(self.time)/5
             if bird_num > self.birds_spawned:
@@ -277,7 +280,7 @@ class Player(Widget):
             
             self.final_song_audio_ctrl.on_update()
 
-            return switch_to_end_screen
+        return (switch_to_end_screen, self.game_over)
 
     def on_instrument_collected(self, collectable):
         inst_name = collectable.get_instrument()
