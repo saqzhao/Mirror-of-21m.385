@@ -87,6 +87,7 @@ class MainScreen(Screen):
         # resize_topleft_label(self.info)
         self.background.on_resize(win_size)
         self.character.on_resize(win_size)
+        self.player.on_resize(win_size)
         #TODO : anything else that needs resizing ?
 
     def on_update(self):
@@ -295,3 +296,9 @@ class Player(Widget):
         self.background.add_collected(collectable.get_inst_source(), self.num_collected_so_far)
         self.num_collected_so_far += 1
         self.audio_ctrl.collect_instrument(inst_name)
+
+    def on_resize(self, win_size):
+        print("calling resize 299")
+        for collectable in self.collectables:
+            print("collectable is here", collectable)
+            collectable.on_resize(win_size)
