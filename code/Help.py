@@ -35,6 +35,10 @@ class HelpButton(Widget):
         self.remove_widget(self.help_widget)
         if self.toggle != None:
             self.toggle()
+
+    def on_resize(self, win_size):
+        pos = (win_size[0]/50, win_size[1]/90)
+        self.help_button.pos = pos
     
     
 class HelpScreen(Widget):
