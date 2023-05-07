@@ -54,22 +54,23 @@ class IntervalQuiz(Widget):
         # quiz buttons
         self.button_size = (Window.width/15, Window.height/20)
         self.button_centerline_margin = Window.width/20
-        self.button_locations = dict()
+        # self.button_locations = dict()
         self.button_distance = self.button_size[0]*1.3
-        self.button_locations[0] = (Window.width/2, Window.height*2/5) # bottom row middle
-        for idx in range(1, 11):
-            if idx % 4 == 1: # top row left
-                self.button_locations[idx] = (Window.width/2+self.button_centerline_margin+1.2*self.button_distance*(idx-1)/4, Window.height*1/5)
-            elif idx % 4 == 2: # top row right
-                self.button_locations[idx] = (Window.width/2-self.button_centerline_margin-1.2*self.button_distance*(idx-2)/4, Window.height*1/5)
-            elif idx == 3:
-                self.button_locations[idx] = (Window.width/2+self.button_centerline_margin+.3*self.button_distance, Window.height*2/5)
-            elif idx == 4:
-                self.button_locations[idx] = (Window.width/2-self.button_centerline_margin-.3*self.button_distance, Window.height*2/5)
-            elif idx % 4 == 3: # bottom row left
-                self.button_locations[idx] = (Window.width/2+self.button_centerline_margin+1.2*self.button_distance*(idx-3)/4, Window.height*2/5)
-            elif idx % 4 == 0: # bottom row right
-                self.button_locations[idx] = (Window.width/2-self.button_centerline_margin-1.2*self.button_distance*(idx-4)/4, Window.height*2/5)
+        # self.button_locations[0] = (Window.width/2, Window.height*2/5) # bottom row middle
+        self.button_locations = [(Window.width/3, Window.width/4), (Window.width/3, Window.width/2), (Window.width*2/3, Window.width/4), (Window.width*2/3, Window.width/2)]
+        # for idx in range(1, 11):
+        #     if idx % 4 == 1: # top row left
+        #         self.button_locations[idx] = (Window.width/2+self.button_centerline_margin+1.2*self.button_distance*(idx-1)/4, Window.height*1/5)
+        #     elif idx % 4 == 2: # top row right
+        #         self.button_locations[idx] = (Window.width/2-self.button_centerline_margin-1.2*self.button_distance*(idx-2)/4, Window.height*1/5)
+        #     elif idx == 3:
+        #         self.button_locations[idx] = (Window.width/2+self.button_centerline_margin+.3*self.button_distance, Window.height*2/5)
+        #     elif idx == 4:
+        #         self.button_locations[idx] = (Window.width/2-self.button_centerline_margin-.3*self.button_distance, Window.height*2/5)
+        #     elif idx % 4 == 3: # bottom row left
+        #         self.button_locations[idx] = (Window.width/2+self.button_centerline_margin+1.2*self.button_distance*(idx-3)/4, Window.height*2/5)
+        #     elif idx % 4 == 0: # bottom row right
+        #         self.button_locations[idx] = (Window.width/2-self.button_centerline_margin-1.2*self.button_distance*(idx-4)/4, Window.height*2/5)
 
         self.buttons = []
         self.button_labels = []
@@ -107,20 +108,20 @@ class IntervalQuiz(Widget):
         for loc, opt in zip(locations, options):
             is_correct = False if opt != correct_answer else True
             button = QuizButton(opt, loc, is_correct, self.button_size, self.quiz_result)
-            self.add_widget(button) #ThIS IS WHERE PROBLEM IS HAPPENING
+            self.add_widget(button)
 
     def generate_quiz(self):
         self.quiz_begun = True
         if self.mode == 'easy':
             self.correct_answer, all_options = self.generate_quiz_options(4)
-            num_options = len(all_options)
-            easy_button_locations = [self.button_locations[idx] for idx in range(num_options)]
-            self.create_buttons(easy_button_locations, all_options, self.correct_answer)
+            # num_options = len(all_options)
+        #     easy_button_locations = [self.button_locations[idx] for idx in range(num_options)]
+            self.create_buttons(self.button_locations, all_options, self.correct_answer)
                 
-        else:
-            self.correct_answer = random.choice(self.options)
-            hard_button_locations = [self.button_locations[idx] for idx in range(len(self.options))]
-            self.create_buttons(hard_button_locations, self.options, self.correct_answer)
+        # else:
+        #     self.correct_answer = random.choice(self.options)
+        #     hard_button_locations = [self.button_locations[idx] for idx in range(len(self.options))]
+        #     self.create_buttons(hard_button_locations, self.options, self.correct_answer)
 
     def on_resize(self, win_size):
         pass #TODO
