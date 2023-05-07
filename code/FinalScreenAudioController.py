@@ -78,7 +78,7 @@ class Arpeggiator(object):
             return
         pitch = self.pitches[self.pitch_index % len(self.pitches)]
         self.pitch_index += 1
-        self.synth.noteon(self.channel, pitch, 100)
+        self.synth.noteon(self.channel, pitch, 70)
 
         off_tick = tick + duration
         self.sched.post_at_tick(self._noteoff, off_tick, pitch)
