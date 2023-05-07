@@ -31,17 +31,22 @@ directions = {member.value for member in Direction}
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(always_update=True, **kwargs)
-        self.started = False
-        self.audio_ctrl = None
-        self.final_song_audio_ctrl = None
-        self.background = None
-        self.character = None
-        self.quiz_display = None
-        self.player = None
+        self.canvas.clear()
+        self.started = True
+        self.audio_ctrl = AudioController()
+        self.final_song_audio_ctrl = FinalScreenAudioController()
+        self.background = BackgroundDisplay()
+        self.character = Character(self.background)
+        self.quiz_display = QuizDisplay()
+        self.ended = False
+        print('start game')
 
         self.default_intervals = {'2M', '3M', '4', '5'}
         self.intervals = set()
-        self.player = None
+
+        intervals = self.default_intervals if (len(self.intervals) == 0) else self.intervals
+        self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character, self.quiz_display, intervals, self)
+        self.add_widget(self.player)
 
     def toggle(self):
         self.player.toggle()
@@ -79,9 +84,8 @@ class MainScreen(Screen):
     # handle changing displayed elements when window size changes
     # This function should call GameDisplay.on_resize
     def on_resize(self, win_size):
-        pass
         # resize_topleft_label(self.info)
-        # self.display.on_resize(win_size)
+        self.background.on_resize(win_size)
         #TODO : anything else that needs resizing ?
 
     def on_update(self):
