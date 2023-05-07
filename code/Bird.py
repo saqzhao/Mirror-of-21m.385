@@ -46,8 +46,10 @@ class Bird(Widget):
 
     def toggle(self):
         if not self.freeze:
+            print('bird freeze')
             self.freeze = True
         else:
+            print('bird unfreeze')
             self.freeze = False
 
     def player_in_range(self): # Returns TRUE if player and bird are close together

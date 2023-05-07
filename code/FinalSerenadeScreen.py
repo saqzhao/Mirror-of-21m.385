@@ -15,22 +15,19 @@ class EndScreen(Screen):
         super(EndScreen, self).__init__(always_update=True, **kwargs)
         self.main_screen = main_screen
 
-        self.info = topleft_label()
-        self.info.text = "EndScreen\n"
-        self.add_widget(self.info)
+        # self.info = topleft_label()
+        # self.info.text = "EndScreen\n"
+        # self.add_widget(self.info)
 
         self.button_continue = Button(text = "Continue Game", font_size = font_sz,  size = (button_sz, button_sz), pos = (Window.width/3, Window.height/2))
         self.button_continue.bind(on_release = lambda x: self.switch_to('main'))
         self.add_widget(self.button_continue)
-
-
 
         self.button = Button(text='Change Intervals', font_size=font_sz, size = (button_sz, button_sz), pos = (Window.width*2/3, Window.height/2))
         self.button.bind(on_release= lambda x: self.switch_to('intro'))
         self.add_widget(self.button)
 
     def on_enter(self):
-        print("entered final screen")
         self.main_screen.final_song_audio_ctrl.play_serenade()
 
     def on_key_down(self, keycode, modifiers):
@@ -38,4 +35,5 @@ class EndScreen(Screen):
             self.switch_to('intro')
 
     def on_resize(self, win_size):
-        resize_topleft_label(self.info)
+        # resize_topleft_label(self.info)
+        pass

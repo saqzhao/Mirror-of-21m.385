@@ -19,6 +19,8 @@ from FinalScreenAudioController import FinalScreenAudioController
 from QuizDisplay import QuizDisplay
 from PauseButton import PauseButton
 from Help import HelpButton
+from ScreenBoundaries import ScreenBoundaries
+
 import random
 
 # Scaling Constants we will be working with
@@ -135,7 +137,7 @@ class Player(Widget):
 
         self.pause_button = PauseButton(self.toggle)
         self.add_widget(self.pause_button)
-        self.help_button = HelpButton()
+        self.help_button = HelpButton(self.toggle)
         self.add_widget(self.help_button)
 
         self.score = 0
@@ -163,6 +165,8 @@ class Player(Widget):
         # self.quiz_active = False
         self.quiz = None
 
+        self.add_widget(ScreenBoundaries())
+
     def make_collectables(self, num_collectables):
         collect = set()
         for j in range(num_collectables):
@@ -173,17 +177,22 @@ class Player(Widget):
         return collect
 
     def toggle(self):
+        print('entering player toggle')
         if not self.freeze:
+            print('pausing in player')
             self.freeze = True
             # self.pause_time = self.clock.time()
             self.character.freeze()
             for bird in self.birds:
                 bird.toggle()
+            print('done running freeze')
         else:
+            print('unpausing in player')
             self.freeze = False
             self.character.unfreeze()
             for bird in self.birds:
                 bird.toggle()
+            print('done running unpause')
 
     # called by IntervalQuiz
     def adjust_lives(self, succeed, interval):
@@ -271,7 +280,6 @@ class Player(Widget):
             self.final_song_audio_ctrl.on_update()
 
             return switch_to_end_screen
-        return True
 
     def on_instrument_collected(self, collectable):
         inst_name = collectable.get_instrument()

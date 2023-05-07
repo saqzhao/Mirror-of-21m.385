@@ -3,12 +3,14 @@ sys.path.insert(0, os.path.abspath('..'))
 
 from imslib.gfxutil import topleft_label, resize_topleft_label
 from imslib.screen import Screen
-from kivy.core.window import Window
 
+from kivy.core.window import Window
+from kivy import metrics
 from kivy.uix.button import Button
 from kivy.uix.widget import Widget
-from kivy import metrics
 
+from ScreenBoundaries import ScreenBoundaries
+from HomeButton import HomeButton
 from Help import HelpButton
 
 # metrics allows kivy to create screen-density-independent sizes.
@@ -24,20 +26,17 @@ class IntroScreen(Screen):
         # interval callback: str -> adding interval to list
         super(IntroScreen, self).__init__(always_update=False, **kwargs)
 
-        self.info = topleft_label()
-        self.info.text = "Intro/Settings Screen\n"
-        self.info.text += "→: Begin game\n"
+        # self.info = topleft_label()
+        # self.info.text = "Intro/Settings Screen\n"
+        # self.info.text += "→: Begin Game\n"
         # self.start_callback = start_callback
         self.interval_callback = interval_callback
-        self.add_widget(self.info)
+        # self.add_widget(self.info)
 
-        # TODO: Decide where on screen home button goes
-        home_image = '../data/home_image.png'
-        self.home_button = Button(text='', font_size=font_sz, background_normal =home_image, pos = (Window.width*1/9, Window.height*9/10))
-        self.home_button.bind(on_release= lambda x: self.switch_to('title'))
+        self.home_button = HomeButton(self)
         self.add_widget(self.home_button)    
 
-        self.start_button = Button(text='Begin game', font_size=font_sz, size = (button_width, button_height), pos = (Window.width/2, Window.height/2))
+        self.start_button = Button(text='Begin Game', font_size=font_sz, size = (button_width, button_height), pos = (Window.width/2, Window.height/2))
         self.start_button.bind(on_release= lambda x: self.switch_to_main())
         self.add_widget(self.start_button)    
 
@@ -69,6 +68,8 @@ class IntroScreen(Screen):
         self.help_button = HelpButton()
         self.add_widget(self.help_button)
 
+        self.add_widget(ScreenBoundaries())
+
     def switch_to_main(self):
         self.switch_to('main')
         # self.start_callback()
@@ -80,12 +81,13 @@ class IntroScreen(Screen):
     # if you want on_update() called when a screen is NOT active, then pass in an extra argument:
     # always_update=True to the screen constructor.
     def on_update(self):
-        self.info.text = "Intro/Settings Screen\n"
-        self.info.text += "→: Begin game\n"
+        # self.info.text = "Intro/Settings Screen\n"
+        # self.info.text += "→: Begin Game\n"
+        pass
 
     def on_resize(self, win_size):
         self.start_button.pos = (Window.width/2, Window.height/2)
-        resize_topleft_label(self.info)
+        # resize_topleft_label(self.info)
 
 class IntervalButton(Widget):
     def __init__(self, buttonLabel, pos, button_size, interval_callback):

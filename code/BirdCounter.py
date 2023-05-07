@@ -8,22 +8,14 @@ from imslib.gfxutil import CLabelRect
 from kivy.core.window import Window
 from kivy.uix.image import Image
 
-
-class HomeButton(Widget):
-	def __init__(self):
-		super(HomeButton,self).__init__()
-
-
-
 class BirdCounter(Widget):
-    def __init__(self, pos):
+    def __init__(self):
         super(BirdCounter, self).__init__()
         self.count = 0
         self.bird_left = '../data/bird_left.gif'
         self.bird_right = '../data/bird_right.gif'
-        self.pos=pos
         self.spacing = int(Window.width/10)
-        self.bird = Image(source = self.bird_right, anim_delay=1, keep_data = True, pos = (self.pos))
+        self.bird = Image(source = self.bird_right, anim_delay=1, keep_data = True, pos = (Window.width*7/9, Window.height*15/18))
 
         #TODO: adjust position of counter
         self.score_display = CLabelRect(cpos=(self.pos[0] + self.spacing, self.pos[1]+ self.spacing/2), text=f'x {self.count}', font_size=21)
@@ -37,3 +29,4 @@ class BirdCounter(Widget):
     def on_update(self):
         # self.score_display.text = f'x {self.count}'
         pass
+    

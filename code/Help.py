@@ -1,3 +1,6 @@
+import sys, os
+sys.path.insert(0, os.path.abspath('..'))
+
 from kivy.uix.widget import Widget
 from kivy.uix.button import Button
 from kivy.core.window import Window
@@ -6,23 +9,30 @@ from kivy.graphics import Color
 from imslib.gfxutil import CRectangle, CLabelRect
 import webbrowser
 
+from HomeButton import HomeButton
+
 font_sz = metrics.dp(20)
 button_side = metrics.dp(100)
 button_sz = (button_side, button_side)
 
 class HelpButton(Widget):
-    def __init__(self):
+    def __init__(self, toggle = None):
         super(HelpButton, self).__init__()
-        self.help_button = Button(text='?', font_size=font_sz*1.3, size = button_sz, background_normal = '../data/circle_button.png', background_down = '../data/circle_button.png', pos = (Window.width/50, Window.height/50))
+        self.help_button = Button(text='?', font_size=font_sz*1.3, size = button_sz, background_normal = '../data/circle_button.png', background_down = '../data/circle_button.png', pos = (Window.width/50, Window.height/90))
+        self.toggle = toggle
         self.help_button.bind(on_press = self.open_help_screen)
         self.add_widget(self.help_button)
         self.help_widget = HelpScreen(self.remove_help_screen)
 
     def open_help_screen(self, _):
         self.add_widget(self.help_widget)
+        if self.toggle != None:
+            self.toggle()
     
     def remove_help_screen(self, _):
         self.remove_widget(self.help_widget)
+        if self.toggle != None:
+            self.toggle()
     
     
 class HelpScreen(Widget):
@@ -63,6 +73,9 @@ class HelpScreen(Widget):
         self.exit_button.bind(on_press = self.remove_help_screen)
         self.add_widget(self.exit_button)
         self.buttons.add(self.exit_button)
+
+        self.home_button = HomeButton()
+        self.add_widget(HomeButton())
 
     def open_interval_link(self, _):
         webbrowser.open(self.what_are_intervals, new=0, autoraise=True)

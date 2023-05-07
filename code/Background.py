@@ -7,8 +7,8 @@ from kivy.graphics import Line
 from imslib.gfxutil import CLabelRect
 from kivy.core.window import Window
 from kivy.uix.image import Image
-from GameAccessories import BirdCounter
-
+from BirdCounter import BirdCounter
+from ScreenBoundaries import ScreenBoundaries
 
 EPSILON = float(5)
 BUFFER = float(20)
@@ -65,8 +65,7 @@ class BackgroundDisplay(Widget):
         self.ladder_locs = set() #set of (x, y_bottom, y_top)
         self.generate_ladders()
 
-        # TODO: adjust position of counter using some value other than 20
-        self.counter= BirdCounter((Window.width*8/9-20, Window.height*8/9))
+        self.counter= BirdCounter()
         self.add_widget(self.counter)
 
         self.remaining_lives = 0
@@ -74,11 +73,12 @@ class BackgroundDisplay(Widget):
         self.heart_base_pos = (Window.width*8/9, Window.height*7/9)
 
         self.collected_inst = []
+        self.add_widget(ScreenBoundaries())
 
     def reset(self):
         self.canvas.clear()
         self.remove_widget(self.counter)
-        self.counter= BirdCounter((Window.width*8/9-20, Window.height*8/9))
+        self.counter= BirdCounter()
         self.ladders = []
         self.x_centers_to_avoid = {idx: set() for idx in range(self.num_layers)}
         self.ladder_locs = set()
@@ -171,13 +171,13 @@ class BackgroundDisplay(Widget):
         self.remaining_lives = number_lives
         for life_idx in range(number_lives):
             heart_pos = (self.heart_base_pos[0], self.heart_base_pos[1] - life_idx*Window.height/9)
-            heart = Image(source='../data/heart.png', anim_delay=1, keep_data=True, pos = heart_pos)
+            heart = Image(source='../data/heart.png', size_hint_x=0.8, anim_delay=1, keep_data=True, pos = heart_pos)
             self.hearts[life_idx] = heart
             self.add_widget(heart)
     
     def add_collected(self, inst_src, idx):
         inst_pos = (self.heart_base_pos[0], Window.height - self.heart_base_pos[1] - idx*Window.height/9)
-        inst_img = Image(source=inst_src, anim_delay=1, keep_data=True, pos = inst_pos)
+        inst_img = Image(source=inst_src, size_hint_x=0.8, anim_delay=1, keep_data=True, pos = inst_pos)
         self.add_widget(inst_img)
     
     def lose_life(self):

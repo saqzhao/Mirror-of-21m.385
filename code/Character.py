@@ -38,13 +38,15 @@ class Character(Widget):
         self.moving_direction = 0
         self.on_ladder = False
         self.frozen = False
+        self.margin_side = Window.width / 10
         
         self.add_widget(self.character)
     
     
     def on_button_down(self, button_value):
         if self.frozen:
-            return
+            print('hi')
+            pass
         if button_value in {Direction.UP, Direction.DOWN}:
             self.moving_direction = button_value
             self.climb(self.moving_direction)
@@ -70,9 +72,11 @@ class Character(Widget):
         self.moving_direction = 0
 
     def freeze(self):
+        print('character freeze')
         self.frozen = True
 
     def unfreeze(self):
+        print('character unfreeze')
         self.frozen = False
 
     def rest(self, direction = Direction.LEFT):
@@ -96,7 +100,7 @@ class Character(Widget):
             else:
                 self.character.source = self.walk_right_character
 
-            if self.character.pos[0]+direction < 0 or self.character.pos[1]+direction>Window.width:
+            if self.character.pos[0]+direction < self.margin_side or self.character.pos[1]+direction>Window.width-self.margin_side:
                 # check if at left and right wall, animate "walking but doesn't move"
                 pass
             else:
