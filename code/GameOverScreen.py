@@ -33,7 +33,7 @@ class GameOverScreen(Screen):
         self.home_button = HomeButton(self)
         self.add_widget(self.home_button)
 
-        self.daze_character = Image(source='../data/daze.png', anim_delay=1, keep_data=True, pos = (Window.width/4, Window.height*16/20))
+        self.daze_character = Image(source='../data/daze.png', anim_delay=1, keep_data=True, pos = (Window.width/4, Window.height*14/20), width=200, height=200)
         self.add_widget(self.daze_character)
         
         self.game_over_text = '''Oh no! You've run into too many birds, 
