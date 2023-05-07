@@ -66,7 +66,7 @@ class HelpScreen(Widget):
         self.buttons = set()
         # what are intervals
         self.what_are_intervals = 'https://en.wikipedia.org/wiki/Interval_(music)'
-        self.interval_button = Button(text='What are intervals?', font_size=metrics.dp(17), size=(400, 75), pos = (Window.width/2-200, Window.height*21/30))
+        self.interval_button = Button(text='What are intervals?', font_size=metrics.dp(17), size=(400, 75), pos = (Window.width/2-200, Window.height*26.5/30))
         self.interval_button.bind(on_press = self.open_interval_link)
         self.add_widget(self.interval_button)
         self.buttons.add(self.interval_button)
