@@ -10,8 +10,9 @@ NUM_LAYERS = 7
 BUFFER = 20
 
 class CollectedInstrumentDisplay(Widget):
-    def __init__(self, background, character, instrument, i, collect_callback, x_centers_to_avoid = None):
+    def __init__(self, background, character, instrument, layer, collect_callback, x_centers_to_avoid = None):
         super(CollectedInstrumentDisplay, self).__init__()
+        self.layer = layer
         self.instrument_text = instrument
         self.instrument_source = '../data/' + instrument + '_2.gif'
         self.background = background
@@ -24,7 +25,7 @@ class CollectedInstrumentDisplay(Widget):
         if x_centers_to_avoid is not None:
             while any((abs(pos-self.x_center) < 2*BUFFER) for pos in x_centers_to_avoid):
                 self.x_center = self.margin_side + 10 + random.randint(0, Window.width - self.margin_side - 2*BUFFER)
-        self.y_center = ((self.margin_bottom + self.layer_spacing * i) + (self.margin_bottom + self.layer_spacing * (i+1)))/2
+        self.y_center = ((self.margin_bottom + self.layer_spacing * self.layer) + (self.margin_bottom + self.layer_spacing * (self.layer+1)))/2
         self.radius = Window.width/20
 
         self.instrument = Image(source = self.instrument_source, anim_delay=0, keep_data = True)

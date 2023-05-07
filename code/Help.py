@@ -13,6 +13,7 @@ from HomeButton import HomeButton
 
 font_sz = metrics.dp(20)
 button_side = metrics.dp(100)
+half_button_side = metrics.dp(70)
 button_sz = (button_side, button_side)
 
 class HelpButton(Widget):
@@ -43,9 +44,11 @@ class HelpScreen(Widget):
         self.screen = screen
 
         # widget background
+        self.canvas.add(Color(0.5, 0.5, 0.5, .75))
+        self.canvas.add(CRectangle(cpos=(Window.width/2, Window.height/2), csize=(Window.width, Window.height)))
         self.canvas.add(Color(0.5, 0.5, 0.5, 1))
         self.canvas.add(CRectangle(cpos=(Window.width/2, Window.height/2), csize=(Window.width*3/4, Window.height*3/4)))
-        self.text_color = Color(1, 1, 1, 1)
+        self.text_color = Color(1, 1, 1, .8)
         self.canvas.add(self.text_color)
         self.title = CLabelRect(cpos=(Window.width/2, Window.height*16/20), text=f'Instructions', font_size=30)
         self.canvas.add(self.title)
@@ -70,7 +73,7 @@ class HelpScreen(Widget):
 
         # exit button
         button_sz = (1.5*button_side, 1.5*button_side)
-        self.exit_button = Button(text='X', font_size=font_sz, size=button_sz, background_normal = '../data/red_circle_button.png', 
+        self.exit_button = Button(text='X', font_size=font_sz, size=(.7*button_side, .7*button_side), background_normal = '../data/red_circle_button.png', 
                                   background_down = '../data/red_circle_button.png', pos=(Window.width*50/60, Window.height*49/60))
         self.exit_button.bind(on_press = self.remove_help_screen)
         self.add_widget(self.exit_button)

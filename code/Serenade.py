@@ -167,9 +167,9 @@ class Player(Widget):
 
     def make_collectables(self, num_collectables):
         collect = set()
-        for j in range(num_collectables):
-            i = random.randint(0, 7)
-            this_collectable = CollectedInstrumentDisplay(self.background, self.character, self.instruments[j], i, self.on_instrument_collected, self.x_centers_to_avoid)
+        for collectable_name_idx in range(num_collectables):
+            layer = random.randint(0, 6)
+            this_collectable = CollectedInstrumentDisplay(self.background, self.character, self.instruments[collectable_name_idx], layer, self.on_instrument_collected, self.x_centers_to_avoid)
             self.x_centers_to_avoid.append(this_collectable.get_x_pos())
             collect.add(this_collectable)
         return collect

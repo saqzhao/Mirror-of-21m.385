@@ -16,6 +16,7 @@ class PauseButton(Widget):
         self.pause_button = Button(size = button_sz, background_normal = '../data/pause_button.png', pos = (Window.width*8/9,  Window.height/90))
         self.pause_callback = pause_callback
         self.pause_button.bind(on_press = self.pause)
+        self.background = CRectangle(cpos=(Window.width/2, Window.height/2), csize=(Window.width, Window.height))
         self.add_widget(self.pause_button)
         self.home_button = HomeButton(screen)
         self.play_button = Button(size = button_sz, background_normal = '../data/play_button.png', pos = (Window.width*8/9,  Window.height/90))
@@ -24,10 +25,13 @@ class PauseButton(Widget):
     def pause(self, _):
         self.pause_callback()
         self.remove_widget(self.pause_button)
+        self.canvas.add(Color(0.5, 0.5, 0.5, .75))
+        self.canvas.add(self.background)
         self.add_widget(self.play_button)
         self.add_widget(self.home_button)
     
     def play(self, _):
+        self.canvas.clear()
         self.remove_widget(self.play_button)
         self.remove_widget(self.home_button)
         self.add_widget(self.pause_button)
