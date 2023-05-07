@@ -10,6 +10,7 @@ from kivy.uix.widget import Widget
 from kivy import metrics
 from imslib.gfxutil import CLabelRect
 from Help import HelpButton
+from kivy.uix.image import Image
 
 # metrics allows kivy to create screen-density-independent sizes.
 # Here, 20 dp will always be the same physical size on screen regardless of resolution or OS.
@@ -52,13 +53,28 @@ class TitleScreen(Screen):
     def on_resize(self, win_size):
         self.start_button.pos = (Window.width/3-button_width/2, Window.height/2-button_height/2)
         self.levels_button.pos = (Window.width*2/3-button_width/2, Window.height/2-button_height/2)
+        self.title.on_resize(win_size)
         resize_topleft_label(self.info)
         pass
 
 class Title(Widget):
-	def __init__(self):
-		super(Title, self).__init__()
-		self.title = CLabelRect(cpos=(Window.width/2, Window.height*3/4), text=f'SERENADE FOR TIM', font_size=40)
-		self.canvas.add(self.title)
-		# self.art_credit = CLabelRect(cpos=(Window.width/2, Window.height*1/10), text=f'Wide Tim property of Margaret Zheng', font_size=5)
-		# self.canvas.add(self.art_credit)
+    def __init__(self):
+        super(Title, self).__init__()
+        # self.title = CLabelRect(cpos=(Window.width/2, Window.height*3/4), text=f'SERENADE FOR TIM', font_size=40)
+        title_image = '../data/title.jpg'
+        self.title = Image(source = title_image)
+        size =(Window.width*3/4, Window.height*1/4) # 800,400
+        self.title.size = size
+
+        self.title.pos = (Window.width/2- 1/2*size[0], Window.height*3/4-1/2*size[1])
+
+        self.add_widget(self.title)
+        # self.canvas.add(self.title)
+        # self.art_credit = CLabelRect(cpos=(Window.width/2, Window.height*1/10), text=f'Wide Tim property of Margaret Zheng', font_size=5)
+        # self.canvas.add(self.art_credit)
+    def on_resize(self, win_size):
+        size = (win_size[0]*3/4, win_size[1]*1/4)
+        self.title.size = size
+        self.title.pos = (win_size[0]/2- 1/2*size[0], win_size[1]*3/4-1/2*size[1])
+
+        return
