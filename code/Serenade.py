@@ -86,6 +86,7 @@ class MainScreen(Screen):
     def on_resize(self, win_size):
         # resize_topleft_label(self.info)
         self.background.on_resize(win_size)
+        self.character.on_resize(win_size)
         #TODO : anything else that needs resizing ?
 
     def on_update(self):
