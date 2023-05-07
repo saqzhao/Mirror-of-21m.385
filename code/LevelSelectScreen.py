@@ -36,8 +36,9 @@ class LevelSelectScreen(Screen):
         self.home_button.bind(on_release= lambda x: self.switch_to('title'))
         self.add_widget(self.home_button)    
 
-        start_button_position = (Window.width/5, Window.height*8/9)
+        start_button_position = (Window.width*4/5, Window.height*2/9)
         self.start_button = Button(text='Begin game', font_size=font_sz, size = (button_width, button_height), pos = start_button_position)
+        self.start_button.pos=start_button_position
         self.start_button.bind(on_release= lambda x: self.start_game())
         self.add_widget(self.start_button)    
 
@@ -107,7 +108,7 @@ class LevelSelectScreen(Screen):
 
 
     def on_resize(self, win_size):
-        self.start_button.pos = (Window.width/2, Window.height/2)
+        # self.start_button.pos = (Window.width/5, Window.height*8/9)
         resize_topleft_label(self.info)
 
 class LevelButton(Widget):
