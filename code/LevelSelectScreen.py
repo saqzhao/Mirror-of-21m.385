@@ -36,8 +36,9 @@ class LevelSelectScreen(Screen):
         self.home_button = HomeButton(self)
         self.add_widget(self.home_button)    
 
-        start_button_position = (Window.width/5, Window.height*8/9)
-        self.start_button = Button(text='Begin Game', font_size=font_sz, size = (button_width, button_height), pos = start_button_position)
+        start_button_position = (Window.width*4/5, Window.height*2/9)
+        self.start_button = Button(text='Begin game', font_size=font_sz, size = (button_width, button_height), pos = start_button_position)
+        self.start_button.pos=start_button_position
         self.start_button.bind(on_release= lambda x: self.start_game())
         self.add_widget(self.start_button)    
 
@@ -71,12 +72,12 @@ class LevelSelectScreen(Screen):
 
         buffer_r = Window.width/10
         buffer_l = buffer_r
-        for cur_level_group, height, number_id in zip(all_levels, all_heights, [0,len(levels_b)+1,len(levels_b)+len(levels_m)+2]):
+        for cur_level_group, height, number_id in zip(all_levels, all_heights, [0,len(levels_b),len(levels_b)+len(levels_m)]):
             width_spacing = (Window.width-buffer_l-buffer_r)/(len(cur_level_group))
             for i in range(len(cur_level_group)):
                 level = cur_level_group[i] # List of Intervals (strings)
                 all_levels.append(level)
-                button = LevelButton(i+number_id, level, (width_spacing*i+buffer_l, height), button_size, self.select_this_level_callback)
+                button = LevelButton(i+number_id+1, level, (width_spacing*i+buffer_l, height), button_size, self.select_this_level_callback)
                 self.add_widget(button)
         
         self.help_button = HelpButton()
@@ -110,8 +111,8 @@ class LevelSelectScreen(Screen):
 
 
     def on_resize(self, win_size):
-        self.start_button.pos = (Window.width/2, Window.height/2)
-        # resize_topleft_label(self.info)
+        # self.start_button.pos = (Window.width/5, Window.height*8/9)
+        resize_topleft_label(self.info)
 
 class LevelButton(Widget):
     def __init__(self, level_name, button_intervals, pos, button_size, callback):

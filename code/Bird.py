@@ -31,7 +31,6 @@ class Bird(Widget):
         self.freeze = False
 
         # Visual Object
-        self.radius = Window.width/50
         self.bird_left = '../data/bird_left.gif'
         self.bird_right = '../data/bird_right.gif'
         self.bird = Image(source = self.bird_right, anim_delay=0, keep_data = True)
@@ -40,9 +39,14 @@ class Bird(Widget):
 
         # Interval Quiz 
         self.active = False
-        self.range = self.radius*0.9 # Distance that activates interval quiz
 
         self.times_around_this_level =0
+
+
+        # IDK HOW BIG TO MAKE THIS> SHOULD BE THE RADIUS OR WHATEVER BUT UHHHH
+        self.range = 50
+
+        print(f"bird info: size is {self.size}")
 
     def toggle(self):
         if not self.freeze:
@@ -54,7 +58,17 @@ class Bird(Widget):
 
     def player_in_range(self): # Returns TRUE if player and bird are close together
         player_pos = self.character.to_screen_pos()
-        is_close = (math.sqrt((self.x-player_pos[0])**2+(self.y-player_pos[1])**2) <= self.range)
+        # if self.collide_widget(self.character):
+        #     print("COLLISION")
+        #     print(self.x, self.y, player_pos)
+        #     return True
+        # if self.collide_point(player_pos[0], player_pos[1]):
+        #     print("collide point")
+        # print(self.center_x, self.x, self.x+self.size[0])
+        center_x = self.x+self.size[0]/2 # accounts for size of 
+        is_close = (math.sqrt((center_x-player_pos[0])**2+(self.y-player_pos[1])**2) <= self.range)
+        # if self.collide_widget(self.character) and is_close:
+        #     print("correct!")
         if is_close:
             return True
         # if not is_close:
@@ -113,7 +127,7 @@ class Bird(Widget):
                     if self.background.distance_to_ladder_end((self.x, self.y), 'B') == 0: # if we've hit bottom of ladder
                         self.direction = self.next_direction
                 # Can go down
-                elif self.background.can_descend((self.x+self.size[0]/2, self.y)) and (self.direction == Direction.RIGHT or self.direction ==Direction.LEFT):
+                elif self.background.can_descend((self.center_x, self.y)) and (self.direction == Direction.RIGHT or self.direction ==Direction.LEFT):
                     if random.random() <.8: # Randomly doesn't  fly down
                         self.direction = Direction.DOWN
                         self.times_around_this_level = 0
