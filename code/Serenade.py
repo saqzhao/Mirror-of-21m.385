@@ -185,14 +185,16 @@ class Player(Widget):
     def toggle(self):
         print('entering player toggle')
         if not self.freeze:
+            # print(self.pause_button.pause)
+            # self.pause_button.toggle()
             print('pausing in player')
             self.freeze = True
-            # self.pause_time = self.clock.time()
             self.character.freeze()
             for bird in self.birds:
                 bird.toggle()
             print('done running freeze')
         else:
+            # self.pause_button.toggle()
             print('unpausing in player')
             self.freeze = False
             self.character.unfreeze()
