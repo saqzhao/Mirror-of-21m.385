@@ -1,7 +1,7 @@
 import sys, os
 sys.path.insert(0, os.path.abspath('..'))
 
-from imslib.gfxutil import topleft_label, resize_topleft_label
+from imslib.gfxutil import topleft_label, resize_topleft_label, CLabelRect
 from imslib.screen import Screen
 from kivy.core.window import Window
 
@@ -32,14 +32,7 @@ class LevelSelectScreen(Screen):
 
         # TODO: Decide where on screen home button goes
         self.home_button = HomeButton(self)
-        self.add_widget(self.home_button)    
-
-        start_button_position = (Window.width*4/5, Window.height*2/9)
-        self.start_button = Button(text='Begin game', font_size=font_sz, size = (button_width, button_height), pos = start_button_position)
-        self.start_button.pos=start_button_position
-        self.start_button.bind(on_release= lambda x: self.start_game())
-        self.add_widget(self.start_button)    
-
+        self.add_widget(self.home_button)      
 
         self.level_selected = None
         # intervals = ['2m', '2M', '3m', '3M', '4', '5', '6m', '6M', '7m', '7M', '8']
@@ -62,24 +55,36 @@ class LevelSelectScreen(Screen):
         # self.all_buttons = {}
         button_size = (button_width, button_height)
 
-        basic_height = Window.height*3/5
-        medium_height = Window.height*2/5
-        advanced_height =Window.height*1/5
+        basic_height = Window.height*2.5/4
+        medium_height = Window.height*1.5/4
+        advanced_height =Window.height*.5/4
+        difficulty_titles = ["Beginner", "Intermediate", "Advanced"]
 
         all_heights = [basic_height, medium_height, advanced_height]
 
         buffer_r = Window.width/10
         buffer_l = buffer_r
-        for cur_level_group, height, number_id in zip(all_levels, all_heights, [0,len(levels_b),len(levels_b)+len(levels_m)]):
+        spacing = min([(Window.width-buffer_l-buffer_r)/(len(i)) for i in all_levels])
+        for cur_level_group, height, number_id, difficulty in zip(all_levels, all_heights, [0,len(levels_b),len(levels_b)+len(levels_m)], difficulty_titles):
+            title_pos = (100, height +  1.2*button_size[1])
+            title = CLabelRect(cpos=title_pos, text=difficulty, font_size=20)
+            self.canvas.add(title)
             width_spacing = (Window.width-buffer_l-buffer_r)/(len(cur_level_group))
+            print(width_spacing, spacing)
             for i in range(len(cur_level_group)):
                 level = cur_level_group[i] # List of Intervals (strings)
                 all_levels.append(level)
-                button = LevelButton(i+number_id+1, level, (width_spacing*i+buffer_l, height), button_size, self.select_this_level_callback)
+                button = LevelButton(i+number_id+1, level, (spacing*i+buffer_l, height), button_size, self.select_this_level_callback)
                 self.add_widget(button)
         
         self.help_button = HelpButton(self)
         self.add_widget(self.help_button)
+
+        start_button_position = (Window.width*4/5, advanced_height)
+        self.start_button = Button(text='Begin game', font_size=font_sz, size = (button_width*1.3, button_height), pos = start_button_position)
+        self.start_button.pos=start_button_position
+        self.start_button.bind(on_release= lambda x: self.start_game())
+        self.add_widget(self.start_button) 
 
     def start_game(self):
         if self.level_selected == None:
