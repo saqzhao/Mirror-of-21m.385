@@ -13,6 +13,7 @@ button_sz = (button_side, button_side)
 class PauseButton(Widget):
     def __init__(self, pause_callback, screen):
         super(PauseButton, self).__init__()
+        self.paused = False
         self.pause_button = Button(size = button_sz, background_normal = '../data/pause_button.png', pos = (Window.width*8/9,  Window.height/90))
         self.pause_callback = pause_callback
         self.pause_button.bind(on_press = self.pause)
@@ -23,6 +24,7 @@ class PauseButton(Widget):
         self.play_button.bind(on_press = self.play)
     
     def pause(self, _):
+        self.paused = True
         self.pause_callback()
         self.remove_widget(self.pause_button)
         self.canvas.add(Color(0.5, 0.5, 0.5, .75))
@@ -31,8 +33,15 @@ class PauseButton(Widget):
         self.add_widget(self.home_button)
     
     def play(self, _):
+        self.paused = False
         self.canvas.clear()
         self.remove_widget(self.play_button)
         self.remove_widget(self.home_button)
         self.add_widget(self.pause_button)
         self.pause_callback()
+    
+    # def toggle(self):
+    #     if not self.paused:
+    #         self.pause(True)
+    #     else:
+    #         self.play(True)
