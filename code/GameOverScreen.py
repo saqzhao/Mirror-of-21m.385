@@ -1,13 +1,15 @@
 import sys, os
 sys.path.insert(0, os.path.abspath('..'))
 
-from imslib.gfxutil import topleft_label, resize_topleft_label
+from imslib.gfxutil import topleft_label, resize_topleft_label, CLabelRect
+
 from imslib.screen import Screen
 from kivy.core.window import Window
 from kivy.uix.button import Button
 from kivy import metrics
 
 from HomeButton import HomeButton
+
 
 font_sz = metrics.dp(20)
 button_sz = metrics.dp(325)
@@ -28,6 +30,13 @@ class GameOverScreen(Screen):
 
         self.home_button = HomeButton(self)
         self.add_widget(self.home_button)
+
+        self.title = CLabelRect(cpos=(Window.width/2, Window.height*16/20), text=f'Game Over :(', font_size=30)
+        self.canvas.add(self.title)
+        self.instruction_text = '''Oh no! You missed too many interval quizzes carried by birds, and got lost on the 
+                                \npath to Wide Tim. Better luck next time! We encourage you to keep practicing.'''
+        self.instructions = CLabelRect(cpos=(Window.width/2, Window.height*7/20), text=self.instruction_text, font_size=15)
+        self.canvas.add(self.instructions)
 
     def on_enter(self):
         self.main_screen.final_song_audio_ctrl.play_serenade()
