@@ -19,3 +19,7 @@ class HomeButton(Widget):
         self.home_button = Button(size = button_sz, background_normal='../data/home_image.png', pos = (Window.width/50, Window.height*15/18))
         self.home_button.bind(on_release= lambda x: self.screen.switch_to('title'))
         self.add_widget(self.home_button)
+
+    def on_resize(self, win_size):
+        pos = (win_size[0]/50, win_size[1]*15/18)
+        self.home_button.pos = pos

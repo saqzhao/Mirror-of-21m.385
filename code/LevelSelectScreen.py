@@ -65,17 +65,22 @@ class LevelSelectScreen(Screen):
         buffer_r = Window.width/10
         buffer_l = buffer_r
         spacing = min([(Window.width-buffer_l-buffer_r)/(len(i)) for i in all_levels])
+        self.titles = []
+        self.buttons = []
         for cur_level_group, height, number_id, difficulty in zip(all_levels, all_heights, [0,len(levels_b),len(levels_b)+len(levels_m)], difficulty_titles):
+            buttons_i =[]
             title_pos = (100, height +  1.2*button_size[1])
             title = CLabelRect(cpos=title_pos, text=difficulty, font_size=20)
+            self.titles.append(title)
             self.canvas.add(title)
             width_spacing = (Window.width-buffer_l-buffer_r)/(len(cur_level_group))
-            print(width_spacing, spacing)
             for i in range(len(cur_level_group)):
                 level = cur_level_group[i] # List of Intervals (strings)
                 all_levels.append(level)
                 button = LevelButton(i+number_id+1, level, (spacing*i+buffer_l, height), button_size, self.select_this_level_callback)
+                buttons_i.append(button)
                 self.add_widget(button)
+            self.buttons.append(buttons_i)
         
         self.help_button = HelpButton(self)
         self.add_widget(self.help_button)
@@ -93,7 +98,7 @@ class LevelSelectScreen(Screen):
         for interval in level_intervals:
             self.interval_callback(interval)
         self.switch_to('main')
-        self.start_callback()
+        # self.interval_callback()
 
     def select_this_level_callback(self, button):
         if self.level_selected!=None:
@@ -112,9 +117,35 @@ class LevelSelectScreen(Screen):
 
 
     def on_resize(self, win_size):
-        # self.start_button.pos = (Window.width/5, Window.height*8/9)
-        # resize_topleft_label(self.info)
-        pass
+        heights = [win_size[1]*2.5/4, win_size[1]*1.5/4, win_size[1]*.5/4]
+
+        button_size = (button_width, button_height)
+
+        buffer_r = win_size[0]/10
+        buffer_l = buffer_r
+        spacing = min([(win_size[0]-buffer_l-buffer_r)/(len(i)) for i in self.buttons])
+       
+        # Home Button Resize
+        self.home_button.on_resize(win_size)
+
+        # Help Button Resize
+        self.help_button.on_resize(win_size)
+
+        # Start Button Resize
+        start_button_position = (win_size[0]*4/5, heights[2])
+        self.start_button.pos = start_button_position
+
+
+        # Titles and Level Buttons Resize
+        for i in range(len(self.buttons)):
+            height = heights[i]
+            these_buttons = self.buttons[i]
+            title_pos = (100, height +  1.2*button_size[1])
+            self.titles[i].pos=title_pos
+            width_spacing = (win_size[0]-buffer_l-buffer_r)/(len(these_buttons))
+            for j in range(len(these_buttons)):
+                button = these_buttons[j]
+                button.set_pos((spacing*j+buffer_l, height))
 
 class LevelButton(Widget):
     def __init__(self, level_name, button_intervals, pos, button_size, callback):
@@ -131,16 +162,21 @@ class LevelButton(Widget):
                      size = button_size,
                      size_hint = (0.2, 0.2),
                      pos = pos)
-        # self.callback = callback
+        self.callback = callback
         self.btn.bind(on_press = self.pressed_button_action)
         self.add_widget(self.btn)
         self.pressed = False
 
     def pressed_button_action(self, _):
+        self.callback(self)
         self.pressed = True
         self.btn.background_color= (.5,.5,.5,.5)
-        # self.callback(self)
+        
 
     def another_pressed(self):
         self.pressed = False
         self.btn.background_color= (1, 1, 1, 1)
+
+    def set_pos(self, pos):
+        self.btn.pos = pos
+
