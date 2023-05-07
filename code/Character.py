@@ -22,7 +22,7 @@ class Character(Widget):
         super(Character, self).__init__()
         self.background = background
         self.pos = (0, 0)
-        self.tim = Image(source='../data/tim.png', pos = (Window.width / 12, Window.height - 1.1*Window.height / 8))
+        self.tim = Image(source='../data/tim.png', pos = (Window.width / 12, Window.height - 1.35*Window.height / 8), width=Window.width/16, height=Window.height/6)
         self.add_widget(self.tim)
         
         # character animation
@@ -147,7 +147,9 @@ class Character(Widget):
             self.rest(self.moving_direction)
 
     def on_resize(self, win_size):
-        pass #TODO
+        self.tim.pos = (win_size[0] / 12, win_size[1] - 1.35*win_size[1] / 8)
+        self.tim.width = win_size[0]/16
+        self.tim.height = win_size[1]/6
 
     # animate character (position and animation) based on current time
     def on_update(self):
