@@ -36,8 +36,8 @@ class GameOverScreen(Screen):
         self.daze_character = Image(source='../data/daze.png', anim_delay=1, keep_data=True, pos = (Window.width/4, Window.height*16/20))
         self.add_widget(self.daze_character)
         
-        self.game_over_text = '''Oh no! You've run into too many birds, and 
-                                 \nbecame lost on your way to Wide Tim. 
+        self.game_over_text = '''Oh no! You've run into too many birds, 
+                                 \nand got lost on your way to Wide Tim. 
                                  \nBetter luck next time!'''
         self.canvas.add(Color(1 ,1, 1, 1))
         self.instructions = CLabelRect(cpos=(Window.width*3/4, Window.height*16/20), text=self.game_over_text, font_size=font_sz*.5)
