@@ -9,7 +9,6 @@ from kivy import metrics
 from kivy.uix.button import Button
 from kivy.uix.widget import Widget
 
-from ScreenBoundaries import ScreenBoundaries
 from HomeButton import HomeButton
 from Help import HelpButton
 
@@ -65,10 +64,8 @@ class IntroScreen(Screen):
             button = IntervalButton(opt, loc, self.button_size, self.interval_callback)
             self.add_widget(button)
         
-        self.help_button = HelpButton()
+        self.help_button = HelpButton(self)
         self.add_widget(self.help_button)
-
-        self.add_widget(ScreenBoundaries())
 
     def switch_to_main(self):
         self.switch_to('main')

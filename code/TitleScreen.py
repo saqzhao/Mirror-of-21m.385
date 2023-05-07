@@ -12,7 +12,6 @@ from kivy.graphics import Color
 from imslib.gfxutil import CLabelRect, CRectangle, Color
 from Help import HelpButton
 from HomeButton import HomeButton
-from ScreenBoundaries import ScreenBoundaries
 from kivy.uix.image import Image
 
 # metrics allows kivy to create screen-density-independent sizes.
@@ -40,10 +39,11 @@ class TitleScreen(Screen):
         self.levels_button.bind(on_release= lambda x: self.switch_to('levels'))
         self.add_widget(self.levels_button) 
 
-        self.help_button = HelpButton()
-        self.add_widget(self.help_button)   
+        self.help_button = HelpButton(self)
+        self.add_widget(self.help_button)
 
-        self.add_widget(ScreenBoundaries())
+        self.home_button = HomeButton(self)
+        self.add_widget(self.home_button)   
 
     def on_key_down(self, keycode, modifiers):
         if keycode[1] == 'right':
@@ -58,7 +58,7 @@ class TitleScreen(Screen):
         self.start_button.pos = (Window.width/3-button_width/2, Window.height/2-button_height/2)
         self.levels_button.pos = (Window.width*2/3-button_width/2, Window.height/2-button_height/2)
         self.title.on_resize(win_size)
-        resize_topleft_label(self.info)
+        # resize_topleft_label(self.info)
 
 class Title(Widget):
     def __init__(self):

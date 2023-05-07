@@ -16,13 +16,14 @@ button_side = metrics.dp(100)
 button_sz = (button_side, button_side)
 
 class HelpButton(Widget):
-    def __init__(self, toggle = None):
+    def __init__(self, screen, toggle = None, ):
         super(HelpButton, self).__init__()
         self.help_button = Button(text='?', font_size=font_sz*1.3, size = button_sz, background_normal = '../data/circle_button.png', background_down = '../data/circle_button.png', pos = (Window.width/50, Window.height/90))
+        self.screen = screen
         self.toggle = toggle
         self.help_button.bind(on_press = self.open_help_screen)
         self.add_widget(self.help_button)
-        self.help_widget = HelpScreen(self.remove_help_screen)
+        self.help_widget = HelpScreen(self.remove_help_screen, self.screen)
 
     def open_help_screen(self, _):
         self.add_widget(self.help_widget)
@@ -36,9 +37,10 @@ class HelpButton(Widget):
     
     
 class HelpScreen(Widget):
-    def __init__(self, exit_screen):
+    def __init__(self, exit_screen, screen):
         super(HelpScreen, self).__init__()
         self.remove_help_screen = exit_screen
+        self.screen = screen
 
         # widget background
         self.canvas.add(Color(0.5, 0.5, 0.5, 1))
@@ -74,8 +76,8 @@ class HelpScreen(Widget):
         self.add_widget(self.exit_button)
         self.buttons.add(self.exit_button)
 
-        self.home_button = HomeButton()
-        self.add_widget(HomeButton())
+        self.home_button = HomeButton(self.screen)
+        self.add_widget(self.home_button)
 
     def open_interval_link(self, _):
         webbrowser.open(self.what_are_intervals, new=0, autoraise=True)

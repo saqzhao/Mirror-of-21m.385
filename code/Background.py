@@ -8,7 +8,6 @@ from imslib.gfxutil import CLabelRect
 from kivy.core.window import Window
 from kivy.uix.image import Image
 from BirdCounter import BirdCounter
-from ScreenBoundaries import ScreenBoundaries
 
 EPSILON = float(5)
 BUFFER = float(20)
@@ -73,7 +72,6 @@ class BackgroundDisplay(Widget):
         self.heart_base_pos = (Window.width*8/9, Window.height*7/9)
 
         self.collected_inst = []
-        self.add_widget(ScreenBoundaries())
 
     def reset(self):
         self.canvas.clear()

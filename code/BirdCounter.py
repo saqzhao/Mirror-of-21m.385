@@ -15,7 +15,7 @@ class BirdCounter(Widget):
         self.bird_left = '../data/bird_left.gif'
         self.bird_right = '../data/bird_right.gif'
         self.spacing = int(Window.width/10)
-        self.bird = Image(source = self.bird_right, anim_delay=1, keep_data = True, pos = (Window.width*7/9, Window.height*15/18))
+        self.bird = Image(source = self.bird_right, anim_delay=1, keep_data = True, pos = (Window.width/2, Window.height/90))
 
         #TODO: adjust position of counter
         self.score_display = CLabelRect(cpos=(self.pos[0] + self.spacing, self.pos[1]+ self.spacing/2), text=f'x {self.count}', font_size=21)

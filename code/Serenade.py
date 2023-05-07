@@ -19,7 +19,6 @@ from FinalScreenAudioController import FinalScreenAudioController
 from QuizDisplay import QuizDisplay
 from PauseButton import PauseButton
 from Help import HelpButton
-from ScreenBoundaries import ScreenBoundaries
 
 import random
 
@@ -110,7 +109,7 @@ class MainScreen(Screen):
         self.character = Character(self.background)
         self.quiz_display = QuizDisplay()
         intervals = self.default_intervals if (len(self.intervals) == 0) else self.intervals
-        self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character, self.quiz_display, intervals)
+        self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character, self.quiz_display, intervals, self)
         self.add_widget(self.player)
         self.ended = False
         print('start game')
@@ -122,10 +121,11 @@ class Player(Widget):
     Controls the GameDisplay and AudioCtrl based on what happens
     '''
 
-    def __init__(self, audio_ctrl, final_song_audio_ctrl, background, character, quiz_display, intervals):
+    def __init__(self, audio_ctrl, final_song_audio_ctrl, background, character, quiz_display, intervals, screen):
         super(Player, self).__init__()
         # self.clock = kivyClock()
         # self.clock = serenClock
+        self.screen = screen
         self.background = background
         self.quiz_display = quiz_display
         self.audio_ctrl = audio_ctrl
@@ -135,9 +135,9 @@ class Player(Widget):
         self.add_widget(self.quiz_display)
         self.add_widget(self.character)
 
-        self.pause_button = PauseButton(self.toggle)
+        self.pause_button = PauseButton(self.toggle, self.screen)
         self.add_widget(self.pause_button)
-        self.help_button = HelpButton(self.toggle)
+        self.help_button = HelpButton(self.screen, self.toggle)
         self.add_widget(self.help_button)
 
         self.score = 0
@@ -164,8 +164,6 @@ class Player(Widget):
         self.options = intervals 
         # self.quiz_active = False
         self.quiz = None
-
-        self.add_widget(ScreenBoundaries())
 
     def make_collectables(self, num_collectables):
         collect = set()

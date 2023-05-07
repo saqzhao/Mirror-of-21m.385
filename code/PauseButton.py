@@ -11,13 +11,13 @@ button_side = metrics.dp(100)
 button_sz = (button_side, button_side)
 
 class PauseButton(Widget):
-    def __init__(self, pause_callback):
+    def __init__(self, pause_callback, screen):
         super(PauseButton, self).__init__()
         self.pause_button = Button(size = button_sz, background_normal = '../data/pause_button.png', pos = (Window.width*8/9,  Window.height/90))
         self.pause_callback = pause_callback
         self.pause_button.bind(on_press = self.pause)
         self.add_widget(self.pause_button)
-        self.home_button = HomeButton()
+        self.home_button = HomeButton(screen)
         self.play_button = Button(size = button_sz, background_normal = '../data/play_button.png', pos = (Window.width*8/9,  Window.height/90))
         self.play_button.bind(on_press = self.play)
     

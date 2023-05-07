@@ -10,8 +10,6 @@ from kivy.uix.widget import Widget
 from kivy import metrics
 from Help import HelpButton
 from HomeButton import HomeButton
-from Help import HelpButton
-from ScreenBoundaries import ScreenBoundaries
 
 # metrics allows kivy to create screen-density-independent sizes.
 # Here, 20 dp will always be the same physical size on screen regardless of resolution or OS.
@@ -80,10 +78,8 @@ class LevelSelectScreen(Screen):
                 button = LevelButton(i+number_id+1, level, (width_spacing*i+buffer_l, height), button_size, self.select_this_level_callback)
                 self.add_widget(button)
         
-        self.help_button = HelpButton()
+        self.help_button = HelpButton(self)
         self.add_widget(self.help_button)
-
-        self.add_widget(ScreenBoundaries())
 
     def start_game(self):
         if self.level_selected == None:
@@ -112,7 +108,8 @@ class LevelSelectScreen(Screen):
 
     def on_resize(self, win_size):
         # self.start_button.pos = (Window.width/5, Window.height*8/9)
-        resize_topleft_label(self.info)
+        # resize_topleft_label(self.info)
+        pass
 
 class LevelButton(Widget):
     def __init__(self, level_name, button_intervals, pos, button_size, callback):
