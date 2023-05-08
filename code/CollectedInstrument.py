@@ -56,8 +56,9 @@ class CollectedInstrumentDisplay(Widget):
         new_max = int(win_size[0] - self.margin_side - 2*BUFFER)
         self.x_center = self.margin_side - self.radius + self.random_number_selected*(new_max/self.old_max)
         self.y_center = ((self.margin_bottom + self.layer_spacing * self.layer) + (self.margin_bottom + self.layer_spacing * (self.layer+1)))/2
-        self.instrument.pos[0] = self.x_center-self.radius
-        self.instrument.pos[1] = self.y_center-self.radius
+        self.instrument.pos[0] *= (win_size[0]/self.orig_window_size[0])
+        self.instrument.pos[1] *= (win_size[1]/self.orig_window_size[1])
+        self.orig_window_size = win_size
         self.instrument.width = self.instrument_width * (win_size[0]/self.orig_window_size[0])
         self.instrument.height = self.instrument_height * (win_size[1]/self.orig_window_size[1])
         self.add_widget(self.instrument)
