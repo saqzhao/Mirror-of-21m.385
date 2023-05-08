@@ -84,6 +84,7 @@ class MainScreen(Screen):
         self.background.on_resize(win_size)
         self.character.on_resize(win_size)
         self.player.on_resize(win_size)
+
         #TODO : anything else that needs resizing ?
 
     def on_update(self):
@@ -297,3 +298,5 @@ class Player(Widget):
     def on_resize(self, win_size):
         for collectable in self.collectables:
             collectable.on_resize(win_size)
+        if self.quiz != None:
+            self.quiz.on_resize(win_size)

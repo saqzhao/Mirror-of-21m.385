@@ -15,7 +15,7 @@ import random
 class QuizButton(Widget):
     def __init__(self, buttonLabel, pos, is_correct, size, callback):
         super(QuizButton, self).__init__()
-        btn = Button(text = buttonLabel,
+        self.btn = Button(text = buttonLabel,
                      font_size = "20sp",
                      background_color = (1, 1, 1, 1),
                      color = (1, 1, 1, 1),
@@ -25,13 +25,16 @@ class QuizButton(Widget):
         # background_down and normal must be string address for button (for future style sthing)
         self.is_correct = is_correct
         self.callback = callback
-        btn.bind(on_press = self.give_result)
-        self.add_widget(btn)
+        self.btn.bind(on_press = self.give_result)
+        self.add_widget(self.btn)
     
 
     def give_result(self, _):
         self.background_color = (1, 0, 0, 1) if self.is_correct else (0.5, 0.5, 0.5, 1)
         self.callback(self.is_correct)
+
+    def set_pos(self, pos):
+        self.btn.pos=pos
 
 class IntervalQuiz(Widget):
     def __init__(self, mode, options, increment_score, audio_ctrl):
@@ -54,23 +57,8 @@ class IntervalQuiz(Widget):
         # quiz buttons
         self.button_size = (Window.width/15, Window.height/20)
         self.button_centerline_margin = Window.width/20
-        # self.button_locations = dict()
         self.button_distance = self.button_size[0]*1.3
-        # self.button_locations[0] = (Window.width/2, Window.height*2/5) # bottom row middle
         self.button_locations = [(Window.width/3, Window.width/4), (Window.width/3, Window.width/2), (Window.width*2/3, Window.width/4), (Window.width*2/3, Window.width/2)]
-        # for idx in range(1, 11):
-        #     if idx % 4 == 1: # top row left
-        #         self.button_locations[idx] = (Window.width/2+self.button_centerline_margin+1.2*self.button_distance*(idx-1)/4, Window.height*1/5)
-        #     elif idx % 4 == 2: # top row right
-        #         self.button_locations[idx] = (Window.width/2-self.button_centerline_margin-1.2*self.button_distance*(idx-2)/4, Window.height*1/5)
-        #     elif idx == 3:
-        #         self.button_locations[idx] = (Window.width/2+self.button_centerline_margin+.3*self.button_distance, Window.height*2/5)
-        #     elif idx == 4:
-        #         self.button_locations[idx] = (Window.width/2-self.button_centerline_margin-.3*self.button_distance, Window.height*2/5)
-        #     elif idx % 4 == 3: # bottom row left
-        #         self.button_locations[idx] = (Window.width/2+self.button_centerline_margin+1.2*self.button_distance*(idx-3)/4, Window.height*2/5)
-        #     elif idx % 4 == 0: # bottom row right
-        #         self.button_locations[idx] = (Window.width/2-self.button_centerline_margin-1.2*self.button_distance*(idx-4)/4, Window.height*2/5)
 
         self.buttons = []
         self.button_labels = []
@@ -108,6 +96,7 @@ class IntervalQuiz(Widget):
         for loc, opt in zip(locations, options):
             is_correct = False if opt != correct_answer else True
             button = QuizButton(opt, loc, is_correct, self.button_size, self.quiz_result)
+            self.buttons.append(button)
             self.add_widget(button)
 
     def generate_quiz(self):
@@ -124,7 +113,27 @@ class IntervalQuiz(Widget):
         #     self.create_buttons(hard_button_locations, self.options, self.correct_answer)
 
     def on_resize(self, win_size):
-        pass #TODO
+        self.background.size = win_size
+        if self.quiz_begun:
+            width = win_size[0]
+            height = win_size[1]
+
+            self.timer_bar.cpos = (width/2, height/8)
+            self.timer_bar.csize = (width/3, height/30)
+            self.timer_runout = KFAnim((0, width/3, height/30), (6, 0, height/30))
+
+            self.button_size = (width/15, height/20)
+            self.button_centerline_margin = width/20
+            self.button_distance = self.button_size[0]*1.3
+            self.button_locations = [(width/3, width/4), (width/3, width/2), (width*2/3, width/4), (width*2/3, width/2)]
+            self.reset_button_locations()
+
+
+    def reset_button_locations(self):
+        print("should be resetting button locations")
+        for button, loc, in zip(self.buttons, self.button_locations):
+            button.set_pos(loc)
+
 
     def on_update(self, dt):
         if self.quiz_begun:

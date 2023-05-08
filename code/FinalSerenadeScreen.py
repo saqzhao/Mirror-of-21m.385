@@ -37,5 +37,8 @@ class EndScreen(Screen):
             self.switch_to('intro')
 
     def on_resize(self, win_size):
-        # resize_topleft_label(self.info)
-        pass
+        width = win_size[0]
+        height = win_size[1]
+        self.button_continue.pos = (width/10 - MARGIN, height/2)
+        self.button_back.pos = (width*5/10 + MARGIN, height/2)
+        self.home_button.on_resize(win_size)
