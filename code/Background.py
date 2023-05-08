@@ -249,5 +249,7 @@ class BackgroundDisplay(Widget):
 
         self.last_window_size = win_size
 
+        self.heart_base_pos = (win_size[0]*8/9, win_size[1]*7/9)
+
     def on_update(self):
         pass #TODO
