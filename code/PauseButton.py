@@ -22,6 +22,7 @@ class PauseButton(Widget):
         self.home_button = HomeButton(screen)
         self.play_button = Button(size = button_sz, background_normal = '../data/play_button.png', pos = (Window.width*8/9,  Window.height/90))
         self.play_button.bind(on_press = self.play)
+        print('pause button init: ', self.paused)
     
     def pause(self, _):
         self.paused = True
@@ -39,9 +40,11 @@ class PauseButton(Widget):
         self.remove_widget(self.home_button)
         self.add_widget(self.pause_button)
         self.pause_callback()
-    
-    # def toggle(self):
-    #     if not self.paused:
-    #         self.pause(True)
-    #     else:
-    #         self.play(True)
+
+    def toggle(self):
+        print('self.paused before: ', self.paused)
+        if not self.paused:
+            self.pause(True)
+        else:
+            self.play(True)
+        print('self.paused after: ', self.paused)

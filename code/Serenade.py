@@ -48,9 +48,6 @@ class MainScreen(Screen):
         self.player = Player(self.audio_ctrl, self.final_song_audio_ctrl, self.background, self.character, self.quiz_display, intervals, self)
         self.add_widget(self.player)
 
-    def toggle(self):
-        self.player.toggle()
-
     def select_intervals(self, interval, add = True):
         if not add:
             self.intervals.remove(interval)
@@ -65,7 +62,8 @@ class MainScreen(Screen):
 
         # play / pause toggle
         if keycode[1] == 'p':
-            self.toggle()
+            self.player.toggle()
+            self.player.toggle_pause_button()
 
         button_idx = lookup(keycode[1], ['up', 'down', 'left', 'right', 'w', 'a', 's', 'd', 'x'], (0,1,2,3,0, 2,1,3,4))
         if button_idx != None:
@@ -131,8 +129,6 @@ class Player(Widget):
 
     def __init__(self, audio_ctrl, final_song_audio_ctrl, background, character, quiz_display, intervals, screen):
         super(Player, self).__init__()
-        # self.clock = kivyClock()
-        # self.clock = serenClock
         self.screen = screen
         self.background = background
         self.quiz_display = quiz_display
@@ -170,7 +166,6 @@ class Player(Widget):
 
         # Interval 
         self.options = intervals 
-        # self.quiz_active = False
         self.quiz = None
 
     def make_collectables(self, num_collectables):
@@ -182,25 +177,20 @@ class Player(Widget):
             collect.add(this_collectable)
         return collect
 
+    def toggle_pause_button(self):
+        self.pause_button.toggle()
+
     def toggle(self):
-        print('entering player toggle')
         if not self.freeze:
-            # print(self.pause_button.pause)
-            # self.pause_button.toggle()
-            print('pausing in player')
             self.freeze = True
             self.character.freeze()
             for bird in self.birds:
                 bird.toggle()
-            print('done running freeze')
         else:
-            # self.pause_button.toggle()
-            print('unpausing in player')
             self.freeze = False
             self.character.unfreeze()
             for bird in self.birds:
                 bird.toggle()
-            print('done running unpause')
 
     # called by IntervalQuiz
     def adjust_lives(self, succeed, interval):

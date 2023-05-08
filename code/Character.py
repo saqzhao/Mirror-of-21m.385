@@ -41,7 +41,7 @@ class Character(Widget):
         self.margin_side = Window.width / 10
         
         self.add_widget(self.character)
-    
+
     
     def on_button_down(self, button_value):
         if self.frozen:
@@ -72,11 +72,9 @@ class Character(Widget):
         self.moving_direction = 0
 
     def freeze(self):
-        print('character freeze')
         self.frozen = True
 
     def unfreeze(self):
-        print('character unfreeze')
         self.frozen = False
 
     def rest(self, direction = Direction.LEFT):
