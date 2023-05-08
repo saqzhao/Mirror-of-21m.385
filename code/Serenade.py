@@ -32,13 +32,13 @@ class MainScreen(Screen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(always_update=True, **kwargs)
         self.canvas.clear()
-        self.started = True
         self.audio_ctrl = AudioController()
         self.final_song_audio_ctrl = FinalScreenAudioController()
         self.background = BackgroundDisplay()
         self.character = Character(self.background)
         self.quiz_display = QuizDisplay()
         self.ended = False
+        self.started = False
         print('start game')
 
         self.default_intervals = {'2M', '3M', '4', '5'}
@@ -123,6 +123,15 @@ class MainScreen(Screen):
         self.ended = False
         print('start game')
 
+    def on_leave(self):
+        print("on leave")
+        self.started = False
+        self.ended = True
+        self.audio_ctrl = None
+        self.final_song_audio_ctrl = None
+        self.background = None
+        self.character = None
+        self.quiz_display = None
 
 class Player(Widget):
     '''
