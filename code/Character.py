@@ -39,6 +39,9 @@ class Character(Widget):
         self.on_ladder = False
         self.frozen = False
         self.margin_side = Window.width / 10
+
+        self.old_window_width = Window.width
+        self.old_window_height = Window.height
         
         self.add_widget(self.character)
 
@@ -148,6 +151,10 @@ class Character(Widget):
         self.tim.pos = (win_size[0] / 12, win_size[1] - 1.35*win_size[1] / 8)
         self.tim.width = win_size[0]/16
         self.tim.height = win_size[1]/6
+
+        self.character.pos[0] *= win_size[0]/self.old_window_width
+        self.character.pos[1] *= win_size[1]/self.old_window_height
+        self.old_window_width, self.old_window_height = win_size
 
     # animate character (position and animation) based on current time
     def on_update(self):

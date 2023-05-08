@@ -11,8 +11,9 @@ from BirdCounter import BirdCounter
 from kivy import metrics
 from kivy.metrics import Metrics
 
-EPSILON = float(5)
-BUFFER = float(20)
+Y_EPSILON = float(Window.height/150)
+X_BUFFER = float(2*Window.width/50)
+Y_BUFFER = float(Window.height/37.5)
 
 
 class Ladder(InstructionGroup):
@@ -23,14 +24,14 @@ class Ladder(InstructionGroup):
         self.margin_side = margin_side
         self.layer_spacing = layer_spacing
         self.num_ladder_rungs = 3
-        self.furthest_x_center_loc = int(Window.width - 2*self.margin_side - BUFFER - 30)
+        self.furthest_x_center_loc = int(Window.width - 2*self.margin_side - X_BUFFER - Window.width/33.33)
         self.init_furthest_x_center_loc = self.furthest_x_center_loc
-        self.random_number_chosen = random.randint(0, self.furthest_x_center_loc)
-        self.x_center = self.margin_side + 10 + self.random_number_chosen
+        self.random_number_chosen = random.randint(0, int(self.furthest_x_center_loc))
+        self.x_center = self.margin_side + Window.width/100 + self.random_number_chosen
         if x_centers_to_avoid[self.layer_idx] is not None:
-            while any((abs(pos-self.x_center) < 3*BUFFER) for pos in x_centers_to_avoid[self.layer_idx]):
-                self.random_number_chosen = random.randint(0, self.furthest_x_center_loc)
-                self.x_center = self.margin_side + 10 + self.random_number_chosen
+            while any((abs(pos-self.x_center) < 3*X_BUFFER) for pos in x_centers_to_avoid[self.layer_idx]):
+                self.random_number_chosen = random.randint(0, int(self.furthest_x_center_loc))
+                self.x_center = self.margin_side + Window.width/100 + self.random_number_chosen
 
         self.horiz_lines = []
         self.vert_lines_left = []
@@ -40,7 +41,7 @@ class Ladder(InstructionGroup):
         self.ladder_top = self.margin_bottom + self.layer_spacing * (self.layer_idx+1)
 
         for multiplier in [-1, 1]:
-            line = Line(points=(self.x_center + multiplier*BUFFER, self.ladder_bottom, self.x_center + multiplier*BUFFER, self.ladder_top), width = 5)
+            line = Line(points=(self.x_center + multiplier*X_BUFFER, self.ladder_bottom, self.x_center + multiplier*X_BUFFER, self.ladder_top), width = 5)
             if multiplier == -1:
                 self.vert_lines_left.append(line)
             else:
@@ -49,7 +50,7 @@ class Ladder(InstructionGroup):
 
         center_line_y = self.ladder_bottom  + self.layer_spacing/4
         for _ in range(1, self.num_ladder_rungs+1):
-            center_line = Line(points=(self.x_center - BUFFER, center_line_y, self.x_center + BUFFER, center_line_y), width = 5)
+            center_line = Line(points=(self.x_center - X_BUFFER, center_line_y, self.x_center + X_BUFFER, center_line_y), width = 5)
             center_line_y += self.layer_spacing/4
             self.add(center_line)
             self.horiz_lines.append(center_line)
@@ -66,16 +67,16 @@ class Ladder(InstructionGroup):
         self.layer_spacing = layer_spacing
         self.ladder_bottom = self.margin_bottom + self.layer_spacing * self.layer_idx
         self.ladder_top = self.margin_bottom + self.layer_spacing * (self.layer_idx+1)
-        self.furthest_x_center_loc = int(win_size[0] - 2*self.margin_side - BUFFER - 30)
-        self.x_center = self.random_number_chosen*(self.furthest_x_center_loc/self.init_furthest_x_center_loc) + self.margin_side + 10
+        self.furthest_x_center_loc = int(win_size[0] - 2*self.margin_side - X_BUFFER - win_size[0]/33.33)
+        self.x_center = self.random_number_chosen*(self.furthest_x_center_loc/self.init_furthest_x_center_loc) + self.margin_side + win_size[0]/100
         for line in self.vert_lines_left:
-            line.points = (self.x_center + -1*BUFFER, self.ladder_bottom, self.x_center + -1*BUFFER, self.ladder_top)
+            line.points = (self.x_center + -1*X_BUFFER, self.ladder_bottom, self.x_center + -1*X_BUFFER, self.ladder_top)
         for line in self.vert_lines_right:
-            line.points = (self.x_center + BUFFER, self.ladder_bottom, self.x_center + BUFFER, self.ladder_top)
+            line.points = (self.x_center + X_BUFFER, self.ladder_bottom, self.x_center + X_BUFFER, self.ladder_top)
         for i in range(len(self.horiz_lines)):
             line = self.horiz_lines[i]
             center_line_y = self.ladder_bottom  + (i+1)*self.layer_spacing/4
-            line.points = (self.x_center - BUFFER, center_line_y, self.x_center + BUFFER, center_line_y)
+            line.points = (self.x_center - X_BUFFER, center_line_y, self.x_center + X_BUFFER, center_line_y)
 
 class BackgroundDisplay(Widget):
     def __init__(self):
@@ -140,14 +141,14 @@ class BackgroundDisplay(Widget):
         return self.layer_spacing
     
     def get_buffer(self):
-        return BUFFER
+        return X_BUFFER
 
     def can_begin_climbing(self, pos):
         # Returns True if player is on a ladder spot and can climb up
         # TODO - make this take into account the width of ladders once ladder isn't just a line
         can_climb = False
         for loc in self.ladder_ends('B'):
-            if ((abs(pos[0]-loc[0])**2 + abs(pos[1]-loc[1])**2)**0.5 < BUFFER):
+            if abs(pos[0]-loc[0]) < X_BUFFER and abs(pos[1]-loc[1]) < Y_BUFFER:
                 can_climb = True
                 break
         return can_climb
@@ -156,7 +157,7 @@ class BackgroundDisplay(Widget):
         # Returns True if a player is on a ladder spot and can climb down
         can_descend = False
         for loc in self.ladder_ends('T'):
-            if ((abs(pos[0]-loc[0])**2 + abs(pos[1]-loc[1])**2)**0.5 < BUFFER):
+            if abs(pos[0]-loc[0]) < X_BUFFER and abs(pos[1]-loc[1]) < Y_BUFFER:
                 can_descend = True
                 break
         return can_descend
@@ -167,7 +168,7 @@ class BackgroundDisplay(Widget):
         can_climb = False
         
         for loc in self.ladder_locs:
-            if (abs(pos[0]-loc[0]) < BUFFER and pos[1] < loc[2] and pos[1] > loc[1] - EPSILON):
+            if (abs(pos[0]-loc[0]) < X_BUFFER and pos[1] < loc[2] and pos[1] > loc[1] - Y_EPSILON):
                 can_climb = True
                 break
         return can_climb
@@ -176,7 +177,7 @@ class BackgroundDisplay(Widget):
         # Returns True if a player is on a ladder spot and can climb down
         can_descend = False
         for loc in self.ladder_locs:
-            if (abs(pos[0]-loc[0]) < BUFFER and pos[1] - EPSILON < loc[2] and pos[1] > loc[1]):
+            if (abs(pos[0]-loc[0]) < X_BUFFER and pos[1] - Y_EPSILON < loc[2] and pos[1] > loc[1]):
                 can_descend = True
                 break
         return can_descend
@@ -217,12 +218,19 @@ class BackgroundDisplay(Widget):
         del self.hearts[self.remaining_lives]
 
     def on_resize(self, win_size):
+        global Y_EPSILON, X_BUFFER, Y_BUFFER
+        Y_EPSILON = float(win_size[1]/150)
+        X_BUFFER = float(win_size[0]/50)
+        Y_BUFFER = float(win_size[1]/37.5)
+
+        self.ladder_locs = set()
         self.margin_side = win_size[0] / 10
         self.margin_bottom = win_size[1] / 10
         self.layer_spacing = win_size[1] / 8
 
         for ladder in self.ladders:
             ladder.on_resize(win_size, self.margin_side, self.margin_bottom, self.layer_spacing)
+            self.ladder_locs.add(ladder.ladder_loc())
 
         for i in range(len(self.layers)):
             layer = self.layers[i]

@@ -25,9 +25,6 @@ class TitleScreen(Screen):
     def __init__(self, **kwargs):
         super(TitleScreen, self).__init__(always_update=False, **kwargs)
 
-        # self.info = topleft_label()
-        # self.info.text = "Title Screen\n"
-        # self.add_widget(self.info)
         self.title = Title()
         self.add_widget(self.title)
 
@@ -42,42 +39,26 @@ class TitleScreen(Screen):
         self.help_button = HelpButton(self)
         self.add_widget(self.help_button)
 
-        self.home_button = HomeButton(self)
-        self.add_widget(self.home_button)   
-
     def on_key_down(self, keycode, modifiers):
         if keycode[1] == 'right':
             self.switch_to_main()
-
-    # if you want on_update() called when a screen is NOT active, then pass in an extra argument:
-    # always_update=True to the screen constructor.
-    def on_update(self):
-        pass
 
     def on_resize(self, win_size):
         self.start_button.pos = (Window.width/3-button_width/2, Window.height/2-button_height/2)
         self.levels_button.pos = (Window.width*2/3-button_width/2, Window.height/2-button_height/2)
         self.title.on_resize(win_size)
-        # resize_topleft_label(self.info)
 
 class Title(Widget):
     def __init__(self):
         super(Title, self).__init__()
-        # self.title = CLabelRect(cpos=(Window.width/2, Window.height*3/4), text=f'SERENADE FOR TIM', font_size=40)
-        title_image = '../data/title.jpg'
-        self.title = Image(source = title_image)
+        title_image = '../data/title.jpg'        
         size =(Window.width*3/4, Window.height*1/4) # 800,400
+        self.title = Image(source = title_image)
         self.title.size = size
-
         self.title.pos = (Window.width/2- 1/2*size[0], Window.height*3/4-1/2*size[1])
-
         self.add_widget(self.title)
-        # self.canvas.add(self.title)
-        # self.art_credit = CLabelRect(cpos=(Window.width/2, Window.height*1/10), text=f'Wide Tim property of Margaret Zheng', font_size=5)
-        # self.canvas.add(self.art_credit)
+
     def on_resize(self, win_size):
         size = (win_size[0]*3/4, win_size[1]*1/4)
         self.title.size = size
         self.title.pos = (win_size[0]/2- 1/2*size[0], win_size[1]*3/4-1/2*size[1])
-
-        return
