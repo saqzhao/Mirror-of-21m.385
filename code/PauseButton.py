@@ -48,3 +48,11 @@ class PauseButton(Widget):
         else:
             self.play(True)
         print('self.paused after: ', self.paused)
+
+    def on_resize(self, win_size):
+        width = win_size[0]
+        height = win_size[1]
+        self.pause_button.pos =(width*8/9,  height/90)
+        self.play_button.pos =(width*8/9,  height/90)
+        self.background.cpos=(width/2, height/2)
+        self.background.csize=(width, height)

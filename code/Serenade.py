@@ -300,3 +300,4 @@ class Player(Widget):
             collectable.on_resize(win_size)
         if self.quiz != None:
             self.quiz.on_resize(win_size)
+        self.pause_button.on_resize(win_size)
