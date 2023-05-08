@@ -71,6 +71,10 @@ class AudioController(object):
         self.collect_sfx(now)
 
     def collect_instrument(self, instrument_name):
+        if instrument_name == "violin":
+            self.vel = 120
+        else:
+            self.vel = 80
         self.change_program(instrument_name)
         self.collecting = True
         now = self.sched.get_tick()

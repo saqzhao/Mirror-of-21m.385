@@ -47,7 +47,7 @@ class Bird(Widget):
 
         self.range = 50
 
-        print(f"bird info: size is {self.size}")
+        # print(f"bird info: size is {self.size}")
 
     def toggle(self):
         if not self.freeze:
