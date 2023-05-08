@@ -51,10 +51,8 @@ class MainScreen(Screen):
     def select_intervals(self, interval, add = True):
         if not add:
             self.intervals.remove(interval)
-            print("intervals are now ", self.intervals)
             return
         self.intervals.add(interval)
-        print("intervals are now ", self.intervals)
 
     def on_key_down(self, keycode, modifiers):
         if keycode[1] == 'enter':
@@ -297,7 +295,5 @@ class Player(Widget):
         self.audio_ctrl.collect_instrument(inst_name)
 
     def on_resize(self, win_size):
-        print("calling resize 299")
         for collectable in self.collectables:
-            print("collectable is here", collectable)
             collectable.on_resize(win_size)

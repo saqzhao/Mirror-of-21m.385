@@ -42,8 +42,9 @@ class Bird(Widget):
 
         self.times_around_this_level =0
 
+        self.old_window_width = Window.width
+        self.old_window_height = Window.height
 
-        # IDK HOW BIG TO MAKE THIS> SHOULD BE THE RADIUS OR WHATEVER BUT UHHHH
         self.range = 50
 
         print(f"bird info: size is {self.size}")
@@ -161,7 +162,10 @@ class Bird(Widget):
 
     def on_resize(self, win_size):
         #TODO: This affects bird size, their current position, and rate/multiplier
-        pass 
+        self.x *= win_size[0]/self.old_window_width
+        self.y *= win_size[1]/self.old_window_height
+        self.old_window_width, self.old_window_height = win_size
+        self.update_position()
 
 if __name__ == "__main__":
     background = BackgroundDisplay()

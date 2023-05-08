@@ -48,7 +48,6 @@ class Character(Widget):
     
     def on_button_down(self, button_value):
         if self.frozen:
-            print('hi')
             pass
         if button_value in {Direction.UP, Direction.DOWN}:
             self.moving_direction = button_value
