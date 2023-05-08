@@ -50,6 +50,7 @@ class Arpeggiator(object):
             self.cmd = None
         pitch = self.pitches[self.pitch_index % len(self.pitches)]
         self.synth.noteoff(self.channel, pitch)
+        self.pitch_index = 0
 
     def toggle(self):
         if self.playing:
@@ -76,6 +77,11 @@ class Arpeggiator(object):
         duration = self.note_len/self.articulation
         if len(self.pitches) == 0:
             return
+        
+        if self.pitch_index >= len(self.pitches):
+            self.stop()
+            return 
+        
         pitch = self.pitches[self.pitch_index % len(self.pitches)]
         self.pitch_index += 1
         self.synth.noteon(self.channel, pitch, 70)
@@ -140,6 +146,8 @@ class FinalScreenAudioController(object):
             self.add_instrument(instrument)
             
         self.playing_channel = 0
+
+        self.pitches.extend(self.pitches)
 
         for arpeg in self.arpeggiators:
             arpeg.toggle()
