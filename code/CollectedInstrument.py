@@ -8,6 +8,7 @@ import random
 
 NUM_LAYERS = 7
 BUFFER = 20
+EPSILON = Window.width/20
 
 class CollectedInstrumentDisplay(Widget):
     def __init__(self, background, character, instrument, layer, collect_callback, x_centers_to_avoid = None):
@@ -43,8 +44,9 @@ class CollectedInstrumentDisplay(Widget):
         self.orig_window_size = Window.width, Window.height
         
     def on_resize(self, win_size):
-        global BUFFER
+        global BUFFER, EPSILON
         BUFFER = win_size[0] / 50
+        EPSILON = win_size[0] / 20
         self.remove_widget(self.instrument)
         self.background.remove_widget(self)
         self.radius = win_size[0]/20
@@ -64,7 +66,7 @@ class CollectedInstrumentDisplay(Widget):
     def on_update(self, dt):
         if self.active:
             character_pos = self.character.to_screen_pos()
-            if ((abs(character_pos[0]-self.x_center)**2 + abs(character_pos[1]-self.y_center)**2)**0.5 < 50):
+            if ((abs(character_pos[0]-self.x_center)**2 + abs(character_pos[1]-self.y_center)**2)**0.5 < EPSILON):
                 self.collect_callback(self)
                 self.remove_widget(self.instrument)
                 self.active = False
