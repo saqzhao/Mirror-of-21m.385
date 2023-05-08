@@ -147,12 +147,15 @@ class Character(Widget):
             self.rest(self.moving_direction)
 
     def on_resize(self, win_size):
-        self.tim.pos = (win_size[0] / 12, win_size[1] - 1.35*win_size[1] / 8)
-        self.tim.width = win_size[0]/16
-        self.tim.height = win_size[1]/6
+        self.tim.pos[0] *= win_size[0]/self.old_window_width
+        self.tim.pos[1] *= win_size[1]/self.old_window_height
+        self.tim.width *= win_size[0]/self.old_window_width
+        self.tim.height *= win_size[1]/self.old_window_height
 
         self.character.pos[0] *= win_size[0]/self.old_window_width
         self.character.pos[1] *= win_size[1]/self.old_window_height
+        self.character.width *= win_size[0]/self.old_window_width
+        self.character.height *= win_size[1]/self.old_window_height
         self.old_window_width, self.old_window_height = win_size
 
     # animate character (position and animation) based on current time
