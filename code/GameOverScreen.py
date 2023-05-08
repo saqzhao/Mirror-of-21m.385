@@ -44,7 +44,7 @@ class GameOverScreen(Screen):
         self.canvas.add(self.instructions)
 
     def on_enter(self):
-        self.main_screen.final_song_audio_ctrl.play_serenade()
+        pass
 
     def on_key_down(self, keycode, modifiers):
         if keycode[1] == 'right':
