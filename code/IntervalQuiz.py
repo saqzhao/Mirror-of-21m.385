@@ -53,6 +53,7 @@ class IntervalQuiz(Widget):
         self.time = 0
         self.correct_answer = None
         self.interval_being_played = False
+        self.already_answered = False
 
         # quiz buttons
         self.button_size = (Window.width/15, Window.height/20)
@@ -69,6 +70,7 @@ class IntervalQuiz(Widget):
 
     def generate_quiz_options(self, num_options):
         options = set()
+        self.already_answered = False
         self.canvas.add(self.background_color)
         self.canvas.add(self.background)
         self.canvas.add(self.timer_color)
@@ -87,10 +89,12 @@ class IntervalQuiz(Widget):
         return correct, options
 
     def quiz_result(self, is_correct):
-        self.score_func(is_correct, self.correct_answer)
-        if is_correct:
-            self.audio_ctrl.interval_quiz_success()
-            self.remove_quiz = True
+        if not self.already_answered:
+            self.already_answered = True
+            self.score_func(is_correct, self.correct_answer)
+            if is_correct:
+                self.audio_ctrl.interval_quiz_success()
+                self.remove_quiz = True
 
     def create_buttons(self, locations, options, correct_answer):
         for loc, opt in zip(locations, options):
@@ -148,7 +152,8 @@ class IntervalQuiz(Widget):
                 return
             if self.time > 6:
                 self.audio_ctrl.stop()
-                self.score_func(False, self.correct_answer)
+                if not self.already_answered:
+                    self.score_func(False, self.correct_answer)
                 return False
             return True
         else:
