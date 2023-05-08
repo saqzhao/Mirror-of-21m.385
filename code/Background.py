@@ -107,6 +107,8 @@ class BackgroundDisplay(Widget):
 
         self.collected_inst = []
 
+        self.last_window_size = Window.width, Window.height
+
     def reset(self):
         self.canvas.clear()
         self.remove_widget(self.counter)
@@ -210,6 +212,7 @@ class BackgroundDisplay(Widget):
     def add_collected(self, inst_src, idx):
         inst_pos = (self.heart_base_pos[0], Window.height - self.heart_base_pos[1] - (idx-1)*Window.height/9)
         inst_img = Image(source=inst_src, size_hint_x=0.8, anim_delay=1, keep_data=True, pos = inst_pos)
+        self.collected_inst.append(inst_img)
         self.add_widget(inst_img)
     
     def lose_life(self):
@@ -235,6 +238,16 @@ class BackgroundDisplay(Widget):
         for i in range(len(self.layers)):
             layer = self.layers[i]
             layer.points = self.margin_side, self.margin_bottom + self.layer_spacing * i, win_size[0] - self.margin_side, self.margin_bottom + self.layer_spacing * i
+
+        for collectable in self.collected_inst:
+            collectable.pos[0] *= win_size[0]/self.last_window_size[0]
+            collectable.pos[1] *= win_size[1]/self.last_window_size[1]
+
+        for i in self.hearts:
+            self.hearts[i].pos[0] *= win_size[0]/self.last_window_size[0]
+            self.hearts[i].pos[1] *= win_size[1]/self.last_window_size[1]
+
+        self.last_window_size = win_size
 
     def on_update(self):
         pass #TODO
