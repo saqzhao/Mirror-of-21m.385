@@ -57,7 +57,6 @@ class IntroScreen(Screen):
         border_e = (Window.width - num_bottom*button_distance)/2
         
         for idx in range(num_top): # 11 Intervals split 5 then 6
-
             x = border_o + button_distance*idx
             self.interval_locs.append((x, height_top))
 
@@ -65,10 +64,7 @@ class IntroScreen(Screen):
             x = border_e + button_distance*idx
             self.interval_locs.append((x, height_bottom))
 
-        # print(self.interval_locs)
-        i = 0
         for loc, opt in zip(self.interval_locs, self.intervals):
-            i += 1
             button = IntervalButton(opt, loc, button_size, self.interval_callback)
             self.buttons.append(button)
             self.add_widget(button)
@@ -87,15 +83,15 @@ class IntroScreen(Screen):
     # if you want on_update() called when a screen is NOT active, then pass in an extra argument:
     # always_update=True to the screen constructor.
     def on_update(self):
-        # self.info.text = "Intro/Settings Screen\n"
-        # self.info.text += "→: Begin Game\n"
+
         pass
 
     def on_resize(self, win_size):
+        self.home_button.on_resize(win_size)
+        self.help_button.on_resize(win_size)
         start_button_position = (win_size[0]/2- button_width/2, win_size[1]*3/5- button_height/2)
         self.start_button.pos = start_button_position
-        # self.start_button.pos = (Window.width/2, Window.height/2)
-        # resize_topleft_label(self.info)
+
         button_centerline_margin = win_size[0]/20
         button_size = (win_size[0]/15, win_size[1]/20)
         button_spacing = button_size[0]*0.3
@@ -107,6 +103,7 @@ class IntroScreen(Screen):
         num_bottom =len(self.intervals)-num_top
         border_o = (Window.width - (num_top)*button_distance)/2
         border_e = (Window.width - num_bottom*button_distance)/2
+
         self.interval_locs = []
         for idx in range(num_top): # 11 self.Intervals split 5 then 6
             x = border_o + button_distance*idx
@@ -116,9 +113,7 @@ class IntroScreen(Screen):
             self.interval_locs.append((x, height_bottom))
 
         for button, loc in zip(self.buttons, self.interval_locs):
-            button.set_pos(loc)
-            # button.btn.pos=loc
-        
+            button.set_pos(loc)        
 
 class IntervalButton(Widget):
     def __init__(self, buttonLabel, pos, button_size, interval_callback):
